@@ -4,7 +4,7 @@ cache: true
 
 interface:
   endpointsMenu: false
-  modelSelect: false
+  modelSelect: true
   parameters: false
   sidePanel: true
   presets: false
