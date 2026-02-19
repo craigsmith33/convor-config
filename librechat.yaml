@@ -37,4 +37,4 @@ modelSpecs:
       preset:
         default: true
         endpoint: "agents"
-        agent_id: "agent_usbMZAnx7CAN0WnlOjGyN"
+        agent_id: "agent_usbMZAnx7CAN0WnIOjGyN"
