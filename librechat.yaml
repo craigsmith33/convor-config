@@ -6,7 +6,7 @@ interface:
   endpointsMenu: false
   modelSelect: true
   parameters: false
-  sidePanel: true
+  sidePanel: false
   presets: false
   bookmarks: false
   multiConvo: false
