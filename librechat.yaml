@@ -1,0 +1,38 @@
+version: 1.2.8
+
+cache: true
+
+interface:
+  endpointsMenu: false
+  modelSelect: false
+  parameters: false
+  sidePanel: true
+  presets: false
+  bookmarks: false
+  multiConvo: false
+  prompts:
+    use: false
+    create: false
+  agents:
+    use: true
+    create: true
+    share: true
+  peoplePicker:
+    users: true
+    groups: true
+    roles: true
+  marketplace:
+    use: false
+
+modelSpecs:
+  enforce: true
+  prioritize: true
+  list:
+    - name: "hr-engine"
+      label: "HR Answer Engine"
+      description: "Convor HR Portal"
+      default: true
+      preset:
+        default: true
+        endpoint: "agents"
+        agent_id: "agent_usbMZAnx7CAN0WnlOjGyN"
