@@ -1,7 +1,5 @@
 version: 1.3.4
-
 cache: true
-
 interface:
   endpointsMenu: false
   modelSelect: true
@@ -23,7 +21,6 @@ interface:
     roles: true
   marketplace:
     use: false
-
 modelSpecs:
   enforce: true
   prioritize: true
@@ -38,3 +35,11 @@ modelSpecs:
         default: true
         endpoint: "agents"
         agent_id: "agent_usbMZAnx7CAN0WnIOjGyN"
+    - name: "sales-engine"
+      label: "Sales Intelligence Engine"
+      description: "Robots.com Sales Assistant"
+      default: false
+      preset:
+        default: false
+        endpoint: "agents"
+        agent_id: "agent_XAF7KrLM0wz2cZ-S4wqha"
