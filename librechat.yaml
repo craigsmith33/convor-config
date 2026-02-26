@@ -24,29 +24,15 @@ interface:
 
 mcpServers:
   hubspot:
-    type: streamable-http
-    title: "HubSpot CRM"
-    description: "Access HubSpot contacts, companies, deals, tickets, and more"
-    url: "https://mcp.hubspot.com"
+    command: npx
+    args:
+      - -y
+      - "@hubspot/mcp-server"
+    env:
+      PRIVATE_APP_ACCESS_TOKEN: "b34d4a00-7345-49ab-85fe-249d647f4a78"
     serverInstructions: true
-    timeout: 45000
-    initTimeout: 150000
-    startup: false
     chatMenu: false
-    oauth:
-      authorization_url: https://mcp.hubspot.com/oauth/authorize
-      token_url: https://mcp.hubspot.com/oauth/v3/token
-      client_id: "874d7c80-8167-41a1-9cfd-c1494b6a318f"
-      client_secret: "53ade169-77cc-47d5-99ac-f529dcc7ba31"
-      redirect_uri: https://ai.convor.ai/api/mcp/hubspot/oauth/callback
-      scope: ""
-      token_endpoint_auth_methods_supported: ["client_secret_post"]
-      code_challenge_methods_supported: ["S256"]
-
-mcpSettings:
-  allowedDomains:
-    - "mcp.hubspot.com"
-    - "*.hubspot.com"
+    timeout: 45000
 
 modelSpecs:
   enforce: true
