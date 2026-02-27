@@ -21,7 +21,17 @@ interface:
     roles: true
   marketplace:
     use: false
-
+endpoints:
+  assistants:
+    disableBuilder: false
+    pollIntervalMs: 750
+    timeoutMs: 180000
+    capabilities:
+      - "code_interpreter"
+      - "retrieval"
+      - "actions"
+      - "tools"
+      - "image_vision"
 mcpServers:
   hubspot:
     command: npx
@@ -33,21 +43,11 @@ mcpServers:
     serverInstructions: true
     chatMenu: false
     timeout: 45000
-
 modelSpecs:
   enforce: true
   prioritize: true
   addedEndpoints:
-   assistants:
-    disableBuilder: false
-    pollIntervalMs: 750
-    timeoutMs: 180000
-    capabilities:
-      - "code_interpreter"
-      - "retrieval"
-      - "actions"
-      - "tools"
-      - "image_vision"
+    - assistants
     - agents
   list:
     - name: "hr-engine"
@@ -66,3 +66,11 @@ modelSpecs:
         default: false
         endpoint: "agents"
         agent_id: "agent_XAF7KrLM0wz2cZ-S4wqha"
+    - name: "finance-engine"
+      label: "Finance Intelligence Engine"
+      description: "Executive Financial Analysis with Code Interpreter"
+      default: false
+      preset:
+        default: false
+        endpoint: "assistants"
+        model: "gpt-4o"
