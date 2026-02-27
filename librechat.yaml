@@ -38,6 +38,16 @@ modelSpecs:
   enforce: true
   prioritize: true
   addedEndpoints:
+   assistants:
+    disableBuilder: false
+    pollIntervalMs: 750
+    timeoutMs: 180000
+    capabilities:
+      - "code_interpreter"
+      - "retrieval"
+      - "actions"
+      - "tools"
+      - "image_vision"
     - agents
   list:
     - name: "hr-engine"
