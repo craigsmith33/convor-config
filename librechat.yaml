@@ -66,11 +66,12 @@ modelSpecs:
         default: false
         endpoint: "agents"
         agent_id: "agent_9d9HDLNTNvgLKPMbRqN-U"
-    - name: "finance-engine"
+- name: "finance-engine"
       label: "Finance Intelligence Engine"
       description: "Executive Financial Analysis with Code Interpreter"
       default: false
       preset:
         default: false
         endpoint: "assistants"
+        assistant_id: "asst_kYXEAz5M4lsqvK9cMjLuijpx"
         model: "gpt-4o"
