@@ -58,6 +58,14 @@ modelSpecs:
         default: true
         endpoint: "agents"
         agent_id: "agent_g81AUn460eTHJg8RczE3s"
+   - name: "sales-engine"
+      label: "Sales Intelligence Engine"
+      description: "Robots.com Sales Assistant"
+      default: false
+      preset:
+        default: false
+        endpoint: "agents"
+        agent_id: "agent_9d9HDLNTNvgLKPMbRqN-U"
     - name: "finance-engine"
       label: "Finance Intelligence Engine"
       description: "Executive Financial Analysis with Code Interpreter"
