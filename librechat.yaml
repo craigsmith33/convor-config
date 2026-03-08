@@ -43,6 +43,12 @@ mcpServers:
     serverInstructions: true
     chatMenu: false
     timeout: 45000
+  finance:
+    type: sse
+    url: "https://convor-finance-mcp-production.up.railway.app/sse"
+    serverInstructions: true
+    chatMenu: false
+    timeout: 45000
 modelSpecs:
   enforce: true
   prioritize: true
@@ -50,28 +56,4 @@ modelSpecs:
     - assistants
     - agents
   list:
-    - name: "hr-engine"
-      label: "HR Answer Engine"
-      description: "Convor HR Portal"
-      default: true
-      preset:
-        default: true
-        endpoint: "agents"
-        agent_id: "agent_g81AUn460eTHJg8RczE3s"
-   - name: "sales-engine"
-      label: "Sales Intelligence Engine"
-      description: "Robots.com Sales Assistant"
-      default: false
-      preset:
-        default: false
-        endpoint: "agents"
-        agent_id: "agent_9d9HDLNTNvgLKPMbRqN-U"
-- name: "finance-engine"
-      label: "Finance Intelligence Engine"
-      description: "Executive Financial Analysis with Code Interpreter"
-      default: false
-      preset:
-        default: false
-        endpoint: "assistants"
-        assistant_id: "asst_kYXEAz5M4lsqvK9cMjLuijpx"
-        model: "gpt-4o"
+    - name: "
