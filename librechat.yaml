@@ -37,9 +37,9 @@ mcpServers:
     command: npx
     args:
       - -y
-      - "@hubspot/mcp-server"
+      - "hubspot-mcp"
     env:
-      PRIVATE_APP_ACCESS_TOKEN: "pat-na2-5ea80805-ae99-4443-8958-ea496189cb57"
+      HUBSPOT_API_KEY: "pat-na2-5ea80805-ae99-4443-8958-ea496189cb57"
     serverInstructions: true
     chatMenu: false
     timeout: 45000
