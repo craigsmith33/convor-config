@@ -39,13 +39,13 @@ mcpServers:
       - -y
       - "@hubspot/mcp-server"
     env:
-      HUBSPOT_PRIVATE_APP_ACCESS_TOKEN: "b34d4a00-7345-49ab-85fe-249d647f4a78"
+      PRIVATE_APP_ACCESS_TOKEN: "b34d4a00-7345-49ab-85fe-249d647f4a78"
     serverInstructions: true
     chatMenu: false
     timeout: 45000
   finance:
-    type: sse
-    url: "https://convor-finance-mcp-production.up.railway.app/sse"
+    type: streamable-http
+    url: "https://convor-finance-mcp-production.up.railway.app/mcp"
     serverInstructions: true
     chatMenu: false
     timeout: 45000
