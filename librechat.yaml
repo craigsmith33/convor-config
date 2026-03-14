@@ -55,27 +55,4 @@ modelSpecs:
   addedEndpoints:
     - agents
   list:
-    - name: "hr-engine"
-      label: "HR Answer Engine"
-      description: "Convor HR Portal"
-      default: true
-      preset:
-        default: true
-        endpoint: "agents"
-        agent_id: "agent_g81AUn460eTHJg8RczE3s"
-    - name: "sales-engine"
-      label: "Sales Intelligence Engine"
-      description: "Sales Assistant"
-      default: false
-      preset:
-        default: false
-        endpoint: "agents"
-        agent_id: "agent_9d9HDLNTNvgLKPMbRqN-U"
-    - name: "finance-engine"
-      label: "Finance Intelligence Engine"
-      description: "Executive Financial Analysis"
-      default: false
-      preset:
-        default: false
-        endpoint: "agents"
-        agent_id: "agent__-BeQ9Fk3FQBnhQCY4Dn2"
+    - name: "hr-engin
