@@ -39,7 +39,7 @@ mcpServers:
       - -y
       - "@hubspot/mcp-server"
     env:
-      PRIVATE_APP_ACCESS_TOKEN: "b34d4a00-7345-49ab-85fe-249d647f4a78"
+      PRIVATE_APP_ACCESS_TOKEN: "pat-na2-5ea80805-ae99-4443-8958-ea496189cb57"
     serverInstructions: true
     chatMenu: false
     timeout: 45000
