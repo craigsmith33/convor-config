@@ -37,9 +37,9 @@ mcpServers:
     command: npx
     args:
       - -y
-      - "@shinzolabs/hubspot-mcp"
+      - "@hubspot/mcp-server"
     env:
-      HUBSPOT_ACCESS_TOKEN: "b34d4a00-7345-49ab-85fe-249d647f4a78"
+      HUBSPOT_PRIVATE_APP_ACCESS_TOKEN: "b34d4a00-7345-49ab-85fe-249d647f4a78"
     serverInstructions: true
     chatMenu: false
     timeout: 45000
