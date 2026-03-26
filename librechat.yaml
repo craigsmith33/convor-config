@@ -21,6 +21,11 @@ interface:
     roles: true
   marketplace:
     use: false
+  remoteAgents:
+    use: true
+    create: true
+    share: false
+    public: false
 endpoints:
   assistants:
     disableBuilder: false
