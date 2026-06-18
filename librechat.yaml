@@ -30,6 +30,10 @@ interface:
     create: true
     share: false
     public: false
+  memories:
+    use: false
+  skills:
+    use: false
 endpoints:
   assistants:
     disableBuilder: false
