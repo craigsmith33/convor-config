@@ -16,6 +16,9 @@ interface:
     use: true
     create: false
     share: false
+  mcpServers:
+    use: false
+    create: false
   peoplePicker:
     users: true
     groups: true
