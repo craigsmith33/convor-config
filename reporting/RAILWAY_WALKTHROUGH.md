@@ -16,9 +16,10 @@ browser-only. Path B (terminal) is kept as a fallback.
 
 ## Before you start
 
-1. A Railway account at **railway.com** with a payment method. Metabase needs ~2GB RAM and
-   runs 24/7 — the free trial won't hold it. Metabase idling is the main cost driver; the two
-   Postgres services are minor by comparison.
+1. A Railway account at **railway.com** with a payment method. The **Hobby** plan is
+   sufficient — its 8 GB RAM / 8 vCPU ceiling comfortably fits Metabase at ~2 GB. Budget
+   roughly **$18–25/month** for this project on top of your existing usage; see
+   "What this will cost" near the end before you start clicking.
 2. A copy of `reporting/convor_analytics_schema.sql` from this repo, open in a text editor so
    you can copy its contents. (On GitHub: open the file, click **Raw**, select all, copy.)
 
@@ -382,43 +383,98 @@ That's checklist items 1 and 2 complete. Stop here for review.
 
 ---
 
+## What this will cost
+
+Railway bills actual consumption per second, not allocation:
+
+| Resource | Rate |
+|---|---|
+| RAM | $10 / GB / month |
+| vCPU | $20 / vCPU / month |
+| Volume storage | $0.15 / GB / month |
+| Egress | $0.05 / GB (inbound free) |
+
+On **Hobby** you pay `max($5 subscription, actual usage)` — the $5 includes $5 of usage, and
+if you exceed it you pay the usage figure rather than $5 plus usage.
+
+**Estimated marginal cost of the `convor-reporting` project — roughly $18–25/month:**
+
+| Service | Typical idle draw | Approx / month |
+|---|---|---|
+| `metabase` | 1.5–2 GB RAM + light CPU | **$15–20** |
+| `metabase-appdb` | ~150 MB RAM | $1–2 |
+| `analytics-db` | ~150 MB RAM | $1–2 |
+| Volumes (all three) | a few GB total | under $1 |
+
+Metabase is essentially the entire bill. Treat the two Postgres services as rounding error.
+
+**Two ways to trim it:**
+
+1. **Cap Metabase's heap.** On the `metabase` service add variable `JAVA_TOOL_OPTIONS` =
+   `-Xmx1g`. This holds the JVM heap to 1GB and can take $5–8/month off. If Metabase becomes
+   sluggish or restarts under load with real dashboards, raise it back to `-Xmx2g`.
+2. **Pause it between demos** — see below.
+
+**Set a spend limit before you deploy.** Account → **Usage** → **Set limits**. In the
+pre-client phase a hard limit is pure safety. Once a client is live, be careful: a hard limit
+that trips will take their dashboard offline, so raise it well above your steady-state figure
+before go-live.
+
+The Hobby plan's 8 GB RAM / 8 vCPU ceiling is not a concern here — Metabase at ~2 GB fits
+alongside your existing projects with room to spare.
+
+---
+
 ## Pause / Resume to save cost (pre-client phase only)
 
 **This applies only before a customer is using the system.** Once a client is live on the
 dashboard, Metabase stays on — pausing it takes their reporting offline.
 
-Metabase is the expensive service (~2GB RAM, running 24/7). The two Postgres services are
-comparatively cheap, and pausing them buys little while risking confusion — leave them
-running.
+Pausing means *removing the active deployment*, which stops compute. It does **not** delete
+the service, its variables, or its volume — your data stays on disk and comes back on
+redeploy.
 
-### To pause Metabase
+Two options depending on how long you're leaving it:
 
-1. Click the **metabase** service tile.
+- **Pause Metabase only** — saves roughly $15–20/month. The databases stay queryable, so you
+  can keep loading data or running SQL. Best if you're actively building.
+- **Pause all three services** — saves roughly $18–25/month, leaving just the $5 subscription
+  and under $1 of volume storage. Data persists on the volumes. Best if you're parking the
+  project for weeks until a client appears.
+
+### To pause a service
+
+1. Click the service tile (**metabase**, and optionally the two Postgres services).
 2. Go to the **Deployments** tab.
 3. Find the active deployment at the top of the list.
 4. Click the **⋮** (three-dot) menu on that deployment → **Remove**.
 
-The service stops and its compute charges stop with it. The service, its variables (including
-`MB_ENCRYPTION_SECRET_KEY`), and its configuration all stay in place.
+Compute charges stop. The service, its variables (including `MB_ENCRYPTION_SECRET_KEY`), its
+configuration and its volume all stay in place.
 
 ### What still costs money while paused
 
-- **The Hobby plan subscription (~$5/month).** Charged whether anything runs or not.
-- **Volume/disk storage.** Removing a deployment stops compute, **not** storage. Metabase's
-  volume and both Postgres volumes keep billing. This is small but non-zero.
-- **`analytics-db` and `metabase-appdb` compute**, if you leave them running — which you
-  should. `metabase-appdb` holds all your dashboards and saved questions.
+- **The Hobby plan subscription ($5/month).** Charged whether anything runs or not.
+- **Volume/disk storage.** Removing a deployment stops compute, **not** storage. All three
+  volumes keep billing at $0.15/GB/month — under $1/month in practice.
 
-So pausing cuts the largest line item, not the bill entirely. Expect a small monthly floor.
+So the floor is about **$5–6/month** with everything paused. Pausing cuts the largest line
+item, not the bill entirely.
 
-⚠️ **Do not delete `metabase-appdb` to save money.** Every dashboard, question, user and
-permission group you build lives there. Deleting it means rebuilding item 6 from scratch.
+⚠️ **Pause, don't delete.** Removing a *deployment* is reversible; deleting a *service*
+destroys its volume. Deleting `metabase-appdb` in particular wipes every dashboard, saved
+question, user and permission group you built — that's checklist item 6 from scratch. The two
+actions sit in different menus for a reason; don't reach for **Danger Zone**.
 
 ### To resume
 
-1. **metabase** service → **Deployments** tab.
+1. Service → **Deployments** tab.
 2. On the most recent deployment, click **⋮** → **Redeploy**.
-3. Wait for green. Metabase comes back with all dashboards and connections intact.
+3. Wait for green.
+
+If you paused all three, **bring the databases up first and let them go green before
+redeploying Metabase** — otherwise Metabase boots, fails to reach `metabase-appdb`, and may
+crash-loop. If that happens, just redeploy Metabase again once the databases are up.
 
 First boot after a pause takes a couple of minutes. If the public URL 502s, wait and refresh.
 
