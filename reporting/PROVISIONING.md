@@ -19,7 +19,7 @@ Three services. Note the *two distinct* Postgres roles — this is easy to confl
 |---|---|---|
 | `metabase` | The single central Metabase (serves every client) | Template, ~2GB RAM |
 | `metabase-appdb` | Metabase's **own** internal metadata store | Questions, dashboards, users, permissions. Usually created by the Railway Metabase template. **Never** put client analytics data here. |
-| `analytics-db` | Postgres hosting the **per-client analytics databases** | `client_acme`, `client_df`, … one database per Convor customer |
+| `analytics-db` | Postgres hosting the **per-client analytics databases** | `client_acme`, `client_hyperdrive_holdings`, … one database per Convor customer |
 
 Do **not** reuse the Finance MCP database for any of these.
 
@@ -27,19 +27,24 @@ Do **not** reuse the Finance MCP database for any of these.
 
 Section 2 requires per-client *database* isolation, not per-client *server*. A Postgres
 connection is bound to a single database and cannot reach across databases in a query, so
-one `analytics-db` service holding `client_acme`, `client_df`, … satisfies the isolation
+one `analytics-db` service holding `client_acme`, `client_hyperdrive_holdings`, … satisfies the isolation
 requirement. Metabase OSS then gets one connection per client database, each scoped to one
 group.
 
 ### Required settings
 
-- **`MB_ENCRYPTION_SECRET_KEY` must be set before the very first boot.** Setting it later
-  means re-encrypting an already-populated app DB. Generate with `openssl rand -base64 32`
-  and store it in the Railway service variables.
+- **Set `MB_ENCRYPTION_SECRET_KEY` before saving any database connection in Metabase.**
+  Generate with `openssl rand -base64 32` (must be ≥16 chars) and store it in the Railway
+  service variables. Connection credentials saved *before* the key exists are stored
+  unencrypted; they keep working, and you can encrypt them after the fact by re-saving each
+  entry under Admin → Databases. Changing a key that is already in use is the expensive path
+  — it needs the `rotate-encryption-key` CLI command against a stopped instance. Setting it
+  up front avoids both.
 - Both Postgres services stay **private-only — no public TCP proxy / no exposed endpoint.**
-  This is the security posture the outbound-push ingest design exists to preserve
-  (spec Section 2). Metabase reaches them over Railway private networking inside the
-  project; client instances push data *outward* and are never dialled into.
+  Railway enables a TCP proxy on Postgres **by default**, so this is an active removal step,
+  not a default you inherit. This is the security posture the outbound-push ingest design
+  exists to preserve (spec Section 2). Metabase reaches them over Railway private networking
+  inside the project; client instances push data *outward* and are never dialled into.
 - Only the `metabase` service gets a public domain, later fronted by Cloudflare at
   `insights.convor.ai` (spec checklist item 7).
 
@@ -61,21 +66,21 @@ Once `analytics-db` exists, for each client:
 
 ```bash
 # 1. Create the client database and a least-privilege role
-createdb  -h <analytics-db-host> -U postgres client_df
+createdb  -h <analytics-db-host> -U postgres client_hyperdrive_holdings
 psql      -h <analytics-db-host> -U postgres -d postgres -c \
-  "CREATE ROLE mb_client_df LOGIN PASSWORD '<generated>';"
+  "CREATE ROLE mb_hyperdrive LOGIN PASSWORD '<generated>';"
 
 # 2. Run the schema (safe to re-run; all objects are IF NOT EXISTS / OR REPLACE)
-psql -h <analytics-db-host> -U postgres -d client_df -v ON_ERROR_STOP=1 \
+psql -h <analytics-db-host> -U postgres -d client_hyperdrive_holdings -v ON_ERROR_STOP=1 \
      -f reporting/convor_analytics_schema.sql
 
 # 3. Grant the Metabase connection role read-only access to the analytics schema
-psql -h <analytics-db-host> -U postgres -d client_df <<'SQL'
-GRANT CONNECT ON DATABASE client_df TO mb_client_df;
-GRANT USAGE ON SCHEMA analytics TO mb_client_df;
-GRANT SELECT ON ALL TABLES IN SCHEMA analytics TO mb_client_df;
+psql -h <analytics-db-host> -U postgres -d client_hyperdrive_holdings <<'SQL'
+GRANT CONNECT ON DATABASE client_hyperdrive_holdings TO mb_hyperdrive;
+GRANT USAGE ON SCHEMA analytics TO mb_hyperdrive;
+GRANT SELECT ON ALL TABLES IN SCHEMA analytics TO mb_hyperdrive;
 ALTER DEFAULT PRIVILEGES IN SCHEMA analytics
-  GRANT SELECT ON TABLES TO mb_client_df;
+  GRANT SELECT ON TABLES TO mb_hyperdrive;
 SQL
 ```
 
@@ -84,7 +89,7 @@ cross-client queries; the role also prevents a misconfigured Metabase connection
 writing to the warehouse.
 
 The ingest worker (Feeds A and B, spec Section 5) needs a **separate** role with `INSERT`/
-`UPDATE` — do not reuse `mb_client_df` for writes.
+`UPDATE` — do not reuse `mb_hyperdrive` for writes.
 
 ---
 
