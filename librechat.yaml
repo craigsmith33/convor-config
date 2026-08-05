@@ -24,14 +24,14 @@ interface:
     groups: true
     roles: true
   marketplace:
-    use: false
+    use: true
   remoteAgents:
     use: true
     create: true
     share: false
     public: false
   memories: false
-  skills: false
+  skills: true
 endpoints:
   assistants:
     disableBuilder: false
