@@ -1,4 +1,4 @@
-version: 1.3.4
+version: 1.3.17
 cache: true
 interface:
   customWelcome: "Welcome to Convor AI"
@@ -43,13 +43,6 @@ endpoints:
       - "actions"
       - "tools"
       - "image_vision"
-mcpServers:
-  finance:
-    type: streamable-http
-    url: "https://convor-finance-mcp-production.up.railway.app/mcp"
-    serverInstructions: true
-    chatMenu: false
-    timeout: 45000
 modelSpecs:
   enforce: true
   prioritize: true
@@ -72,11 +65,3 @@ modelSpecs:
         default: false
         endpoint: "agents"
         agent_id: "agent_9d9HDLNTNvgLKPMbRqN-U"
-    - name: "finance-engine"
-      label: "Finance Intelligence Engine"
-      description: "Executive Financial Analysis"
-      default: false
-      preset:
-        default: false
-        endpoint: "agents"
-        agent_id: "agent__-BeQ9Fk3FQBnhQCY4Dn2"
