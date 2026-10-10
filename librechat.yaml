@@ -50,8 +50,8 @@ modelSpecs:
     - agents
   list:
     - name: "hr-engine"
-      label: "HR Answer Engine"
-      description: "Convor HR Portal"
+      label: "People Ops Assistant"
+      description: "Policies, benefits, onboarding and hiring"
       default: true
       preset:
         default: true
