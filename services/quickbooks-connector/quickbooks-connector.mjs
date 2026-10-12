@@ -32365,15 +32365,15 @@ function template(text, settings, oldSettings) {
   ].join("|") + "|$", "g");
   var index = 0;
   var source = "__p+='";
-  text.replace(matcher2, function(match, escape2, interpolate, evaluate, offset) {
+  text.replace(matcher2, function(match, escape2, interpolate, evaluate2, offset) {
     source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
     index = offset + match.length;
     if (escape2) {
       source += "'+\n((__t=(" + escape2 + "))==null?'':_.escape(__t))+\n'";
     } else if (interpolate) {
       source += "'+\n((__t=(" + interpolate + "))==null?'':__t)+\n'";
-    } else if (evaluate) {
-      source += "';\n" + evaluate + "\n__p+='";
+    } else if (evaluate2) {
+      source += "';\n" + evaluate2 + "\n__p+='";
     }
     return match;
   });
@@ -42404,7 +42404,7 @@ var require_csrf = __commonJS({
     Tokens.prototype.secretSync = function secretSync() {
       return uid.sync(this.secretLength);
     };
-    Tokens.prototype._tokenize = function tokenize(secret, salt) {
+    Tokens.prototype._tokenize = function tokenize2(secret, salt) {
       return salt + "-" + hash(salt + "-" + secret);
     };
     Tokens.prototype.verify = function verify(secret, token2) {
@@ -80304,6 +80304,151 @@ function flattenReport(rep) {
   return out;
 }
 
+// src/convor-calc.ts
+var DIV_SCALE = 30;
+var Dec = class _Dec {
+  constructor(n, s) {
+    this.n = n;
+    this.s = s;
+  }
+  static parse(text) {
+    const m = /^(\d+)(?:\.(\d+))?$/.exec(text);
+    if (!m) throw new Error(`not a number: ${text}`);
+    const frac = m[2] || "";
+    return new _Dec(BigInt(m[1] + frac), frac.length);
+  }
+  static align(a, b) {
+    const s = Math.max(a.s, b.s);
+    return [a.n * 10n ** BigInt(s - a.s), b.n * 10n ** BigInt(s - b.s), s];
+  }
+  add(b) {
+    const [x, y, s] = _Dec.align(this, b);
+    return new _Dec(x + y, s);
+  }
+  sub(b) {
+    const [x, y, s] = _Dec.align(this, b);
+    return new _Dec(x - y, s);
+  }
+  mul(b) {
+    return new _Dec(this.n * b.n, this.s + b.s).trim(DIV_SCALE);
+  }
+  neg() {
+    return new _Dec(-this.n, this.s);
+  }
+  div(b) {
+    if (b.n === 0n) throw new Error("division by zero");
+    const scale = DIV_SCALE + 1;
+    const num = this.n * 10n ** BigInt(b.s + scale);
+    const den = b.n * 10n ** BigInt(this.s);
+    return new _Dec(num / den, scale).round(DIV_SCALE);
+  }
+  /** Round half away from zero to d decimal places. */
+  round(d) {
+    if (this.s <= d) return new _Dec(this.n * 10n ** BigInt(d - this.s), d);
+    const f = 10n ** BigInt(this.s - d);
+    const neg = this.n < 0n;
+    const abs = neg ? -this.n : this.n;
+    let q = abs / f;
+    if (abs % f * 2n >= f) q += 1n;
+    return new _Dec(neg ? -q : q, d);
+  }
+  trim(max2) {
+    return this.s > max2 ? this.round(max2) : this;
+  }
+  toFixed(d) {
+    const r = this.round(d);
+    const neg = r.n < 0n;
+    let digits = (neg ? -r.n : r.n).toString().padStart(d + 1, "0");
+    const out = d > 0 ? digits.slice(0, -d) + "." + digits.slice(-d) : digits;
+    return (neg && /[1-9]/.test(out) ? "-" : "") + out;
+  }
+  toPlain(maxDecimals = 10) {
+    let t = this.toFixed(maxDecimals);
+    if (t.includes(".")) t = t.replace(/0+$/, "").replace(/\.$/, "");
+    return t === "-0" ? "0" : t;
+  }
+};
+function tokenize(expr) {
+  const s = expr.replace(/[$\s]/g, "").replace(/(\d),(?=\d{3}(\D|$))/g, "$1").replace(/[−–]/g, "-").replace(/[×xX]/g, "*").replace(/÷/g, "/");
+  const out = [];
+  let i = 0;
+  while (i < s.length) {
+    const c = s[i];
+    if (/[0-9.]/.test(c)) {
+      let j = i;
+      while (j < s.length && /[0-9.]/.test(s[j])) j++;
+      const v = s.slice(i, j);
+      if (!/^\d+(\.\d+)?$|^\.\d+$/.test(v)) throw new Error(`bad number "${v}"`);
+      out.push({ t: "num", v: v.startsWith(".") ? "0" + v : v });
+      i = j;
+    } else if ("+-*/()".includes(c)) {
+      out.push({ t: "op", v: c });
+      i++;
+    } else {
+      throw new Error(`unsupported character "${c}" (use numbers, + - * / and parentheses)`);
+    }
+  }
+  if (!out.length) throw new Error("empty expression");
+  return out;
+}
+function evaluate(expr) {
+  if (typeof expr !== "string" || expr.length > 500) throw new Error("expression must be text under 500 characters");
+  const toks = tokenize(expr);
+  let p = 0;
+  let depth = 0;
+  const peek = () => toks[p];
+  const take = () => toks[p++];
+  const parseExpr = () => {
+    let v2 = parseTerm();
+    while (peek() && peek().t === "op" && (peek().v === "+" || peek().v === "-")) {
+      const op = take().v;
+      const r = parseTerm();
+      v2 = op === "+" ? v2.add(r) : v2.sub(r);
+    }
+    return v2;
+  };
+  const parseTerm = () => {
+    let v2 = parseFactor();
+    while (peek() && peek().t === "op" && (peek().v === "*" || peek().v === "/")) {
+      const op = take().v;
+      const r = parseFactor();
+      v2 = op === "*" ? v2.mul(r) : v2.div(r);
+    }
+    return v2;
+  };
+  const parseFactor = () => {
+    const tok = take();
+    if (!tok) throw new Error("expression ends too early");
+    if (tok.t === "num") return Dec.parse(tok.v);
+    if (tok.v === "-") return parseFactor().neg();
+    if (tok.v === "+") return parseFactor();
+    if (tok.v === "(") {
+      if (++depth > 50) throw new Error("too many parentheses");
+      const v2 = parseExpr();
+      const close = take();
+      if (!close || close.v !== ")") throw new Error("missing closing parenthesis");
+      depth--;
+      return v2;
+    }
+    throw new Error(`unexpected "${tok.v}"`);
+  };
+  const v = parseExpr();
+  if (p !== toks.length) throw new Error(`unexpected "${toks[p].v}"`);
+  return v;
+}
+function calculateAll(items, decimals = 2) {
+  const d = Number.isInteger(decimals) && decimals >= 0 && decimals <= 6 ? decimals : 2;
+  return items.map((it) => {
+    const label = typeof it?.label === "string" ? it.label.slice(0, 200) : void 0;
+    try {
+      const v = evaluate(String(it?.expression ?? ""));
+      return { ...label ? { label } : {}, expression: it.expression, result: v.toFixed(d), unrounded: v.toPlain(10) };
+    } catch (e) {
+      return { ...label ? { label } : {}, expression: it?.expression, error: String(e?.message || e) };
+    }
+  });
+}
+
 // src/handlers/get-quickbooks-profit-and-loss.handler.ts
 async function getQuickbooksProfitAndLoss(options) {
   try {
@@ -82590,7 +82735,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.1.0";
+var VERSION2 = "1.2.0";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;
@@ -82662,6 +82807,24 @@ var SearchCustomerOrVendorTool = {
     return { content: [{ type: "text", text: JSON.stringify(summary) }] };
   }
 };
+var calcSchema = external_exports.object({
+  calculations: external_exports.array(external_exports.object({
+    label: external_exports.string().optional().describe('What this number is, for example "Net margin Nov 2025"'),
+    expression: external_exports.string().describe('Arithmetic using numbers, + - * / and parentheses, for example "1680.78 / 6915.88 * 100"')
+  })).min(1).max(60).describe("Every calculation the answer needs, all in this one call"),
+  decimals: external_exports.number().int().min(0).max(6).optional().describe("Decimal places to round results to (default 2)")
+});
+var CalculateTool = {
+  name: "calculate",
+  description: "Exact calculator for money, percentages and ratios. Put every calculation the answer needs into one call (totals, differences, percentage changes, margins, ratios). Expressions use numbers, + - * / and parentheses; $ signs and thousands commas are fine. Returns each result rounded (default 2 decimals) and unrounded. Use these results exactly; never work numbers out yourself. This tool does not read or change QuickBooks.",
+  schema: calcSchema,
+  handler: async ({ params }) => {
+    const items = Array.isArray(params?.calculations) ? params.calculations : [];
+    if (!items.length) return { isError: true, content: [{ type: "text", text: "Error: give at least one calculation." }] };
+    const results = calculateAll(items.slice(0, 60), params?.decimals ?? 2);
+    return { content: [{ type: "text", text: JSON.stringify({ results }) }] };
+  }
+};
 var TOOLS = [
   GetProfitAndLossTool,
   GetBalanceSheetTool,
@@ -82701,12 +82864,14 @@ var TOOLS = [
   SearchClassesTool,
   SearchDepartmentsTool,
   SearchTermsTool,
-  SearchCustomerOrVendorTool
+  SearchCustomerOrVendorTool,
+  CalculateTool
 ];
 var READ_ONLY = /^(get|search|read)[_-]/;
+var LOCAL_ONLY = /* @__PURE__ */ new Set(["calculate"]);
 for (const t of TOOLS) {
   if (!t || typeof t.name !== "string" || typeof t.handler !== "function") throw new Error("Bad tool definition");
-  if (!READ_ONLY.test(t.name)) throw new Error("Refusing to serve non-read tool " + t.name);
+  if (!READ_ONLY.test(t.name) && !(LOCAL_ONLY.has(t.name) && t === CalculateTool)) throw new Error("Refusing to serve non-read tool " + t.name);
 }
 quickbooksClient.startOAuthFlow = async () => {
   throw new Error(RECONNECT_MSG);

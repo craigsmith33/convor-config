@@ -12,6 +12,7 @@ import { searchQuickbooksCustomers } from "./handlers/search-quickbooks-customer
 import { searchQuickbooksVendors } from "./handlers/search-quickbooks-vendors.handler.js";
 import { z } from "zod";
 import { flattenReport, isQuickBooksReport } from "./convor-reports.js";
+import { calculateAll } from "./convor-calc.js";
 
 // Reports
 import { GetProfitAndLossTool } from "./tools/get-profit-and-loss.tool.js";
@@ -57,7 +58,7 @@ import { SearchClassesTool } from "./tools/search-classes.tool.js";
 import { SearchDepartmentsTool } from "./tools/search-departments.tool.js";
 import { SearchTermsTool } from "./tools/search-terms.tool.js";
 
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 const PORT = Number(process.env.PORT || 8080);
 const MAX_RESULT_CHARS = 150_000;
 const KEEPALIVE_MS = 6 * 60 * 60 * 1000;
@@ -135,6 +136,31 @@ const SearchCustomerOrVendorTool = {
   },
 };
 
+// Convor addition: exact decimal arithmetic in one call, so the assistant never
+// does mental math on money. Pure computation; it does not touch QuickBooks.
+const calcSchema = z.object({
+  calculations: z.array(z.object({
+    label: z.string().optional().describe("What this number is, for example \"Net margin Nov 2025\""),
+    expression: z.string().describe("Arithmetic using numbers, + - * / and parentheses, for example \"1680.78 / 6915.88 * 100\""),
+  })).min(1).max(60).describe("Every calculation the answer needs, all in this one call"),
+  decimals: z.number().int().min(0).max(6).optional().describe("Decimal places to round results to (default 2)"),
+});
+const CalculateTool = {
+  name: "calculate",
+  description:
+    "Exact calculator for money, percentages and ratios. Put every calculation the answer needs into one call " +
+    "(totals, differences, percentage changes, margins, ratios). Expressions use numbers, + - * / and parentheses; " +
+    "$ signs and thousands commas are fine. Returns each result rounded (default 2 decimals) and unrounded. " +
+    "Use these results exactly; never work numbers out yourself. This tool does not read or change QuickBooks.",
+  schema: calcSchema,
+  handler: async ({ params }: any) => {
+    const items = Array.isArray(params?.calculations) ? params.calculations : [];
+    if (!items.length) return { isError: true, content: [{ type: "text" as const, text: "Error: give at least one calculation." }] };
+    const results = calculateAll(items.slice(0, 60), params?.decimals ?? 2);
+    return { content: [{ type: "text" as const, text: JSON.stringify({ results }) }] };
+  },
+};
+
 const TOOLS: any[] = [
   GetProfitAndLossTool, GetBalanceSheetTool, GetCashFlowTool, GetTrialBalanceTool, GetAgedReceivablesTool,
   GetAgedPayablesTool, GetCustomerBalanceTool, GetVendorBalanceTool, GetCustomerSalesTool, GetVendorExpensesTool,
@@ -145,14 +171,16 @@ const TOOLS: any[] = [
   GetPurchaseTool, SearchPurchaseOrdersTool,
   SearchAccountsTool, GetAccountTool, SearchItemsTool, ReadItemTool, SearchBudgetsTool, SearchDepositsTool,
   SearchClassesTool, SearchDepartmentsTool, SearchTermsTool,
-  SearchCustomerOrVendorTool,
+  SearchCustomerOrVendorTool, CalculateTool,
 ];
 
-// Belt and braces: refuse to serve anything that is not a read.
+// Belt and braces: refuse to serve anything that is not a read (plus the
+// Convor-only calculator, which never calls QuickBooks).
 const READ_ONLY = /^(get|search|read)[_-]/;
+const LOCAL_ONLY = new Set(["calculate"]);
 for (const t of TOOLS) {
   if (!t || typeof t.name !== "string" || typeof t.handler !== "function") throw new Error("Bad tool definition");
-  if (!READ_ONLY.test(t.name)) throw new Error("Refusing to serve non-read tool " + t.name);
+  if (!READ_ONLY.test(t.name) && !(LOCAL_ONLY.has(t.name) && t === CalculateTool)) throw new Error("Refusing to serve non-read tool " + t.name);
 }
 
 // Never fall back to Intuit's interactive browser login inside a server: it

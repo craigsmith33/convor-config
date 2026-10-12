@@ -1,8 +1,10 @@
 # QuickBooks connector (read-only)
 
 Serves a read-only subset (38 tools: reports, lookups and searches) of Intuit's official
-QuickBooks Online MCP server to the Convor LibreChat app over Streamable HTTP, plus one Convor
-read-only tool, `search_customer_or_vendor`, that finds a name in the customer and vendor lists at once.
+QuickBooks Online MCP server to the Convor LibreChat app over Streamable HTTP, plus two Convor
+tools: `search_customer_or_vendor` (read-only; finds a name in the customer and vendor lists at once)
+and `calculate` (exact decimal arithmetic for totals, differences, percentages and ratios, so the
+assistant never does mental math; it does not call QuickBooks, `src/convor-calc.ts`).
 
 - Upstream: https://github.com/intuit/quickbooks-online-mcp-server at commit
   `31a1dd5c3e170e368dbff651abbaf61aabde6ed9` (Apache-2.0, see LICENSE-intuit-quickbooks-online-mcp-server).
