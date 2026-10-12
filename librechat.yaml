@@ -64,10 +64,10 @@ modelSpecs:
         endpoint: "agents"
         agent_id: "agent_g81AUn460eTHJg8RczE3s"
     - name: "sales-engine"
-      label: "Sales Support Engine"
-      description: "Sales Assistant"
+      label: "Sales Assistant"
+      description: "Products, quotes, call prep and follow-ups (sample company)"
       default: false
       preset:
         default: false
         endpoint: "agents"
-        agent_id: "agent_9d9HDLNTNvgLKPMbRqN-U"
+        agent_id: "agent_ZTA-mY-88hWpx__7ayNzs"
