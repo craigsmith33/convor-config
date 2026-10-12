@@ -23,7 +23,7 @@ interface:
     create: true
     share: true
   mcpServers:
-    use: false
+    use: true
     create: false
   peoplePicker:
     users: true
@@ -38,6 +38,21 @@ interface:
     public: false
   memories: false
   skills: true
+mcpSettings:
+  allowedAddresses:
+    - "quickbooks-connector.railway.internal:8080"
+mcpServers:
+  quickbooks:
+    type: streamable-http
+    title: "QuickBooks"
+    description: "Read-only access to the connected QuickBooks Online company"
+    url: "http://quickbooks-connector.railway.internal:8080/mcp"
+    headers:
+      Authorization: "Bearer ${QBO_MCP_SECRET}"
+    timeout: 60000
+    initTimeout: 30000
+    chatMenu: false
+    serverInstructions: false
 endpoints:
   assistants:
     disableBuilder: false
