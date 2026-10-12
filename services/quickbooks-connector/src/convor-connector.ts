@@ -8,6 +8,10 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { RegisterTool } from "./helpers/register-tool.js";
 import { QuickbooksClient, quickbooksClient } from "./clients/quickbooks-client.js";
 import { getQuickbooksCompanyInfo } from "./handlers/get-quickbooks-company-info.handler.js";
+import { searchQuickbooksCustomers } from "./handlers/search-quickbooks-customers.handler.js";
+import { searchQuickbooksVendors } from "./handlers/search-quickbooks-vendors.handler.js";
+import { z } from "zod";
+import { flattenReport, isQuickBooksReport } from "./convor-reports.js";
 
 // Reports
 import { GetProfitAndLossTool } from "./tools/get-profit-and-loss.tool.js";
@@ -53,13 +57,83 @@ import { SearchClassesTool } from "./tools/search-classes.tool.js";
 import { SearchDepartmentsTool } from "./tools/search-departments.tool.js";
 import { SearchTermsTool } from "./tools/search-terms.tool.js";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const PORT = Number(process.env.PORT || 8080);
 const MAX_RESULT_CHARS = 150_000;
 const KEEPALIVE_MS = 6 * 60 * 60 * 1000;
 const RECONNECT_MSG =
   "The QuickBooks connection has expired or was revoked. Reconnect it: get a new refresh token in the Intuit OAuth Playground " +
   "and paste it into the quickbooks-connector service's QUICKBOOKS_REFRESH_TOKEN variable in Railway.";
+
+// Convor addition: one read-only lookup across BOTH customers and vendors, so a
+// name is never reported missing just because the wrong list was searched.
+const lookupSchema = z.object({
+  name: z.string().min(1).describe("All or part of the customer's or vendor's name, for example \"paulsen\""),
+});
+function compactParty(type: "customer" | "vendor", r: any) {
+  const out: any = { type, Id: r?.Id, DisplayName: r?.DisplayName };
+  if (r?.FullyQualifiedName && r.FullyQualifiedName !== r.DisplayName) out.FullyQualifiedName = r.FullyQualifiedName;
+  if (r?.CompanyName && r.CompanyName !== r.DisplayName) out.CompanyName = r.CompanyName;
+  if (r?.Balance !== undefined) out.Balance = r.Balance;
+  if (type === "customer" && r?.BalanceWithJobs !== undefined && r.BalanceWithJobs !== r.Balance) out.BalanceWithJobs = r.BalanceWithJobs;
+  if (r?.Job) { out.IsSubCustomer = true; if (r?.ParentRef?.value) out.ParentId = r.ParentRef.value; }
+  if (r?.PrimaryEmailAddr?.Address) out.Email = r.PrimaryEmailAddr.Address;
+  if (r?.PrimaryPhone?.FreeFormNumber) out.Phone = r.PrimaryPhone.FreeFormNumber;
+  if (r?.Active === false) out.Active = false;
+  return out;
+}
+async function lookupBoth(term: string) {
+  const crit = [{ field: "DisplayName", value: `%${term}%`, operator: "LIKE" }, { field: "limit", value: 25 }];
+  const [c, v] = await Promise.all([searchQuickbooksCustomers(crit), searchQuickbooksVendors(crit)]);
+  if (c.isError && v.isError) throw new Error(String(c.error || v.error));
+  return {
+    customers: Array.isArray(c.result) ? c.result.map((r: any) => compactParty("customer", r)) : [],
+    vendors: Array.isArray(v.result) ? v.result.map((r: any) => compactParty("vendor", r)) : [],
+    errors: [c.isError ? "customers: " + c.error : "", v.isError ? "vendors: " + v.error : ""].filter(Boolean),
+  };
+}
+const SearchCustomerOrVendorTool = {
+  name: "search_customer_or_vendor",
+  description:
+    "Find a customer or a vendor by name in one step. Searches BOTH lists with a partial, case-insensitive name match: " +
+    "customers (who buy from us and owe us money) and vendors (businesses we pay). Returns each match's type, Id, name, balance and email. " +
+    "Use the Id with other tools (for example search_invoices with CustomerRef, or search_bills with VendorRef).",
+  schema: lookupSchema,
+  handler: async ({ params }: any) => {
+    const name = String(params?.name ?? "").replace(/[\u2018\u2019]/g, "'").replace(/[%_]/g, " ").replace(/\s+/g, " ").trim();
+    if (!name) return { isError: true, content: [{ type: "text" as const, text: "Error: give part of a name to search for." }] };
+    let found = await lookupBoth(name);
+    let searched = [name];
+    if (!found.customers.length && !found.vendors.length) {
+      // Fall back to each distinctive word, e.g. "Paulsen Medical Supplies Inc" -> "Paulsen".
+      const words = [...new Set(name.split(" ").filter((w) => w.replace(/[^\p{L}\p{N}]/gu, "").length >= 3))].slice(0, 4);
+      if (words.length > 1 || (words.length === 1 && words[0] !== name)) {
+        const seen = new Set<string>();
+        const merged: any = { customers: [], vendors: [], errors: [] };
+        for (const w of words) {
+          const r = await lookupBoth(w);
+          for (const k of ["customers", "vendors"]) for (const x of r[k as "customers" | "vendors"]) {
+            const key = x.type + ":" + x.Id;
+            if (!seen.has(key)) { seen.add(key); merged[k].push(x); }
+          }
+          merged.errors.push(...r.errors);
+        }
+        found = merged;
+        searched = words;
+      }
+    }
+    const summary = {
+      searchedFor: searched,
+      customers: found.customers,
+      vendors: found.vendors,
+      ...(found.errors.length ? { errors: found.errors } : {}),
+      note: found.customers.length || found.vendors.length
+        ? "Customers owe us money; vendors are paid by us. Id is internal: use it in other tools, never show it as an account or invoice number."
+        : "No customer or vendor matched. Try a shorter or different spelling.",
+    };
+    return { content: [{ type: "text" as const, text: JSON.stringify(summary) }] };
+  },
+};
 
 const TOOLS: any[] = [
   GetProfitAndLossTool, GetBalanceSheetTool, GetCashFlowTool, GetTrialBalanceTool, GetAgedReceivablesTool,
@@ -71,6 +145,7 @@ const TOOLS: any[] = [
   GetPurchaseTool, SearchPurchaseOrdersTool,
   SearchAccountsTool, GetAccountTool, SearchItemsTool, ReadItemTool, SearchBudgetsTool, SearchDepositsTool,
   SearchClassesTool, SearchDepartmentsTool, SearchTermsTool,
+  SearchCustomerOrVendorTool,
 ];
 
 // Belt and braces: refuse to serve anything that is not a read.
@@ -107,7 +182,18 @@ function tidy(result: any): any {
     let text = item.text;
     const trimmed = text.trim();
     if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-      try { text = JSON.stringify(JSON.parse(trimmed)); } catch { /* leave as is */ }
+      try {
+        const parsed = JSON.parse(trimmed);
+        text = JSON.stringify(parsed);
+        if (isQuickBooksReport(parsed)) {
+          try {
+            const flat = flattenReport(parsed);
+            if (flat) text = JSON.stringify(flat);
+          } catch (e: any) {
+            console.log("[connector] report kept in original form: " + (e?.message || String(e)).slice(0, 200));
+          }
+        }
+      } catch { /* leave as is */ }
     }
     if (total + text.length > MAX_RESULT_CHARS) {
       text = text.slice(0, Math.max(0, MAX_RESULT_CHARS - total)) +
@@ -119,14 +205,28 @@ function tidy(result: any): any {
   return result;
 }
 
+function logCall(name: string, args: any[], ms: number, result: any) {
+  try {
+    const params = redact(JSON.stringify(args?.[0]?.params ?? {})).slice(0, 300);
+    const content = Array.isArray(result?.content) ? result.content : [];
+    const chars = content.reduce((n: number, c: any) => n + (typeof c?.text === "string" ? c.text.length : 0), 0);
+    const failed = !!result?.isError || content.some((c: any) => typeof c?.text === "string" && /^Error/.test(c.text));
+    console.log(`[tool] ${name} ${failed ? "ERROR" : "ok"} ms=${ms} chars=${chars} params=${params}`);
+  } catch { /* logging must never break a call */ }
+}
+
 const SERVED = TOOLS.map((t) => ({
   ...t,
   handler: async (...args: any[]) => {
+    const t0 = Date.now();
+    let result: any;
     try {
-      return tidy(await t.handler(...args));
+      result = tidy(await t.handler(...args));
     } catch (e: any) {
-      return { isError: true, content: [{ type: "text", text: redact("Error: " + (e?.message || String(e))) }] };
+      result = { isError: true, content: [{ type: "text", text: redact("Error: " + (e?.message || String(e))) }] };
     }
+    logCall(t.name, args, Date.now() - t0, result);
+    return result;
   },
 }));
 

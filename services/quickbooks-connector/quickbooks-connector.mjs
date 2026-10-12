@@ -80129,6 +80129,181 @@ async function getQuickbooksCompanyInfo(companyId) {
   }
 }
 
+// src/handlers/search-quickbooks-customers.handler.ts
+async function searchQuickbooksCustomers(criteria = {}) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    return new Promise((resolve) => {
+      quickbooks.findCustomers(criteria, (err, customers) => {
+        if (err) {
+          resolve({
+            result: null,
+            isError: true,
+            error: formatError2(err)
+          });
+        } else {
+          resolve({
+            result: customers?.QueryResponse?.Customer ?? customers?.QueryResponse?.totalCount ?? [],
+            isError: false,
+            error: null
+          });
+        }
+      });
+    });
+  } catch (error2) {
+    return {
+      result: null,
+      isError: true,
+      error: formatError2(error2)
+    };
+  }
+}
+
+// src/handlers/search-quickbooks-vendors.handler.ts
+async function searchQuickbooksVendors(criteria = {}) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    return new Promise((resolve) => {
+      quickbooks.findVendors(criteria, (err, vendors) => {
+        if (err) {
+          resolve({
+            result: null,
+            isError: true,
+            error: formatError2(err)
+          });
+        } else {
+          resolve({
+            result: vendors?.QueryResponse?.Vendor ?? vendors?.QueryResponse?.totalCount ?? [],
+            isError: false,
+            error: null
+          });
+        }
+      });
+    });
+  } catch (error2) {
+    return {
+      result: null,
+      isError: true,
+      error: formatError2(error2)
+    };
+  }
+}
+
+// src/convor-reports.ts
+var TOTAL_TITLES = /* @__PURE__ */ new Set(["total", "totals"]);
+function metaMap(list) {
+  const out = {};
+  if (Array.isArray(list)) {
+    for (const m of list) if (m && typeof m.Name === "string") out[m.Name] = String(m.Value ?? "");
+  }
+  return out;
+}
+function isNumeric(v) {
+  return /^-?\d+(\.\d+)?$/.test(v.replace(/,/g, "").trim());
+}
+function countCells(rows) {
+  let n = 0;
+  const visit = (list) => {
+    if (!Array.isArray(list)) return;
+    for (const r of list) {
+      for (const cd of [r?.Header?.ColData, r?.ColData, r?.Summary?.ColData]) {
+        if (Array.isArray(cd)) {
+          for (const c of cd) if (c && c.value !== void 0 && c.value !== null && String(c.value) !== "") n++;
+        }
+      }
+      visit(r?.Rows?.Row);
+    }
+  };
+  visit(rows);
+  return n;
+}
+function isQuickBooksReport(obj2) {
+  return !!(obj2 && typeof obj2 === "object" && obj2.Header && obj2.Columns && Array.isArray(obj2.Columns.Column));
+}
+function flattenReport(rep) {
+  if (!isQuickBooksReport(rep)) return null;
+  const h = rep.Header || {};
+  const options = metaMap(h.Option);
+  const seen = /* @__PURE__ */ new Map();
+  const cols = rep.Columns.Column.map((c, i) => {
+    const md = metaMap(c?.MetaData);
+    let title = String(c?.ColTitle ?? "").trim();
+    if (!title) title = i === 0 ? "Name" : md.ColKey ? String(md.ColKey) : `Column ${i + 1}`;
+    const k = title.toLowerCase();
+    const count = (seen.get(k) || 0) + 1;
+    seen.set(k, count);
+    if (count > 1) title = `${title} (${count})`;
+    const col = { title };
+    if (c?.ColType) col.type = String(c.ColType);
+    if (md.StartDate) col.start = md.StartDate;
+    if (md.EndDate) col.end = md.EndDate;
+    return col;
+  });
+  const labelCol = 0;
+  const rows = [];
+  let cells = 0;
+  const toRow = (colData, kind, group2) => {
+    if (!Array.isArray(colData)) return;
+    if (colData.length > cols.length) throw new Error("more cells than columns");
+    const first2 = colData[labelCol] || {};
+    const row = { kind };
+    if (group2.length) row.group = group2.join(" > ");
+    const label = first2.value !== void 0 && first2.value !== null ? String(first2.value) : "";
+    row.label = label;
+    if (label !== "") cells++;
+    if (first2.id !== void 0 && first2.id !== null && String(first2.id) !== "") row.id = String(first2.id);
+    const values2 = {};
+    for (let i = 0; i < colData.length; i++) {
+      if (i === labelCol) continue;
+      const v = colData[i]?.value;
+      if (v === void 0 || v === null || String(v) === "") continue;
+      values2[cols[i].title] = String(v);
+      cells++;
+    }
+    row.values = values2;
+    if (kind !== "line" || label !== "" || Object.keys(values2).length) rows.push(row);
+  };
+  const walk = (list, group2) => {
+    if (!Array.isArray(list)) return;
+    for (const r of list) {
+      if (!r || typeof r !== "object") continue;
+      const sectionLabel = r.Header?.ColData?.[labelCol]?.value ? String(r.Header.ColData[labelCol].value) : "";
+      if (r.Header?.ColData) toRow(r.Header.ColData, "heading", group2);
+      const inner = sectionLabel ? [...group2, sectionLabel] : group2;
+      if (r.ColData) toRow(r.ColData, "line", group2);
+      if (r.Rows?.Row) walk(r.Rows.Row, inner);
+      if (r.Summary?.ColData) toRow(r.Summary.ColData, "total", inner);
+    }
+  };
+  walk(rep.Rows?.Row, []);
+  const original = countCells(rep.Rows?.Row);
+  if (original !== cells) throw new Error(`cell count mismatch ${original} != ${cells}`);
+  const kept = rows.filter((r) => !(r.kind === "heading" && Object.keys(r.values).length === 0));
+  const periodCols = cols.filter((c, i) => i !== labelCol && c.start && !TOTAL_TITLES.has(c.title.toLowerCase()));
+  const withActivity = periodCols.filter((c) => rows.some((r) => (r.kind === "line" || r.kind === "heading") && r.values[c.title] !== void 0 && isNumeric(r.values[c.title]) && Number(r.values[c.title].replace(/,/g, "")) !== 0)).map((c) => c.title);
+  const out = {
+    report: h.ReportName,
+    basis: h.ReportBasis,
+    startPeriod: h.StartPeriod,
+    endPeriod: h.EndPeriod,
+    summarizeColumnsBy: h.SummarizeColumnsBy,
+    currency: h.Currency,
+    noReportData: options.NoReportData === "true"
+  };
+  for (const k of ["Customer", "Vendor", "Item", "Department", "Class"]) if (h[k]) out[k.toLowerCase()] = h[k];
+  const extra = Object.fromEntries(Object.entries(options).filter(([k]) => k !== "NoReportData"));
+  if (Object.keys(extra).length) out.options = extra;
+  for (const k of Object.keys(out)) if (out[k] === void 0) delete out[k];
+  out.columns = cols.slice(1);
+  if (periodCols.length > 1) {
+    out.columnsWithActivity = withActivity;
+    out.latestColumnWithActivity = withActivity.length ? withActivity[withActivity.length - 1] : null;
+  }
+  out.howToRead = "Each row's values are keyed by the exact column title; use those titles as the period or aging labels. kind 'total' rows are QuickBooks' own totals and subtotals for the group named in 'group'. Rows that share a group are its parts (for example sub-accounts, or a customer's sub-customers/jobs), so do not add a group's total to its parts. A kind 'heading' row with values holds only the amounts posted directly to that parent; its full amount is in the matching 'Total ...' row. Blank cells are omitted. 'id' is QuickBooks' internal Id, for use in other tools only.";
+  out.rows = kept;
+  return out;
+}
+
 // src/handlers/get-quickbooks-profit-and-loss.handler.ts
 async function getQuickbooksProfitAndLoss(options) {
   try {
@@ -80516,36 +80691,6 @@ var toolHandler11 = async ({ params }) => {
   return { content: [{ type: "text", text: JSON.stringify(response.result, null, 2) }] };
 };
 var GetCompanyInfoTool = { name: toolName11, description: toolDescription11, schema: toolSchema11, handler: toolHandler11 };
-
-// src/handlers/search-quickbooks-customers.handler.ts
-async function searchQuickbooksCustomers(criteria = {}) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    return new Promise((resolve) => {
-      quickbooks.findCustomers(criteria, (err, customers) => {
-        if (err) {
-          resolve({
-            result: null,
-            isError: true,
-            error: formatError2(err)
-          });
-        } else {
-          resolve({
-            result: customers?.QueryResponse?.Customer ?? customers?.QueryResponse?.totalCount ?? [],
-            isError: false,
-            error: null
-          });
-        }
-      });
-    });
-  } catch (error2) {
-    return {
-      result: null,
-      isError: true,
-      error: formatError2(error2)
-    };
-  }
-}
 
 // src/tools/search-customers.tool.ts
 var toolName12 = "search_customers";
@@ -81308,36 +81453,6 @@ var SearchSalesReceiptsTool = {
   schema: toolSchema21,
   handler: toolHandler20
 };
-
-// src/handlers/search-quickbooks-vendors.handler.ts
-async function searchQuickbooksVendors(criteria = {}) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    return new Promise((resolve) => {
-      quickbooks.findVendors(criteria, (err, vendors) => {
-        if (err) {
-          resolve({
-            result: null,
-            isError: true,
-            error: formatError2(err)
-          });
-        } else {
-          resolve({
-            result: vendors?.QueryResponse?.Vendor ?? vendors?.QueryResponse?.totalCount ?? [],
-            isError: false,
-            error: null
-          });
-        }
-      });
-    });
-  } catch (error2) {
-    return {
-      result: null,
-      isError: true,
-      error: formatError2(error2)
-    };
-  }
-}
 
 // src/tools/search-vendors.tool.ts
 var toolName22 = "search_vendors";
@@ -82475,11 +82590,78 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.0.0";
+var VERSION2 = "1.1.0";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;
 var RECONNECT_MSG = "The QuickBooks connection has expired or was revoked. Reconnect it: get a new refresh token in the Intuit OAuth Playground and paste it into the quickbooks-connector service's QUICKBOOKS_REFRESH_TOKEN variable in Railway.";
+var lookupSchema = external_exports.object({
+  name: external_exports.string().min(1).describe(`All or part of the customer's or vendor's name, for example "paulsen"`)
+});
+function compactParty(type, r) {
+  const out = { type, Id: r?.Id, DisplayName: r?.DisplayName };
+  if (r?.FullyQualifiedName && r.FullyQualifiedName !== r.DisplayName) out.FullyQualifiedName = r.FullyQualifiedName;
+  if (r?.CompanyName && r.CompanyName !== r.DisplayName) out.CompanyName = r.CompanyName;
+  if (r?.Balance !== void 0) out.Balance = r.Balance;
+  if (type === "customer" && r?.BalanceWithJobs !== void 0 && r.BalanceWithJobs !== r.Balance) out.BalanceWithJobs = r.BalanceWithJobs;
+  if (r?.Job) {
+    out.IsSubCustomer = true;
+    if (r?.ParentRef?.value) out.ParentId = r.ParentRef.value;
+  }
+  if (r?.PrimaryEmailAddr?.Address) out.Email = r.PrimaryEmailAddr.Address;
+  if (r?.PrimaryPhone?.FreeFormNumber) out.Phone = r.PrimaryPhone.FreeFormNumber;
+  if (r?.Active === false) out.Active = false;
+  return out;
+}
+async function lookupBoth(term) {
+  const crit = [{ field: "DisplayName", value: `%${term}%`, operator: "LIKE" }, { field: "limit", value: 25 }];
+  const [c, v] = await Promise.all([searchQuickbooksCustomers(crit), searchQuickbooksVendors(crit)]);
+  if (c.isError && v.isError) throw new Error(String(c.error || v.error));
+  return {
+    customers: Array.isArray(c.result) ? c.result.map((r) => compactParty("customer", r)) : [],
+    vendors: Array.isArray(v.result) ? v.result.map((r) => compactParty("vendor", r)) : [],
+    errors: [c.isError ? "customers: " + c.error : "", v.isError ? "vendors: " + v.error : ""].filter(Boolean)
+  };
+}
+var SearchCustomerOrVendorTool = {
+  name: "search_customer_or_vendor",
+  description: "Find a customer or a vendor by name in one step. Searches BOTH lists with a partial, case-insensitive name match: customers (who buy from us and owe us money) and vendors (businesses we pay). Returns each match's type, Id, name, balance and email. Use the Id with other tools (for example search_invoices with CustomerRef, or search_bills with VendorRef).",
+  schema: lookupSchema,
+  handler: async ({ params }) => {
+    const name = String(params?.name ?? "").replace(/[\u2018\u2019]/g, "'").replace(/[%_]/g, " ").replace(/\s+/g, " ").trim();
+    if (!name) return { isError: true, content: [{ type: "text", text: "Error: give part of a name to search for." }] };
+    let found = await lookupBoth(name);
+    let searched = [name];
+    if (!found.customers.length && !found.vendors.length) {
+      const words = [...new Set(name.split(" ").filter((w) => w.replace(/[^\p{L}\p{N}]/gu, "").length >= 3))].slice(0, 4);
+      if (words.length > 1 || words.length === 1 && words[0] !== name) {
+        const seen = /* @__PURE__ */ new Set();
+        const merged = { customers: [], vendors: [], errors: [] };
+        for (const w of words) {
+          const r = await lookupBoth(w);
+          for (const k of ["customers", "vendors"]) for (const x of r[k]) {
+            const key = x.type + ":" + x.Id;
+            if (!seen.has(key)) {
+              seen.add(key);
+              merged[k].push(x);
+            }
+          }
+          merged.errors.push(...r.errors);
+        }
+        found = merged;
+        searched = words;
+      }
+    }
+    const summary = {
+      searchedFor: searched,
+      customers: found.customers,
+      vendors: found.vendors,
+      ...found.errors.length ? { errors: found.errors } : {},
+      note: found.customers.length || found.vendors.length ? "Customers owe us money; vendors are paid by us. Id is internal: use it in other tools, never show it as an account or invoice number." : "No customer or vendor matched. Try a shorter or different spelling."
+    };
+    return { content: [{ type: "text", text: JSON.stringify(summary) }] };
+  }
+};
 var TOOLS = [
   GetProfitAndLossTool,
   GetBalanceSheetTool,
@@ -82518,7 +82700,8 @@ var TOOLS = [
   SearchDepositsTool,
   SearchClassesTool,
   SearchDepartmentsTool,
-  SearchTermsTool
+  SearchTermsTool,
+  SearchCustomerOrVendorTool
 ];
 var READ_ONLY = /^(get|search|read)[_-]/;
 for (const t of TOOLS) {
@@ -82546,7 +82729,16 @@ function tidy(result2) {
     const trimmed = text.trim();
     if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
       try {
-        text = JSON.stringify(JSON.parse(trimmed));
+        const parsed = JSON.parse(trimmed);
+        text = JSON.stringify(parsed);
+        if (isQuickBooksReport(parsed)) {
+          try {
+            const flat = flattenReport(parsed);
+            if (flat) text = JSON.stringify(flat);
+          } catch (e) {
+            console.log("[connector] report kept in original form: " + (e?.message || String(e)).slice(0, 200));
+          }
+        }
       } catch {
       }
     }
@@ -82558,14 +82750,28 @@ function tidy(result2) {
   }
   return result2;
 }
+function logCall(name, args, ms, result2) {
+  try {
+    const params = redact(JSON.stringify(args?.[0]?.params ?? {})).slice(0, 300);
+    const content = Array.isArray(result2?.content) ? result2.content : [];
+    const chars = content.reduce((n, c) => n + (typeof c?.text === "string" ? c.text.length : 0), 0);
+    const failed = !!result2?.isError || content.some((c) => typeof c?.text === "string" && /^Error/.test(c.text));
+    console.log(`[tool] ${name} ${failed ? "ERROR" : "ok"} ms=${ms} chars=${chars} params=${params}`);
+  } catch {
+  }
+}
 var SERVED = TOOLS.map((t) => ({
   ...t,
   handler: async (...args) => {
+    const t0 = Date.now();
+    let result2;
     try {
-      return tidy(await t.handler(...args));
+      result2 = tidy(await t.handler(...args));
     } catch (e) {
-      return { isError: true, content: [{ type: "text", text: redact("Error: " + (e?.message || String(e))) }] };
+      result2 = { isError: true, content: [{ type: "text", text: redact("Error: " + (e?.message || String(e))) }] };
     }
+    logCall(t.name, args, Date.now() - t0, result2);
+    return result2;
   }
 }));
 function buildServer() {

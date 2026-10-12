@@ -1,7 +1,8 @@
 # QuickBooks connector (read-only)
 
 Serves a read-only subset (38 tools: reports, lookups and searches) of Intuit's official
-QuickBooks Online MCP server to the Convor LibreChat app over Streamable HTTP.
+QuickBooks Online MCP server to the Convor LibreChat app over Streamable HTTP, plus one Convor
+read-only tool, `search_customer_or_vendor`, that finds a name in the customer and vendor lists at once.
 
 - Upstream: https://github.com/intuit/quickbooks-online-mcp-server at commit
   `31a1dd5c3e170e368dbff651abbaf61aabde6ed9` (Apache-2.0, see LICENSE-intuit-quickbooks-online-mcp-server).
@@ -13,6 +14,11 @@ QuickBooks Online MCP server to the Convor LibreChat app over Streamable HTTP.
 - Rotated refresh tokens are kept on the service volume (`QUICKBOOKS_TOKEN_STORE_PATH`). Pasting a new
   refresh token into the Railway variables replaces the saved one automatically.
 - Never falls back to Intuit's browser login; if the connection expires it says how to reconnect.
+- Report results are rewritten so every amount is keyed by its column title (for example
+  `"Nov 2025"` or `"91 and over"`), with `columnsWithActivity` / `latestColumnWithActivity` for
+  period reports (`src/convor-reports.ts`). The rewrite is checked cell by cell; if anything does
+  not match, the original QuickBooks report is returned instead.
+- Each tool call is logged with its name, parameters, duration and result size (no credentials).
 
 Rebuild: clone upstream at the pinned commit into `src/` next to `build.sh`, `npm ci`, install
 `esbuild@0.25.10` into `tools/`, then run `build.sh`.
