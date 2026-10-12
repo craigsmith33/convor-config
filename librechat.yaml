@@ -1,5 +1,11 @@
 version: 1.3.17
 cache: true
+fileStrategy: "local"
+fileStrategies:
+  default: "local"
+  avatar: "local"
+  image: "local"
+  document: "s3"
 interface:
   customWelcome: "Welcome to Convor AI"
   endpointsMenu: false
