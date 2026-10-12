@@ -53,6 +53,7 @@ mcpServers:
     initTimeout: 30000
     chatMenu: false
     serverInstructions: false
+    requiresOAuth: false
 endpoints:
   assistants:
     disableBuilder: false
