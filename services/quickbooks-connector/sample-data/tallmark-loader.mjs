@@ -242,6 +242,14 @@ async function cleanup() {
     }
     if (!remaining) break;
   }
+  // Time entries still tied to the deleted invoices: mark them not billable, then delete.
+  for (const t of await queryAll("TimeActivity")) {
+    try {
+      const upd = (await api("POST", "/timeactivity", { ...t, BillableStatus: "NotBillable" })).TimeActivity;
+      await api("POST", "/timeactivity?operation=delete", { Id: upd.Id, SyncToken: upd.SyncToken });
+      log("time activity removed", t.Id);
+    } catch (e) { log("time activity left in place", t.Id, String(e.message).slice(0, 200)); }
+  }
   for (const t of TXN_TYPES) { const n = await count(t); if (n) log("left after cleanup", t, n); }
   // Make Intuit's sample names inactive (jobs before their parent customers).
   const deactivate = async (entity, rows) => {
@@ -250,6 +258,14 @@ async function cleanup() {
     const bad = Object.values(res).filter((r) => r.Fault);
     log(`inactivate ${entity}: ${rows.length - bad.length} done, ${bad.length} failed`);
     for (const b of bad.slice(0, 5)) log("  fault", b.bId, faultText(b));
+    // Some records refuse a sparse update; retry those with a full update.
+    for (const b of bad) {
+      const id = b.bId.split("-").pop();
+      try {
+        const cur = (await api("GET", `/${entity.toLowerCase()}/${id}`))[entity];
+        if (cur && cur.Active) { await api("POST", `/${entity.toLowerCase()}`, { ...cur, Active: false }); log(`inactivate ${entity} ${id}: done with a full update`); }
+      } catch (e) { log(`inactivate ${entity} ${id}: still active`, String(e.message).slice(0, 160)); }
+    }
   };
   const customers = await queryAll("Customer", "Active = true");
   await deactivate("Customer", customers.filter((c) => c.Job || c.ParentRef));
@@ -334,8 +350,7 @@ async function setup() {
   if (ci.CompanyName !== d.company.name) {
     const body = { Id: ci.Id, SyncToken: ci.SyncToken, sparse: true, CompanyName: d.company.name, LegalName: d.company.legalName,
       CompanyAddr: d.company.address, LegalAddr: d.company.address, CustomerCommunicationAddr: d.company.address,
-      PrimaryPhone: { FreeFormNumber: d.company.phone }, Email: { Address: d.company.email }, CustomerCommunicationEmailAddr: { Address: d.company.email },
-      WebAddr: { URI: d.company.web } };
+      PrimaryPhone: { FreeFormNumber: d.company.phone }, Email: { Address: d.company.email }, CustomerCommunicationEmailAddr: { Address: d.company.email } };
     const r = await api("POST", "/companyinfo", body);
     log("company renamed to", r.CompanyInfo.CompanyName);
   }
