@@ -5,7 +5,7 @@ import http from "http";
 import crypto from "crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { RegisterTool } from "./helpers/register-tool.js";
+import { isToolDisabled, knownParamKeys, unsupportedParamsWarning } from "./helpers/register-tool.js";
 import { QuickbooksClient, quickbooksClient } from "./clients/quickbooks-client.js";
 import { getQuickbooksCompanyInfo } from "./handlers/get-quickbooks-company-info.handler.js";
 import { searchQuickbooksCustomers } from "./handlers/search-quickbooks-customers.handler.js";
@@ -58,7 +58,7 @@ import { SearchClassesTool } from "./tools/search-classes.tool.js";
 import { SearchDepartmentsTool } from "./tools/search-departments.tool.js";
 import { SearchTermsTool } from "./tools/search-terms.tool.js";
 
-const VERSION = "1.2.0";
+const VERSION = "1.3.0";
 const PORT = Number(process.env.PORT || 8080);
 const MAX_RESULT_CHARS = 150_000;
 const KEEPALIVE_MS = 6 * 60 * 60 * 1000;
@@ -258,12 +258,46 @@ const SERVED = TOOLS.map((t) => ({
   },
 }));
 
+// Convor change (1.3): tools take their arguments at the top level, for example
+// {"end_date": "2026-09-30"}. Upstream wraps every tool's arguments in a single
+// "params" object, which models often leave out on the first try, so the call
+// fails validation and has to be retried. The handlers still receive
+// { params }, exactly as upstream expects. For tools with no required
+// arguments, a call that still sends the old { "params": { ... } } shape is
+// unwrapped and validated against the same schema. Unknown keys are reported
+// and stripped before the handler runs, as upstream does.
+function registerFlat(server: McpServer, t: any) {
+  if (isToolDisabled(t.name)) return;
+  const known = knownParamKeys(t.schema);
+  if (!known) throw new Error("Tool " + t.name + " does not have an object schema");
+  const input = t.schema.passthrough();
+  server.registerTool(t.name, { description: t.description, inputSchema: input }, async (args: any, extra: any) => {
+    let params: Record<string, unknown> = args && typeof args === "object" && !Array.isArray(args) ? { ...args } : {};
+    const nested = params.params;
+    if (!known.has("params") && nested && typeof nested === "object" && !Array.isArray(nested)) {
+      const { params: _drop, ...rest } = params;
+      params = { ...(nested as Record<string, unknown>), ...rest };
+      const check = input.safeParse(params);
+      if (!check.success) {
+        const why = check.error.issues.map((i: any) => (i.path.join(".") || "arguments") + ": " + i.message).join("; ");
+        return { isError: true, content: [{ type: "text" as const, text: `Error: invalid arguments for ${t.name}: ${why}` }] };
+      }
+      params = check.data;
+    }
+    const warning = unsupportedParamsWarning(t.name, known, params);
+    if (warning) params = Object.fromEntries(Object.entries(params).filter(([k]) => known.has(k)));
+    const result = await t.handler({ params }, extra);
+    if (warning && result && Array.isArray(result.content)) result.content.unshift({ type: "text" as const, text: warning });
+    return result;
+  });
+}
+
 function buildServer(): McpServer {
   const server = new McpServer(
     { name: "Convor QuickBooks (read-only)", version: VERSION },
     { capabilities: { tools: {} } },
   );
-  for (const t of SERVED) RegisterTool(server, t);
+  for (const t of SERVED) registerFlat(server, t);
   return server;
 }
 

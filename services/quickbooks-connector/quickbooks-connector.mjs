@@ -78013,46 +78013,11 @@ function knownParamKeys(schema) {
     return null;
   }
 }
-function permissiveParamsSchema(schema) {
-  const anySchema = schema;
-  return typeof anySchema?.passthrough === "function" ? anySchema.passthrough() : schema;
-}
 function unsupportedParamsWarning(toolName39, known, params) {
   if (!known || !params || typeof params !== "object" || Array.isArray(params)) return null;
   const extras = Object.keys(params).filter((k) => !known.has(k));
   if (extras.length === 0) return null;
   return `WARNING: ${toolName39} does not support ${extras.length === 1 ? "this parameter" : "these parameters"}: ${extras.join(", ")}. ${extras.length === 1 ? "It was" : "They were"} IGNORED - the value did not reach QuickBooks. Supported parameters: ${[...known].sort().join(", ")}.`;
-}
-function RegisterTool(server, toolDefinition) {
-  if (isToolDisabled(toolDefinition.name)) return;
-  const known = knownParamKeys(toolDefinition.schema);
-  const paramsSchema = permissiveParamsSchema(toolDefinition.schema);
-  const baseHandler = toolDefinition.handler;
-  const handler = (async (...a) => {
-    let callArgs = a;
-    let warning = null;
-    try {
-      const params = a[0]?.params;
-      warning = unsupportedParamsWarning(toolDefinition.name, known, params);
-      if (warning && known && params && typeof params === "object" && !Array.isArray(params)) {
-        const cleaned = {};
-        for (const [k, v] of Object.entries(params)) {
-          if (known.has(k)) cleaned[k] = v;
-        }
-        callArgs = [{ ...a[0], params: cleaned }, ...a.slice(1)];
-      }
-    } catch {
-    }
-    const result2 = await baseHandler(...callArgs);
-    try {
-      if (warning && result2 && Array.isArray(result2.content)) {
-        result2.content.unshift({ type: "text", text: warning });
-      }
-    } catch {
-    }
-    return result2;
-  });
-  server.tool(toolDefinition.name, toolDefinition.description, { params: paramsSchema }, handler);
 }
 
 // src/clients/quickbooks-client.ts
@@ -82735,7 +82700,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.2.0";
+var VERSION2 = "1.3.0";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;
@@ -82939,12 +82904,37 @@ var SERVED = TOOLS.map((t) => ({
     return result2;
   }
 }));
+function registerFlat(server, t) {
+  if (isToolDisabled(t.name)) return;
+  const known = knownParamKeys(t.schema);
+  if (!known) throw new Error("Tool " + t.name + " does not have an object schema");
+  const input = t.schema.passthrough();
+  server.registerTool(t.name, { description: t.description, inputSchema: input }, async (args, extra) => {
+    let params = args && typeof args === "object" && !Array.isArray(args) ? { ...args } : {};
+    const nested = params.params;
+    if (!known.has("params") && nested && typeof nested === "object" && !Array.isArray(nested)) {
+      const { params: _drop, ...rest2 } = params;
+      params = { ...nested, ...rest2 };
+      const check2 = input.safeParse(params);
+      if (!check2.success) {
+        const why = check2.error.issues.map((i) => (i.path.join(".") || "arguments") + ": " + i.message).join("; ");
+        return { isError: true, content: [{ type: "text", text: `Error: invalid arguments for ${t.name}: ${why}` }] };
+      }
+      params = check2.data;
+    }
+    const warning = unsupportedParamsWarning(t.name, known, params);
+    if (warning) params = Object.fromEntries(Object.entries(params).filter(([k]) => known.has(k)));
+    const result2 = await t.handler({ params }, extra);
+    if (warning && result2 && Array.isArray(result2.content)) result2.content.unshift({ type: "text", text: warning });
+    return result2;
+  });
+}
 function buildServer() {
   const server = new McpServer(
     { name: "Convor QuickBooks (read-only)", version: VERSION2 },
     { capabilities: { tools: {} } }
   );
-  for (const t of SERVED) RegisterTool(server, t);
+  for (const t of SERVED) registerFlat(server, t);
   return server;
 }
 if (process.env.CONNECTOR_SELFTEST === "1") {

@@ -21,6 +21,9 @@ assistant never does mental math; it does not call QuickBooks, `src/convor-calc.
   period reports (`src/convor-reports.ts`). The rewrite is checked cell by cell; if anything does
   not match, the original QuickBooks report is returned instead.
 - Each tool call is logged with its name, parameters, duration and result size (no credentials).
+- Tools take their arguments at the top level (for example `{"end_date": "2026-09-30"}`) instead of upstream's
+  single `params` wrapper, which models often omitted on the first call. Handlers still receive `{ params }`,
+  and unknown arguments are reported and stripped as upstream does (`registerFlat` in `src/convor-connector.ts`).
 
 Rebuild: clone upstream at the pinned commit into `src/` next to `build.sh`, `npm ci`, install
 `esbuild@0.25.10` into `tools/`, then run `build.sh`.
