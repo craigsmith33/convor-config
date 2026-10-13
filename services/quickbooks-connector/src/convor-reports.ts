@@ -129,13 +129,35 @@ export function flattenReport(rep: any): any | null {
   if (periodCols.length > 1) {
     out.columnsWithActivity = withActivity;
     out.latestColumnWithActivity = withActivity.length ? withActivity[withActivity.length - 1] : null;
+    // The figures most answers need, spelled out: the top-level totals for the
+    // latest period with activity and the period just before it. A blank cell
+    // in QuickBooks means no amount, so it is shown here as 0.00.
+    if (out.latestColumnWithActivity && h.SummarizeColumnsBy && String(h.SummarizeColumnsBy) !== "Total") {
+      const idx = periodCols.findIndex((c) => c.title === out.latestColumnWithActivity);
+      const periods = idx > 0 ? [periodCols[idx - 1].title, periodCols[idx].title] : [periodCols[idx].title];
+      const keyTotals: Record<string, Record<string, string>> = {};
+      for (const r of kept) {
+        if (r.kind !== "total" || !r.label || String(r.group || "").includes(" > ")) continue;
+        let name = r.label;
+        if (keyTotals[name]) name = `${r.label} (${r.group || "top"})`;
+        const v: Record<string, string> = {};
+        for (const p of periods) v[p] = r.values[p] !== undefined ? r.values[p] : "0.00";
+        keyTotals[name] = v;
+      }
+      out.latestPeriods = {
+        periods,
+        keyTotals,
+        note: "Top-level totals for the latest period with activity and the period before it, copied from the rows below (a blank QuickBooks cell is shown as 0.00). Use these for latest-month answers and comparisons.",
+      };
+    }
   }
   out.howToRead =
     "Each row's values are keyed by the exact column title; use those titles as the period or aging labels. " +
     "kind 'total' rows are QuickBooks' own totals and subtotals for the group named in 'group'. " +
     "Rows that share a group are its parts (for example sub-accounts, or a customer's sub-customers/jobs), so do not add a group's total to its parts. " +
     "A kind 'heading' row with values holds only the amounts posted directly to that parent; its full amount is in the matching 'Total ...' row. " +
-    "Blank cells are omitted. 'id' is QuickBooks' internal Id, for use in other tools only.";
+    "Blank cells are omitted: if a column title is missing from a row's values, that row has no amount for that column. Never take a value from a neighbouring column. " +
+    "'id' is QuickBooks' internal Id, for use in other tools only.";
   out.rows = kept;
   return out;
 }

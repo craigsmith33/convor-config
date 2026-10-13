@@ -18,7 +18,8 @@ assistant never does mental math; it does not call QuickBooks, `src/convor-calc.
 - Never falls back to Intuit's browser login; if the connection expires it says how to reconnect.
 - Report results are rewritten so every amount is keyed by its column title (for example
   `"Nov 2025"` or `"91 and over"`), with `columnsWithActivity` / `latestColumnWithActivity` for
-  period reports (`src/convor-reports.ts`). The rewrite is checked cell by cell; if anything does
+  period reports (`src/convor-reports.ts`), plus `latestPeriods`: the top-level totals for the latest period with activity
+  and the period before it, so latest-month answers never depend on reading a wide table. The rewrite is checked cell by cell; if anything does
   not match, the original QuickBooks report is returned instead.
 - Each tool call is logged with its name, parameters, duration and result size (no credentials).
 - Tools take their arguments at the top level (for example `{"end_date": "2026-09-30"}`) instead of upstream's
