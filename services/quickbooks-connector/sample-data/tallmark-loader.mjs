@@ -373,7 +373,7 @@ async function setup() {
       PrimaryEmailAddr: { Address: n.email }, PrimaryPhone: { FreeFormNumber: n.phone },
       BillAddr: { Line1: a.line1, City: a.city, CountrySubDivisionCode: a.state, PostalCode: a.zip, Country: "USA" },
       ShipAddr: { Line1: a.line1, City: a.city, CountrySubDivisionCode: a.state, PostalCode: a.zip, Country: "USA" },
-      Notes: n.notes, Taxable: false, TaxExemptionReasonId: 14, SalesTermRef: { value: (terms.find((t) => t.Name === "Net 30") || {}).Id } });
+      Notes: n.notes, Taxable: false, TaxExemptionReasonId: "14", SalesTermRef: { value: (terms.find((t) => t.Name === "Net 30") || {}).Id } });
     log("leftover sample customer renamed", oldName, "->", n.name);
   }
   const A = (name) => { const id = state.accounts[name]; if (!id) throw new Error("account not found: " + name); return { value: id }; };
@@ -393,7 +393,7 @@ async function setup() {
   await createAll("customers", "Customer", d.customers, (c) => ({
     DisplayName: c.name, CompanyName: c.name, GivenName: c.contact.given, FamilyName: c.contact.family, Title: undefined,
     PrimaryEmailAddr: { Address: c.email }, PrimaryPhone: { FreeFormNumber: c.phone }, BillAddr: addr(c.address), ShipAddr: addr(c.address),
-    SalesTermRef: { value: state.terms[c.terms] }, Notes: c.notes, Taxable: false, TaxExemptionReasonId: 14, ResaleNum: c.exemptionNo,
+    SalesTermRef: { value: state.terms[c.terms] }, Notes: c.notes, Taxable: false, TaxExemptionReasonId: "14", ResaleNum: c.exemptionNo,
   }), state);
   await createAll("vendors", "Vendor", d.vendors, (v) => ({
     DisplayName: v.name, CompanyName: v.name, PrimaryEmailAddr: v.email ? { Address: v.email } : undefined, PrimaryPhone: v.phone ? { FreeFormNumber: v.phone } : undefined,
