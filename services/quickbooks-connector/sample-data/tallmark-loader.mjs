@@ -15,6 +15,7 @@
 //            sample customers, vendors and items inactive
 //   setup    rename the company; create accounts, terms, items, customers, vendors
 //   load     opening balances, then all transactions (resumable)
+//   prepare  cleanup, then setup
 //   report   read-only: totals to compare with the dataset's expectations
 import fs from "fs";
 import path from "path";
@@ -338,6 +339,11 @@ async function setup() {
     const r = await api("POST", "/companyinfo", body);
     log("company renamed to", r.CompanyInfo.CompanyName);
   }
+  const prefs = (await query("SELECT * FROM Preferences")).Preferences?.[0];
+  if (prefs && !prefs.SalesFormsPrefs?.CustomTxnNumbers) {
+    await api("POST", "/preferences", { SyncToken: prefs.SyncToken, sparse: true, SalesFormsPrefs: { CustomTxnNumbers: true } });
+    log("preferences: custom transaction numbers turned on");
+  }
   await ensureAccounts(d, state);
   saveState(state);
   const A = (name) => { const id = state.accounts[name]; if (!id) throw new Error("account not found: " + name); return { value: id }; };
@@ -354,11 +360,11 @@ async function setup() {
     Name: it.name, Sku: it.sku || undefined, Description: it.desc, Type: it.type, IncomeAccountRef: A(it.incomeAccount),
     ...(it.expenseAccount ? { ExpenseAccountRef: A(it.expenseAccount), PurchaseDesc: it.desc } : {}), UnitPrice: it.price ?? 0, Taxable: false,
   }), state);
-  const addr = (a) => ({ Line1: a.line1, City: a.city, CountrySubDivisionCode: a.state, PostalCode: a.zip, Country: "USA" });
+  const addr = (a) => ({ Line1: a.line1, City: a.city, CountrySubDivisionCode: a.state, PostalCode: a.zip || undefined, Country: "USA" });
   await createAll("customers", "Customer", d.customers, (c) => ({
     DisplayName: c.name, CompanyName: c.name, GivenName: c.contact.given, FamilyName: c.contact.family, Title: undefined,
     PrimaryEmailAddr: { Address: c.email }, PrimaryPhone: { FreeFormNumber: c.phone }, BillAddr: addr(c.address), ShipAddr: addr(c.address),
-    SalesTermRef: { value: state.terms[c.terms] }, Notes: c.notes, Taxable: false, ResaleNum: c.exemptionNo,
+    SalesTermRef: { value: state.terms[c.terms] }, Notes: c.notes, Taxable: false, TaxExemptionReasonId: 14, ResaleNum: c.exemptionNo,
   }), state);
   await createAll("vendors", "Vendor", d.vendors, (v) => ({
     DisplayName: v.name, CompanyName: v.name, PrimaryEmailAddr: v.email ? { Address: v.email } : undefined, PrimaryPhone: v.phone ? { FreeFormNumber: v.phone } : undefined,
@@ -390,6 +396,10 @@ async function load() {
         continue;
       }
       if (!["Bank", "Other Current Asset", "Fixed Asset", "Other Asset", "Credit Card", "Other Current Liability", "Long Term Liability", "Equity"].includes(a.AccountType)) continue;
+      if (a.AccountSubType === "GlobalTaxPayable") {
+        if (Math.abs(Number(a.CurrentBalance || 0)) > 0.004) log("sales tax account left as is", a.FullyQualifiedName, a.CurrentBalance);
+        continue;
+      }
       const have = money(Number(a.CurrentBalance || 0));
       const want = money(target[a.FullyQualifiedName] ?? 0);
       touched.add(a.FullyQualifiedName);
@@ -412,6 +422,18 @@ async function load() {
     state.ids.opening = r.JournalEntry.Id;
     saveState(state);
     log("opening entry created", r.JournalEntry.Id);
+    // Sample accounts that only held leftovers are zero now and can be hidden.
+    for (const name of d.accounts.deactivate || []) {
+      const id = state.accounts?.[name];
+      if (!id) continue;
+      try {
+        const a = (await api("GET", `/account/${id}`)).Account;
+        if (a.Active && Math.abs(Number(a.CurrentBalance || 0)) < 0.005) {
+          await api("POST", "/account", { Id: a.Id, SyncToken: a.SyncToken, sparse: true, Active: false });
+          log("account made inactive", name);
+        }
+      } catch (e) { log("account inactivate failed", name, String(e.message).slice(0, 160)); }
+    }
   }
 
   const lineSales = (l) => ({ DetailType: "SalesItemLineDetail", Amount: l.amount, Description: l.desc,
@@ -420,7 +442,8 @@ async function load() {
     AccountBasedExpenseLineDetail: { AccountRef: A(l.account) } });
   const steps = [
     ["invoices", "Invoice", d.invoices, (x) => ({ CustomerRef: { value: ID("customers", x.customer) }, TxnDate: x.date, DueDate: x.due, DocNumber: x.doc,
-      SalesTermRef: { value: state.terms[x.terms] }, CustomerMemo: x.memo ? { value: x.memo } : undefined, PrivateNote: x.po ? "Customer PO " + x.po : undefined,
+      SalesTermRef: { value: state.terms[x.terms] }, CustomerMemo: x.memo ? { value: x.memo } : undefined,
+      PrivateNote: [x.note, x.po ? "Customer PO " + x.po : ""].filter(Boolean).join(" ") || undefined,
       Line: x.lines.map(lineSales), BillEmail: x.email ? { Address: x.email } : undefined })],
     ["bills", "Bill", d.bills, (x) => ({ VendorRef: { value: ID("vendors", x.vendor) }, TxnDate: x.date, DueDate: x.due, DocNumber: x.doc || undefined,
       SalesTermRef: x.terms ? { value: state.terms[x.terms] } : undefined, PrivateNote: x.memo || undefined, Line: x.lines.map(lineExp) })],
@@ -468,6 +491,7 @@ try {
   else if (MODE === "cleanup") await cleanup();
   else if (MODE === "setup") await setup();
   else if (MODE === "load") await load();
+  else if (MODE === "prepare") { await cleanup(); await setup(); }
   else if (MODE === "report") await report();
   else throw new Error("unknown SEED_MODE " + MODE);
   log(`mode ${MODE} finished in ${Math.round((Date.now() - T0) / 1000)}s`);
