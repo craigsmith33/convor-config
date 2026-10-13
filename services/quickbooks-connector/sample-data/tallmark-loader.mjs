@@ -354,6 +354,7 @@ async function setup() {
     const r = await api("POST", "/companyinfo", body);
     log("company renamed to", r.CompanyInfo.CompanyName);
   }
+  const terms = await queryAll("Term", "Active IN (true, false)");
   const prefs = (await query("SELECT * FROM Preferences")).Preferences?.[0];
   if (prefs && !prefs.SalesFormsPrefs?.CustomTxnNumbers) {
     await api("POST", "/preferences", { SyncToken: prefs.SyncToken, sparse: true, SalesFormsPrefs: { CustomTxnNumbers: true } });
@@ -361,8 +362,21 @@ async function setup() {
   }
   await ensureAccounts(d, state);
   saveState(state);
+  // Three sample customers cannot be made inactive (QuickBooks keeps unbilled
+  // time entries tied to deleted invoices). Give them dormant Tallmark identities
+  // so no landscaping names remain in the customer list.
+  for (const [oldName, n] of Object.entries(d.leftoverCustomers || {})) {
+    const cur = (await query(`SELECT * FROM Customer WHERE DisplayName = '${oldName.replace(/'/g, "\\'")}'`)).Customer?.[0];
+    if (!cur || !cur.Active) continue;
+    const a = n.address;
+    await api("POST", "/customer", { Id: cur.Id, SyncToken: cur.SyncToken, DisplayName: n.name, CompanyName: n.name, GivenName: n.contact.given, FamilyName: n.contact.family,
+      PrimaryEmailAddr: { Address: n.email }, PrimaryPhone: { FreeFormNumber: n.phone },
+      BillAddr: { Line1: a.line1, City: a.city, CountrySubDivisionCode: a.state, PostalCode: a.zip, Country: "USA" },
+      ShipAddr: { Line1: a.line1, City: a.city, CountrySubDivisionCode: a.state, PostalCode: a.zip, Country: "USA" },
+      Notes: n.notes, Taxable: false, TaxExemptionReasonId: 14, SalesTermRef: { value: (terms.find((t) => t.Name === "Net 30") || {}).Id } });
+    log("leftover sample customer renamed", oldName, "->", n.name);
+  }
   const A = (name) => { const id = state.accounts[name]; if (!id) throw new Error("account not found: " + name); return { value: id }; };
-  const terms = await queryAll("Term", "Active IN (true, false)");
   state.terms = {};
   for (const t of d.terms) {
     let term = terms.find((x) => x.Name === t.name);

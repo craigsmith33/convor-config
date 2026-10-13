@@ -91,7 +91,7 @@ ACCOUNTS = {
         {"name": "Warehouse Equipment & Racking", "type": "Fixed Asset", "subType": "MachineryAndEquipment"},
         {"name": "Vehicles", "type": "Fixed Asset", "subType": "Vehicles"},
         {"name": "Computer Equipment", "type": "Fixed Asset", "subType": "FurnitureAndFixtures"},
-        {"name": "Accumulated Depreciation", "type": "Fixed Asset", "subType": "AccumulatedDepreciation"},
+        {"name": "Accumulated Depreciation", "type": "Fixed Asset", "subType": "OtherFixedAssets"},  # QuickBooks only allows the AccumulatedDepreciation type as a sub-account
         {"name": "Common Stock", "type": "Equity", "subType": "CommonStock"},
         {"name": "Shareholder Distributions", "type": "Equity", "subType": "PartnerDistributions"},
     ]
@@ -950,6 +950,18 @@ dataset = {
     "customers": [{k: c[k] for k in ("key", "name", "contact", "email", "phone", "address", "terms", "notes", "exemptionNo")} for c in customers],
     "vendors": [{k: v[k] for k in ("key", "name", "email", "phone", "address", "terms", "accountNo")} for v in vendors],
     "opening": {"date": "2024-12-31", "balances": OPENING, "plugAccount": "Retained Earnings"},
+    # Sample customers QuickBooks will not let us make inactive become dormant Tallmark accounts.
+    "leftoverCustomers": {
+        "Rondonuwu Fruit and Vegi": {"name": "Rockford Packaging Prototypes", "contact": {"given": "Dale", "family": "Kurtz"}, "email": "ap@rockfordpackagingprototypes.example",
+                                     "phone": "(815) 555-0187", "address": {"line1": "2210 Harrison Avenue", "city": "Rockford", "state": "IL", "zip": "61104"},
+                                     "notes": "Tier C account; Indianapolis branch; Consumer products; dormant - no orders since 2024"},
+        "Travis Waldron": {"name": "Peoria Gear & Machine", "contact": {"given": "Lorna", "family": "Bishop"}, "email": "ap@peoriagearmachine.example",
+                           "phone": "(309) 555-0163", "address": {"line1": "815 Industrial Drive", "city": "Peoria", "state": "IL", "zip": "61604"},
+                           "notes": "Tier C account; Indianapolis branch; Metal fabrication; dormant - no orders since 2024"},
+        "Video Games by Dan": {"name": "Kankakee Valley Bottlers", "contact": {"given": "Ray", "family": "Delgado"}, "email": "ap@kankakeevalleybottlers.example",
+                               "phone": "(815) 555-0141", "address": {"line1": "390 Riverside Drive", "city": "Kankakee", "state": "IL", "zip": "60901"},
+                               "notes": "Tier C account; Indianapolis branch; Food and beverage packaging; dormant - no orders since 2024"},
+    },
     "invoices": [{"key": i["key"], "doc": i["doc"], "customer": i["customer"], "date": i["date"], "due": i["due"], "terms": i["terms"], "po": i["po"],
                   "memo": i["memo"], "note": i["note"], "email": i["email"],
                   "lines": [{"item": l["item"], "qty": l["qty"], "rate": l["rate"], "amount": l["amount"], "desc": l["desc"]} for l in i["lines"]]} for i in invoices],
