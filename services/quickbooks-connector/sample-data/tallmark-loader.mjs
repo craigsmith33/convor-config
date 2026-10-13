@@ -17,6 +17,7 @@
 //   load     opening balances, then all transactions (resumable)
 //   prepare  cleanup, then setup
 //   report   read-only: totals to compare with the dataset's expectations
+//   tidy     clear small sales-tax balances left by the sample company
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
@@ -505,6 +506,23 @@ async function load() {
   log("load complete");
 }
 
+// Clears tiny sales-tax balances left by Intuit's sample invoices (dated with the opening entry).
+async function tidy() {
+  await companyGuard();
+  const all = await queryAll("Account", "Active IN (true, false)");
+  const left = all.filter((a) => a.AccountSubType === "GlobalTaxPayable" && Math.abs(Number(a.CurrentBalance || 0)) > 0.004);
+  if (!left.length) { log("tidy: nothing to clear"); return; }
+  const re = all.find((a) => a.AccountSubType === "RetainedEarnings");
+  const total = Math.round(left.reduce((s, a) => s + Number(a.CurrentBalance), 0) * 100) / 100;
+  const je = { TxnDate: "2024-12-31", DocNumber: "OB-2024-TAX", PrivateNote: "Clears sales tax balances left from the sample company (convor-seed)",
+    Line: [...left.map((a) => ({ DetailType: "JournalEntryLineDetail", Amount: Math.abs(Number(a.CurrentBalance)), Description: "Clear sample sales tax balance",
+      JournalEntryLineDetail: { PostingType: Number(a.CurrentBalance) > 0 ? "Credit" : "Debit", AccountRef: { value: a.Id } } })),
+      { DetailType: "JournalEntryLineDetail", Amount: Math.abs(total), Description: "Clear sample sales tax balance",
+        JournalEntryLineDetail: { PostingType: total > 0 ? "Debit" : "Credit", AccountRef: { value: re.Id } } }] };
+  try { await api("POST", "/journalentry", je); log("tidy: cleared", left.map((a) => `${a.FullyQualifiedName} ${a.CurrentBalance}`).join(", ")); }
+  catch (e) { log("tidy: left as is", String(e.message).slice(0, 300)); }
+}
+
 async function report() {
   const ci = await companyGuard();
   log("company", ci.CompanyName);
@@ -531,6 +549,7 @@ try {
   else if (MODE === "load") await load();
   else if (MODE === "prepare") { await cleanup(); await setup(); }
   else if (MODE === "report") await report();
+  else if (MODE === "tidy") await tidy();
   else throw new Error("unknown SEED_MODE " + MODE);
   log(`mode ${MODE} finished in ${Math.round((Date.now() - T0) / 1000)}s`);
 } catch (e) {
