@@ -87,3 +87,11 @@ modelSpecs:
         default: false
         endpoint: "agents"
         agent_id: "agent_ZTA-mY-88hWpx__7ayNzs"
+    - name: "finance-engine"
+      label: "Finance Assistant"
+      description: "Cash, receivables, bills and profit from QuickBooks (sample company)"
+      default: false
+      preset:
+        default: false
+        endpoint: "agents"
+        agent_id: "agent_pzx4BrXk9nE2y_fRNTA-g"
