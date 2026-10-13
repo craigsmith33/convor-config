@@ -151,9 +151,9 @@ async function batch(items) {
   const results = {};
   for (let i = 0; i < items.length; i += 30) {
     const chunk = items.slice(i, i + 30);
-    const wait = 1700 - (Date.now() - lastBatchAt);
-    if (wait > 0) await sleep(wait);
-    lastBatchAt = Date.now();
+    const slot = Math.max(Date.now(), lastBatchAt + 1700); // reserve a start time; keeps under ~35 batches a minute
+    lastBatchAt = slot;
+    if (slot > Date.now()) await sleep(slot - Date.now());
     const j = await api("POST", "/batch", { BatchItemRequest: chunk });
     for (const r of j.BatchItemResponse || []) results[r.bId] = r;
     for (const it of chunk) if (!results[it.bId]) results[it.bId] = { Fault: { Error: [{ Message: "no response for item" }] } };
@@ -324,21 +324,30 @@ async function ensureAccounts(d, state) {
 async function createAll(kind, entity, rows, toBody, state) {
   state.ids[kind] ||= {};
   const todo = rows.filter((r) => !state.ids[kind][r.key]);
-  for (let i = 0; i < todo.length; i += 30) {
-    if (timeLeft() < 60_000) { log(`time budget reached during ${kind}; will resume`); return false; }
-    const chunk = todo.slice(i, i + 30);
-    const res = await batch(chunk.map((r) => ({ bId: r.key, operation: "create", [entity]: toBody(r) })));
-    let bad = 0;
-    for (const r of chunk) {
-      const out = res[r.key];
-      const ent = out && entityOf(out);
-      if (out && !out.Fault && ent?.Id) state.ids[kind][r.key] = ent.Id;
-      else { bad++; if (bad <= 5) log(`create ${kind} ${r.key} failed: ${out ? faultText(out) : "no response"}`); }
+  const pool = Number(process.env.SEED_CONCURRENCY || 3);
+  let next = 0, batches = 0, failure = null, outOfTime = false;
+  const worker = async () => {
+    while (next < todo.length && !failure) {
+      if (timeLeft() < 90_000) { outOfTime = true; return; }
+      const chunk = todo.slice(next, next + 30);
+      next += 30;
+      const res = await batch(chunk.map((r) => ({ bId: r.key, operation: "create", [entity]: toBody(r) })));
+      let bad = 0;
+      for (const r of chunk) {
+        const out = res[r.key];
+        const ent = out && entityOf(out);
+        if (out && !out.Fault && ent?.Id) state.ids[kind][r.key] = ent.Id;
+        else { bad++; if (bad <= 5) log(`create ${kind} ${r.key} failed: ${out ? faultText(out) : "no response"}`); }
+      }
+      saveState(state);
+      if (bad) failure = `${bad} ${kind} failed in one batch; stopping so nothing is half-loaded`;
+      if (++batches % 10 === 0) log(`${kind}: ${Object.keys(state.ids[kind]).length} of ${rows.length} so far`);
     }
-    saveState(state);
-    if (bad) throw new Error(`${bad} ${kind} failed in one batch; stopping so nothing is half-loaded`);
-  }
+  };
+  await Promise.all(Array.from({ length: pool }, worker));
+  if (failure) throw new Error(failure);
   log(`${kind}: ${Object.keys(state.ids[kind]).length} of ${rows.length} created`);
+  if (outOfTime) { log(`time budget reached during ${kind}; will resume`); return false; }
   return true;
 }
 
