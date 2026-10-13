@@ -80414,6 +80414,79 @@ function calculateAll(items, decimals = 2) {
   });
 }
 
+// src/convor-lists.ts
+var KINDS = {
+  search_invoices: { key: "invoices", party: "Customer", partyRef: "CustomerRef", detailTool: "read_invoice" },
+  search_bills: { key: "bills", party: "Vendor", partyRef: "VendorRef", detailTool: "get-bill" }
+};
+function toCents(v) {
+  if (v === void 0 || v === null || v === "") return null;
+  const s = typeof v === "number" ? String(v) : String(v).trim();
+  const m = /^(-?)(\d+)(?:\.(\d+))?$/.exec(s);
+  if (!m) return null;
+  const frac = (m[3] || "").padEnd(3, "0");
+  let cents = BigInt(m[2]) * 100n + BigInt(frac.slice(0, 2));
+  if (Number(frac[2]) >= 5) cents += 1n;
+  return m[1] === "-" ? -cents : cents;
+}
+function money(c) {
+  const neg = c < 0n;
+  const a = neg ? -c : c;
+  const s = (a / 100n).toString() + "." + (a % 100n).toString().padStart(2, "0");
+  return neg ? "-" + s : s;
+}
+function compactSearchResult(toolName39, result2) {
+  const kind = KINDS[toolName39];
+  if (!kind || !result2 || result2.isError || !Array.isArray(result2.content)) return null;
+  const parts = result2.content;
+  if (!parts.length || parts.some((p) => p?.type !== "text" || typeof p.text !== "string")) return null;
+  const head = /^Found (\d+) /.exec(parts[0].text);
+  if (!head) return null;
+  const found = Number(head[1]);
+  const records = parts.slice(1);
+  if (found === 0 || records.length !== found) return null;
+  let totalBalance = 0n;
+  let totalAmount = 0n;
+  const rows = [];
+  for (const p of records) {
+    let r;
+    try {
+      r = JSON.parse(p.text);
+    } catch {
+      return null;
+    }
+    if (!r || typeof r !== "object" || Array.isArray(r) || typeof r.Id !== "string") return null;
+    const bal = toCents(r.Balance);
+    const amt = toCents(r.TotalAmt);
+    if (bal === null || amt === null) return null;
+    totalBalance += bal;
+    totalAmount += amt;
+    const row = {
+      Id: r.Id,
+      DocNumber: typeof r.DocNumber === "string" && r.DocNumber ? r.DocNumber : null,
+      [kind.party]: r[kind.partyRef]?.name ?? null,
+      [kind.party + "Id"]: r[kind.partyRef]?.value ?? null,
+      TxnDate: r.TxnDate ?? null,
+      DueDate: r.DueDate ?? null,
+      TotalAmt: money(amt),
+      Balance: money(bal)
+    };
+    if (r.SalesTermRef?.name) row.Terms = r.SalesTermRef.name;
+    if (toolName39 === "search_invoices") {
+      if (r.EmailStatus) row.EmailStatus = r.EmailStatus;
+      if (r.BillEmail?.Address) row.BillEmail = r.BillEmail.Address;
+    }
+    rows.push(row);
+  }
+  const note = `Each record shows its key fields only. totalBalance and totalAmount are the exact sums of the records listed; use them instead of adding numbers up. For line items or other detail, call ${kind.detailTool} with the record's Id. Id is internal: never show it to the user` + (toolName39 === "search_bills" ? ". A bill with DocNumber null has no bill number; identify it by vendor, date and amount." : "; refer to invoices by DocNumber.");
+  return {
+    content: [{
+      type: "text",
+      text: JSON.stringify({ found, [kind.key]: rows, totalBalance: money(totalBalance), totalAmount: money(totalAmount), note })
+    }]
+  };
+}
+
 // src/handlers/get-quickbooks-profit-and-loss.handler.ts
 async function getQuickbooksProfitAndLoss(options) {
   try {
@@ -82700,7 +82773,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.3.0";
+var VERSION2 = "1.4.0";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;
@@ -82896,7 +82969,14 @@ var SERVED = TOOLS.map((t) => ({
     const t0 = Date.now();
     let result2;
     try {
-      result2 = tidy(await t.handler(...args));
+      const raw = await t.handler(...args);
+      let compact2 = null;
+      try {
+        compact2 = compactSearchResult(t.name, raw);
+      } catch (e) {
+        console.log("[connector] " + t.name + " kept in original form: " + (e?.message || String(e)).slice(0, 200));
+      }
+      result2 = tidy(compact2 ?? raw);
     } catch (e) {
       result2 = { isError: true, content: [{ type: "text", text: redact("Error: " + (e?.message || String(e))) }] };
     }

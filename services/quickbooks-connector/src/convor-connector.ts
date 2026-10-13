@@ -13,6 +13,7 @@ import { searchQuickbooksVendors } from "./handlers/search-quickbooks-vendors.ha
 import { z } from "zod";
 import { flattenReport, isQuickBooksReport } from "./convor-reports.js";
 import { calculateAll } from "./convor-calc.js";
+import { compactSearchResult } from "./convor-lists.js";
 
 // Reports
 import { GetProfitAndLossTool } from "./tools/get-profit-and-loss.tool.js";
@@ -58,7 +59,7 @@ import { SearchClassesTool } from "./tools/search-classes.tool.js";
 import { SearchDepartmentsTool } from "./tools/search-departments.tool.js";
 import { SearchTermsTool } from "./tools/search-terms.tool.js";
 
-const VERSION = "1.3.0";
+const VERSION = "1.4.0";
 const PORT = Number(process.env.PORT || 8080);
 const MAX_RESULT_CHARS = 150_000;
 const KEEPALIVE_MS = 6 * 60 * 60 * 1000;
@@ -249,7 +250,12 @@ const SERVED = TOOLS.map((t) => ({
     const t0 = Date.now();
     let result: any;
     try {
-      result = tidy(await t.handler(...args));
+      const raw = await t.handler(...args);
+      let compact: any = null;
+      try { compact = compactSearchResult(t.name, raw); } catch (e: any) {
+        console.log("[connector] " + t.name + " kept in original form: " + (e?.message || String(e)).slice(0, 200));
+      }
+      result = tidy(compact ?? raw);
     } catch (e: any) {
       result = { isError: true, content: [{ type: "text", text: redact("Error: " + (e?.message || String(e))) }] };
     }

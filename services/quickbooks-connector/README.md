@@ -24,6 +24,10 @@ assistant never does mental math; it does not call QuickBooks, `src/convor-calc.
 - Tools take their arguments at the top level (for example `{"end_date": "2026-09-30"}`) instead of upstream's
   single `params` wrapper, which models often omitted on the first call. Handlers still receive `{ params }`,
   and unknown arguments are reported and stripped as upstream does (`registerFlat` in `src/convor-connector.ts`).
+- `search_invoices` and `search_bills` results are compacted to each record's key fields (number, customer or
+  vendor, dates, total, balance, terms) plus `totalBalance` / `totalAmount`, exact sums computed by the connector,
+  so the assistant never adds up long lists itself (`src/convor-lists.ts`). Anything unexpected keeps the original
+  result. Full detail stays available through `read_invoice` and `get-bill`.
 
 Rebuild: clone upstream at the pinned commit into `src/` next to `build.sh`, `npm ci`, install
 `esbuild@0.25.10` into `tools/`, then run `build.sh`.
