@@ -80496,7 +80496,7 @@ function compactSearchResult(toolName39, result2) {
     }
     rows.push(row);
   }
-  const note = `Each record shows its key fields only. totalBalance and totalAmount are the exact sums of the records listed; use them instead of adding numbers up. For line items or other detail, call ${kind.detailTool} with the record's Id. Id is internal: never show it to the user` + (toolName39 === "search_bills" ? ". A bill with DocNumber null has no bill number; identify it by vendor, date and amount." : "; refer to invoices by DocNumber.");
+  const note = `Each record shows its key fields only. totalBalance and totalAmount are the exact sums of the records listed; use them instead of adding numbers up. For line items or other detail, call ${kind.detailTool} with the record's Id. Id is internal: never show it to the user` + (toolName39 === "search_bills" ? ". DocNumber null means the bill has no bill number in QuickBooks: describe it by vendor, date and amount, without mentioning DocNumber." : "; refer to invoices by DocNumber.");
   return {
     content: [{
       type: "text",
@@ -82791,7 +82791,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.5.0";
+var VERSION2 = "1.5.1";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;

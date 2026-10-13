@@ -77,7 +77,7 @@ export function compactSearchResult(toolName: string, result: any): any | null {
     "Each record shows its key fields only. totalBalance and totalAmount are the exact sums of the records listed; use them instead of adding numbers up. " +
     `For line items or other detail, call ${kind.detailTool} with the record's Id. Id is internal: never show it to the user` +
     (toolName === "search_bills"
-      ? ". A bill with DocNumber null has no bill number; identify it by vendor, date and amount."
+      ? ". DocNumber null means the bill has no bill number in QuickBooks: describe it by vendor, date and amount, without mentioning DocNumber."
       : "; refer to invoices by DocNumber.");
 
   return {
