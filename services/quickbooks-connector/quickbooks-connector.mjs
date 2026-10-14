@@ -4630,7 +4630,7 @@ var require_core = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text, msg) => text + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text2, msg) => text2 + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -10528,7 +10528,7 @@ var require_core3 = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text, msg) => text + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text2, msg) => text2 + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -27486,20 +27486,20 @@ var require_axios = __commonJS({
       if (parts[0] !== "127") return false;
       return parts.every((p) => /^\d+$/.test(p) && Number(p) >= 0 && Number(p) <= 255);
     };
-    var parseIPv4Octet = (text) => {
-      if (/^0[xX][0-9a-fA-F]+$/.test(text)) {
-        const n = parseInt(text.slice(2), 16);
+    var parseIPv4Octet = (text2) => {
+      if (/^0[xX][0-9a-fA-F]+$/.test(text2)) {
+        const n = parseInt(text2.slice(2), 16);
         return Number.isFinite(n) ? n : null;
       }
-      if (text.length > 1 && /^0[0-7]+$/.test(text)) {
-        const n = parseInt(text, 8);
+      if (text2.length > 1 && /^0[0-7]+$/.test(text2)) {
+        const n = parseInt(text2, 8);
         return Number.isFinite(n) ? n : null;
       }
-      if (text.length > 1 && /^0[0-9]+$/.test(text)) {
+      if (text2.length > 1 && /^0[0-9]+$/.test(text2)) {
         return null;
       }
-      if (/^[0-9]+$/.test(text)) {
-        const n = parseInt(text, 10);
+      if (/^[0-9]+$/.test(text2)) {
+        const n = parseInt(text2, 10);
         return Number.isFinite(n) ? n : null;
       }
       return null;
@@ -32355,7 +32355,7 @@ var init_templateSettings = __esm({
 function escapeChar(match) {
   return "\\" + escapes[match];
 }
-function template(text, settings, oldSettings) {
+function template(text2, settings, oldSettings) {
   if (!settings && oldSettings) settings = oldSettings;
   settings = defaults_default({}, settings, _2.templateSettings);
   var matcher2 = RegExp([
@@ -32365,8 +32365,8 @@ function template(text, settings, oldSettings) {
   ].join("|") + "|$", "g");
   var index = 0;
   var source = "__p+='";
-  text.replace(matcher2, function(match, escape2, interpolate, evaluate2, offset) {
-    source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
+  text2.replace(matcher2, function(match, escape2, interpolate, evaluate2, offset) {
+    source += text2.slice(index, offset).replace(escapeRegExp, escapeChar);
     index = offset + match.length;
     if (escape2) {
       source += "'+\n((__t=(" + escape2 + "))==null?'':_.escape(__t))+\n'";
@@ -36154,7 +36154,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail(reason) {
+      function fail2(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -36183,7 +36183,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail,
+                fail2,
                 void 0,
                 this,
                 void 0
@@ -36200,11 +36200,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler, type, success, fail2) {
+      Promise2.prototype._passThrough = function(handler, type, success, fail3) {
         if (typeof handler !== "function") return this.then();
         return this._then(
           success,
-          fail2,
+          fail3,
           void 0,
           new PassThroughHandlerContext(this, type, handler),
           void 0
@@ -43062,10 +43062,10 @@ var require_supports_colors = __commonJS({
 // node_modules/@colors/colors/lib/custom/trap.js
 var require_trap = __commonJS({
   "node_modules/@colors/colors/lib/custom/trap.js"(exports2, module2) {
-    module2["exports"] = function runTheTrap(text, options) {
+    module2["exports"] = function runTheTrap(text2, options) {
       var result2 = "";
-      text = text || "Run the trap, drop the bass";
-      text = text.split("");
+      text2 = text2 || "Run the trap, drop the bass";
+      text2 = text2.split("");
       var trap = {
         a: ["@", "\u0104", "\u023A", "\u0245", "\u0394", "\u039B", "\u0414"],
         b: ["\xDF", "\u0181", "\u0243", "\u026E", "\u03B2", "\u0E3F"],
@@ -43113,7 +43113,7 @@ var require_trap = __commonJS({
         y: ["\xA5", "\u04B0", "\u04CB"],
         z: ["\u01B5", "\u0240"]
       };
-      text.forEach(function(c) {
+      text2.forEach(function(c) {
         c = c.toLowerCase();
         var chars = trap[c] || [" "];
         var rand = Math.floor(Math.random() * chars.length);
@@ -43131,8 +43131,8 @@ var require_trap = __commonJS({
 // node_modules/@colors/colors/lib/custom/zalgo.js
 var require_zalgo = __commonJS({
   "node_modules/@colors/colors/lib/custom/zalgo.js"(exports2, module2) {
-    module2["exports"] = function zalgo(text, options) {
-      text = text || "   he is here   ";
+    module2["exports"] = function zalgo(text2, options) {
+      text2 = text2 || "   he is here   ";
       var soul = {
         "up": [
           "\u030D",
@@ -43265,7 +43265,7 @@ var require_zalgo = __commonJS({
         });
         return bool;
       }
-      function heComes(text2, options2) {
+      function heComes(text3, options2) {
         var result2 = "";
         var counts;
         var l2;
@@ -43274,12 +43274,12 @@ var require_zalgo = __commonJS({
         options2["mid"] = typeof options2["mid"] !== "undefined" ? options2["mid"] : true;
         options2["down"] = typeof options2["down"] !== "undefined" ? options2["down"] : true;
         options2["size"] = typeof options2["size"] !== "undefined" ? options2["size"] : "maxi";
-        text2 = text2.split("");
-        for (l2 in text2) {
+        text3 = text3.split("");
+        for (l2 in text3) {
           if (isChar(l2)) {
             continue;
           }
-          result2 = result2 + text2[l2];
+          result2 = result2 + text3[l2];
           counts = { "up": 0, "down": 0, "mid": 0 };
           switch (options2.size) {
             case "mini":
@@ -43310,7 +43310,7 @@ var require_zalgo = __commonJS({
         }
         return result2;
       }
-      return heComes(text, options);
+      return heComes(text2, options);
     };
   }
 });
@@ -44084,8 +44084,8 @@ var require_safe_stable_stringify = __commonJS({
     }
     function configure(options) {
       options = { ...options };
-      const fail = getStrictOption(options);
-      if (fail) {
+      const fail2 = getStrictOption(options);
+      if (fail2) {
         if (options.bigint === void 0) {
           options.bigint = false;
         }
@@ -44196,7 +44196,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail ? fail(value) : "null";
+            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44207,7 +44207,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail ? fail(value) : void 0;
+            return fail2 ? fail2(value) : void 0;
         }
       }
       function stringifyArrayReplacer(key, value, stack, replacer, spacer, indentation) {
@@ -44287,7 +44287,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail ? fail(value) : "null";
+            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44298,7 +44298,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail ? fail(value) : void 0;
+            return fail2 ? fail2(value) : void 0;
         }
       }
       function stringifyIndent(key, value, stack, spacer, indentation) {
@@ -44399,7 +44399,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail ? fail(value) : "null";
+            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44410,7 +44410,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail ? fail(value) : void 0;
+            return fail2 ? fail2(value) : void 0;
         }
       }
       function stringifySimple(key, value, stack) {
@@ -44495,7 +44495,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail ? fail(value) : "null";
+            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44506,7 +44506,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail ? fail(value) : void 0;
+            return fail2 ? fail2(value) : void 0;
         }
       }
       function stringify2(value, replacer, space) {
@@ -49738,11 +49738,11 @@ var require_index_cjs = __commonJS({
       const h = hwb[0] / 360;
       let wh = hwb[1] / 100;
       let bl = hwb[2] / 100;
-      const ratio = wh + bl;
+      const ratio2 = wh + bl;
       let f;
-      if (ratio > 1) {
-        wh /= ratio;
-        bl /= ratio;
+      if (ratio2 > 1) {
+        wh /= ratio2;
+        bl /= ratio2;
       }
       const i = Math.floor(6 * h);
       const v = 1 - bl;
@@ -50527,34 +50527,34 @@ var require_index_cjs = __commonJS({
         }
         return rgb;
       },
-      lighten(ratio) {
+      lighten(ratio2) {
         const hsl = this.hsl();
-        hsl.color[2] += hsl.color[2] * ratio;
+        hsl.color[2] += hsl.color[2] * ratio2;
         return hsl;
       },
-      darken(ratio) {
+      darken(ratio2) {
         const hsl = this.hsl();
-        hsl.color[2] -= hsl.color[2] * ratio;
+        hsl.color[2] -= hsl.color[2] * ratio2;
         return hsl;
       },
-      saturate(ratio) {
+      saturate(ratio2) {
         const hsl = this.hsl();
-        hsl.color[1] += hsl.color[1] * ratio;
+        hsl.color[1] += hsl.color[1] * ratio2;
         return hsl;
       },
-      desaturate(ratio) {
+      desaturate(ratio2) {
         const hsl = this.hsl();
-        hsl.color[1] -= hsl.color[1] * ratio;
+        hsl.color[1] -= hsl.color[1] * ratio2;
         return hsl;
       },
-      whiten(ratio) {
+      whiten(ratio2) {
         const hwb = this.hwb();
-        hwb.color[1] += hwb.color[1] * ratio;
+        hwb.color[1] += hwb.color[1] * ratio2;
         return hwb;
       },
-      blacken(ratio) {
+      blacken(ratio2) {
         const hwb = this.hwb();
-        hwb.color[2] += hwb.color[2] * ratio;
+        hwb.color[2] += hwb.color[2] * ratio2;
         return hwb;
       },
       grayscale() {
@@ -50562,11 +50562,11 @@ var require_index_cjs = __commonJS({
         const value = rgb[0] * 0.3 + rgb[1] * 0.59 + rgb[2] * 0.11;
         return Color.rgb(value, value, value);
       },
-      fade(ratio) {
-        return this.alpha(this.valpha - this.valpha * ratio);
+      fade(ratio2) {
+        return this.alpha(this.valpha - this.valpha * ratio2);
       },
-      opaquer(ratio) {
-        return this.alpha(this.valpha + this.valpha * ratio);
+      opaquer(ratio2) {
+        return this.alpha(this.valpha + this.valpha * ratio2);
       },
       rotate(degrees) {
         const hsl = this.hsl();
@@ -50694,10 +50694,10 @@ var require_index_cjs = __commonJS({
 var require_kuler = __commonJS({
   "node_modules/kuler/index.js"(exports2, module2) {
     "use strict";
-    function Kuler(text, color) {
-      if (color) return new Kuler(text).style(color);
-      if (!(this instanceof Kuler)) return new Kuler(text);
-      this.text = text;
+    function Kuler(text2, color) {
+      if (color) return new Kuler(text2).style(color);
+      if (!(this instanceof Kuler)) return new Kuler(text2);
+      this.text = text2;
     }
     Kuler.prototype.prefix = "\x1B[";
     Kuler.prototype.suffix = "m";
@@ -51986,7 +51986,7 @@ var require_one_time = __commonJS({
   "node_modules/one-time/index.js"(exports2, module2) {
     "use strict";
     var name = require_fn();
-    module2.exports = function one(fn) {
+    module2.exports = function one2(fn) {
       var called = 0, value;
       function onetime2() {
         if (called) return value;
@@ -57170,7 +57170,7 @@ var require_AuthResponse = __commonJS({
     AuthResponse.prototype.getToken = function getToken() {
       return this.token.getToken();
     };
-    AuthResponse.prototype.text = function text() {
+    AuthResponse.prototype.text = function text2() {
       return this.body;
     };
     AuthResponse.prototype.status = function status2() {
@@ -59353,14 +59353,14 @@ var require_BigInteger = __commonJS({
         }
         return low.add(Integer.fromArray(result2, BASE, false));
       }
-      var parseBase = function(text, base, alphabet, caseSensitive) {
+      var parseBase = function(text2, base, alphabet, caseSensitive) {
         alphabet = alphabet || DEFAULT_ALPHABET;
-        text = String(text);
+        text2 = String(text2);
         if (!caseSensitive) {
-          text = text.toLowerCase();
+          text2 = text2.toLowerCase();
           alphabet = alphabet.toLowerCase();
         }
-        var length = text.length;
+        var length = text2.length;
         var i2;
         var absBase = Math.abs(base);
         var alphabetValues = {};
@@ -59368,7 +59368,7 @@ var require_BigInteger = __commonJS({
           alphabetValues[alphabet[i2]] = i2;
         }
         for (i2 = 0; i2 < length; i2++) {
-          var c = text[i2];
+          var c = text2[i2];
           if (c === "-") continue;
           if (c in alphabetValues) {
             if (alphabetValues[c] >= absBase) {
@@ -59379,16 +59379,16 @@ var require_BigInteger = __commonJS({
         }
         base = parseValue(base);
         var digits = [];
-        var isNegative = text[0] === "-";
-        for (i2 = isNegative ? 1 : 0; i2 < text.length; i2++) {
-          var c = text[i2];
+        var isNegative = text2[0] === "-";
+        for (i2 = isNegative ? 1 : 0; i2 < text2.length; i2++) {
+          var c = text2[i2];
           if (c in alphabetValues) digits.push(parseValue(alphabetValues[c]));
           else if (c === "<") {
             var start = i2;
             do {
               i2++;
-            } while (text[i2] !== ">" && i2 < text.length);
-            digits.push(parseValue(text.slice(start + 1, i2)));
+            } while (text2[i2] !== ">" && i2 < text2.length);
+            digits.push(parseValue(text2.slice(start + 1, i2)));
           } else throw new Error(c + " is not a valid character");
         }
         return parseBaseFromArray(digits, base, isNegative);
@@ -59520,15 +59520,15 @@ var require_BigInteger = __commonJS({
           if (exp[0] === "+") exp = exp.slice(1);
           exp = +exp;
           if (exp !== truncate(exp) || !isPrecise(exp)) throw new Error("Invalid integer: " + exp + " is not a valid exponent.");
-          var text = split[0];
-          var decimalPlace = text.indexOf(".");
+          var text2 = split[0];
+          var decimalPlace = text2.indexOf(".");
           if (decimalPlace >= 0) {
-            exp -= text.length - decimalPlace - 1;
-            text = text.slice(0, decimalPlace) + text.slice(decimalPlace + 1);
+            exp -= text2.length - decimalPlace - 1;
+            text2 = text2.slice(0, decimalPlace) + text2.slice(decimalPlace + 1);
           }
           if (exp < 0) throw new Error("Cannot include negative exponent part for integers");
-          text += new Array(exp + 1).join("0");
-          v = text;
+          text2 += new Array(exp + 1).join("0");
+          v = text2;
         }
         var isValid2 = /^([0-9][0-9]*)$/.test(v);
         if (!isValid2) throw new Error("Invalid integer: " + v);
@@ -80198,11 +80198,11 @@ function flattenReport(rep) {
     const count = (seen.get(k) || 0) + 1;
     seen.set(k, count);
     if (count > 1) title = `${title} (${count})`;
-    const col = { title };
-    if (c?.ColType) col.type = String(c.ColType);
-    if (md.StartDate) col.start = md.StartDate;
-    if (md.EndDate) col.end = md.EndDate;
-    return col;
+    const col2 = { title };
+    if (c?.ColType) col2.type = String(c.ColType);
+    if (md.StartDate) col2.start = md.StartDate;
+    if (md.EndDate) col2.end = md.EndDate;
+    return col2;
   });
   const labelCol = 0;
   const rows = [];
@@ -80294,9 +80294,9 @@ var Dec = class _Dec {
     this.n = n;
     this.s = s;
   }
-  static parse(text) {
-    const m = /^(\d+)(?:\.(\d+))?$/.exec(text);
-    if (!m) throw new Error(`not a number: ${text}`);
+  static parse(text2) {
+    const m = /^(\d+)(?:\.(\d+))?$/.exec(text2);
+    if (!m) throw new Error(`not a number: ${text2}`);
     const frac = m[2] || "";
     return new _Dec(BigInt(m[1] + frac), frac.length);
   }
@@ -80505,6 +80505,33 @@ function compactSearchResult(toolName39, result2) {
   };
 }
 
+// src/handlers/get-quickbooks-balance-sheet.handler.ts
+async function getQuickbooksBalanceSheet(options) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    const params = {};
+    if (options.end_date) {
+      params.end_date = options.end_date;
+      params.start_date = options.start_date || `${options.end_date.substring(0, 4)}-01-01`;
+    } else if (options.start_date) {
+      params.start_date = options.start_date;
+    }
+    if (options.accounting_method) params.accounting_method = options.accounting_method;
+    if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
+    return new Promise((resolve) => {
+      quickbooks.reportBalanceSheet(params, (err, report2) => {
+        if (err) {
+          resolve({ result: null, isError: true, error: formatError2(err) });
+        } else {
+          resolve({ result: report2, isError: false, error: null });
+        }
+      });
+    });
+  } catch (error2) {
+    return { result: null, isError: true, error: formatError2(error2) };
+  }
+}
+
 // src/handlers/get-quickbooks-profit-and-loss.handler.ts
 async function getQuickbooksProfitAndLoss(options) {
   try {
@@ -80520,15 +80547,838 @@ async function getQuickbooksProfitAndLoss(options) {
     if (options.department) params.department = options.department;
     if (options.class) params.class = options.class;
     return new Promise((resolve) => {
-      quickbooks.reportProfitAndLoss(params, (err, report) => {
+      quickbooks.reportProfitAndLoss(params, (err, report2) => {
         if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
+        else resolve({ result: report2, isError: false, error: null });
       });
     });
   } catch (error2) {
     return { result: null, isError: true, error: formatError2(error2) };
   }
 }
+
+// src/handlers/get-quickbooks-aged-receivables.handler.ts
+async function getQuickbooksAgedReceivables(options) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    const params = {};
+    if (options.report_date) params.report_date = options.report_date;
+    if (options.customer) params.customer = options.customer;
+    if (options.aging_method) params.aging_method = options.aging_method;
+    if (options.days_per_aging_period) params.days_per_aging_period = options.days_per_aging_period;
+    if (options.num_periods) params.num_periods = options.num_periods;
+    return new Promise((resolve) => {
+      quickbooks.reportAgedReceivables(params, (err, report2) => {
+        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
+        else resolve({ result: report2, isError: false, error: null });
+      });
+    });
+  } catch (error2) {
+    return { result: null, isError: true, error: formatError2(error2) };
+  }
+}
+
+// src/handlers/get-quickbooks-aged-payables.handler.ts
+async function getQuickbooksAgedPayables(options) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    const params = {};
+    if (options.report_date) params.report_date = options.report_date;
+    if (options.vendor) params.vendor = options.vendor;
+    if (options.aging_method) params.aging_method = options.aging_method;
+    if (options.days_per_aging_period) params.days_per_aging_period = options.days_per_aging_period;
+    if (options.num_periods) params.num_periods = options.num_periods;
+    return new Promise((resolve) => {
+      quickbooks.reportAgedPayables(params, (err, report2) => {
+        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
+        else resolve({ result: report2, isError: false, error: null });
+      });
+    });
+  } catch (error2) {
+    return { result: null, isError: true, error: formatError2(error2) };
+  }
+}
+
+// src/handlers/get-quickbooks-customer-sales.handler.ts
+async function getQuickbooksCustomerSales(options) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    const params = {};
+    if (options.start_date) params.start_date = options.start_date;
+    if (options.end_date) params.end_date = options.end_date;
+    if (options.customer) params.customer = options.customer;
+    if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
+    return new Promise((resolve) => {
+      quickbooks.reportCustomerSales(params, (err, report2) => {
+        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
+        else resolve({ result: report2, isError: false, error: null });
+      });
+    });
+  } catch (error2) {
+    return { result: null, isError: true, error: formatError2(error2) };
+  }
+}
+
+// src/handlers/get-quickbooks-vendor-expenses.handler.ts
+async function getQuickbooksVendorExpenses(options) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    const params = {};
+    if (options.start_date) params.start_date = options.start_date;
+    if (options.end_date) params.end_date = options.end_date;
+    if (options.vendor) params.vendor = options.vendor;
+    if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
+    if (options.accounting_method) params.accounting_method = options.accounting_method;
+    return new Promise((resolve) => {
+      quickbooks.reportVendorExpenses(params, (err, report2) => {
+        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
+        else resolve({ result: report2, isError: false, error: null });
+      });
+    });
+  } catch (error2) {
+    return { result: null, isError: true, error: formatError2(error2) };
+  }
+}
+
+// src/helpers/build-quickbooks-search-criteria.ts
+function buildQuickbooksSearchCriteria(input) {
+  if (Array.isArray(input)) {
+    return input;
+  }
+  const possibleAdvancedKeys = [
+    "filters",
+    "criteria",
+    "asc",
+    "desc",
+    "limit",
+    "offset",
+    "count",
+    "fetchAll"
+  ];
+  const inputKeys = Object.keys(input || {});
+  const isAdvanced = inputKeys.some(
+    (k) => possibleAdvancedKeys.includes(k)
+  );
+  if (!isAdvanced) {
+    return input;
+  }
+  const options = input;
+  const criteriaArr = [];
+  const filterList = options.filters ?? options.criteria;
+  filterList?.forEach((f) => {
+    criteriaArr.push({ field: f.field, value: f.value, operator: f.operator });
+  });
+  if (options.asc) {
+    criteriaArr.push({ field: "asc", value: options.asc });
+  }
+  if (options.desc) {
+    criteriaArr.push({ field: "desc", value: options.desc });
+  }
+  if (typeof options.limit === "number") {
+    criteriaArr.push({ field: "limit", value: options.limit });
+  }
+  if (typeof options.offset === "number") {
+    criteriaArr.push({ field: "offset", value: options.offset });
+  }
+  if (options.count) {
+    criteriaArr.push({ field: "count", value: true });
+  }
+  if (options.fetchAll) {
+    criteriaArr.push({ field: "fetchAll", value: true });
+  }
+  return criteriaArr.length > 0 ? criteriaArr : {};
+}
+
+// src/handlers/search-quickbooks-invoices.handler.ts
+async function searchQuickbooksInvoices(criteria) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    const normalizedCriteria = buildQuickbooksSearchCriteria(criteria);
+    return new Promise((resolve) => {
+      quickbooks.findInvoices(normalizedCriteria, (err, invoices) => {
+        if (err) {
+          resolve({ result: null, isError: true, error: formatError2(err) });
+        } else {
+          resolve({
+            result: invoices.QueryResponse.Invoice || [],
+            isError: false,
+            error: null
+          });
+        }
+      });
+    });
+  } catch (error2) {
+    return { result: null, isError: true, error: formatError2(error2) };
+  }
+}
+
+// src/handlers/search-quickbooks-bills.handler.ts
+async function searchQuickbooksBills(criteria = {}) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    return new Promise((resolve) => {
+      quickbooks.findBills(criteria, (err, bills) => {
+        if (err) {
+          resolve({
+            result: null,
+            isError: true,
+            error: formatError2(err)
+          });
+        } else {
+          resolve({
+            result: bills?.QueryResponse?.Bill ?? bills?.QueryResponse?.totalCount ?? [],
+            isError: false,
+            error: null
+          });
+        }
+      });
+    });
+  } catch (error2) {
+    return {
+      result: null,
+      isError: true,
+      error: formatError2(error2)
+    };
+  }
+}
+
+// src/handlers/read-quickbooks-invoice.handler.ts
+async function readQuickbooksInvoice(invoiceId) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    return new Promise((resolve) => {
+      quickbooks.getInvoice(invoiceId, (err, invoice) => {
+        if (err) {
+          resolve({
+            result: null,
+            isError: true,
+            error: formatError2(err)
+          });
+        } else {
+          resolve({
+            result: invoice,
+            isError: false,
+            error: null
+          });
+        }
+      });
+    });
+  } catch (error2) {
+    return {
+      result: null,
+      isError: true,
+      error: formatError2(error2)
+    };
+  }
+}
+
+// src/convor-answers.ts
+function toCents2(v) {
+  if (v === void 0 || v === null || v === "") return 0n;
+  const s = (typeof v === "number" ? String(v) : String(v)).replace(/[$,\s]/g, "");
+  const m = /^(-?)(\d*)(?:\.(\d+))?$/.exec(s);
+  if (!m || m[2] === "" && !m[3]) throw new Error("not an amount: " + String(v).slice(0, 40));
+  const frac = (m[3] || "").padEnd(3, "0");
+  let cents = BigInt(m[2] || "0") * 100n + BigInt(frac.slice(0, 2));
+  if (Number(frac[2]) >= 5) cents += 1n;
+  return m[1] === "-" ? -cents : cents;
+}
+function money2(c) {
+  const neg = c < 0n;
+  const a = neg ? -c : c;
+  const s = (a / 100n).toString() + "." + (a % 100n).toString().padStart(2, "0");
+  return neg ? "-" + s : s;
+}
+function pct(num, den) {
+  if (den === 0n) return null;
+  const neg = num < 0n !== den < 0n && num !== 0n;
+  const n = num < 0n ? -num : num;
+  const d = den < 0n ? -den : den;
+  const q = (n * 10000n * 2n + d) / (2n * d);
+  const s = (q / 100n).toString() + "." + (q % 100n).toString().padStart(2, "0");
+  return neg ? "-" + s : s;
+}
+function ratio(num, den) {
+  if (den === 0n) return null;
+  const neg = num < 0n !== den < 0n && num !== 0n;
+  const n = num < 0n ? -num : num;
+  const d = den < 0n ? -den : den;
+  const q = (n * 100n * 2n + d) / (2n * d);
+  const s = (q / 100n).toString() + "." + (q % 100n).toString().padStart(2, "0");
+  return neg ? "-" + s : s;
+}
+var TZ = process.env.CONVOR_TIMEZONE || "America/New_York";
+var ISO = /^\d{4}-\d{2}-\d{2}$/;
+function todayISO() {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(/* @__PURE__ */ new Date());
+}
+function dayNumber(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return Math.round(Date.UTC(y, m - 1, d) / 864e5);
+}
+function checkDate(v, name) {
+  if (v === void 0 || v === null || v === "") return void 0;
+  const s = String(v).trim();
+  if (!ISO.test(s) || isNaN(dayNumber(s))) throw new Error(`${name} must be a date written YYYY-MM-DD`);
+  return s;
+}
+function yearEarlier(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dd = m === 2 && d === 29 ? 28 : d;
+  return `${y - 1}-${String(m).padStart(2, "0")}-${String(dd).padStart(2, "0")}`;
+}
+function humanDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return `${["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][m - 1]} ${d}, ${y}`;
+}
+async function report(fn, opts, what) {
+  const r = await fn(opts);
+  if (r.isError) throw new Error(`${what}: ${r.error}`);
+  const flat = flattenReport(r.result);
+  if (!flat) throw new Error(`${what}: unexpected report format`);
+  return flat;
+}
+function rowsOf(flat) {
+  return (flat.rows || []).map((r) => ({ kind: r.kind, group: r.group || "", label: r.label || "", values: r.values || {} }));
+}
+function one(rows, label, group2) {
+  const hits = rows.filter((r) => r.label === label && (group2 === void 0 || r.group === group2));
+  if (hits.length !== 1) throw new Error(`expected one '${label}' row${group2 !== void 0 ? ` in '${group2}'` : ""}, found ${hits.length}`);
+  return hits[0];
+}
+function maybe(rows, label, group2) {
+  const hits = rows.filter((r) => r.label === label && (group2 === void 0 || r.group === group2));
+  return hits.length === 1 ? hits[0] : null;
+}
+function col(row, title = "Total") {
+  return row ? toCents2(row.values[title]) : 0n;
+}
+async function allRecords(fn, criteria, what) {
+  const r = await fn([...criteria, { field: "fetchAll", value: true }]);
+  if (r.isError) throw new Error(`${what}: ${r.error}`);
+  if (!Array.isArray(r.result)) throw new Error(`${what}: unexpected result`);
+  return r.result;
+}
+var AGE_COLS = ["Current", "1 - 30", "31 - 60", "61 - 90", "91 and over"];
+function bucketFor(daysPast) {
+  if (daysPast <= 0) return "Current";
+  if (daysPast <= 30) return "1 - 30";
+  if (daysPast <= 60) return "31 - 60";
+  if (daysPast <= 90) return "61 - 90";
+  return "91 and over";
+}
+function agingTotals(report2) {
+  const rows = rowsOf(report2);
+  const total = one(rows, "TOTAL");
+  const out = {};
+  for (const c of [...AGE_COLS, "Total"]) out[c] = money2(toCents2(total.values[c]));
+  return out;
+}
+function text(obj2) {
+  return { content: [{ type: "text", text: JSON.stringify(obj2) }] };
+}
+function fail(e) {
+  return { isError: true, content: [{ type: "text", text: "Error: " + (e?.message || String(e)) }] };
+}
+var snapshotSchema = external_exports.object({
+  as_of: external_exports.string().optional().describe("Date to report as of (YYYY-MM-DD). Leave empty for today.")
+});
+async function financeSnapshot(params) {
+  const asOf = checkDate(params?.as_of, "as_of") || todayISO();
+  const year = asOf.slice(0, 4);
+  const ytdStart = `${year}-01-01`;
+  const [bs, ar, ap, pl, plPrior] = await Promise.all([
+    report(getQuickbooksBalanceSheet, { end_date: asOf, accounting_method: "Accrual", summarize_column_by: "Total" }, "balance sheet"),
+    report(getQuickbooksAgedReceivables, { report_date: asOf, aging_method: "Report_Date", days_per_aging_period: 30, num_periods: 4 }, "receivables aging"),
+    report(getQuickbooksAgedPayables, { report_date: asOf, aging_method: "Report_Date", days_per_aging_period: 30, num_periods: 4 }, "payables aging"),
+    report(getQuickbooksProfitAndLoss, { start_date: ytdStart, end_date: asOf, accounting_method: "Accrual", summarize_column_by: "Total" }, "profit and loss"),
+    report(getQuickbooksProfitAndLoss, { start_date: yearEarlier(ytdStart), end_date: yearEarlier(asOf), accounting_method: "Accrual", summarize_column_by: "Total" }, "profit and loss, prior year")
+  ]);
+  const b = rowsOf(bs);
+  const bankLines = b.filter((r) => r.kind === "line" && /(^|> )Bank Accounts$/.test(r.group || ""));
+  const cash = col(maybe(b, "Total Bank Accounts"));
+  const arTotal = col(maybe(b, "Total Accounts Receivable"));
+  const apTotal = col(maybe(b, "Total Accounts Payable"));
+  const curA = col(one(b, "Total Current Assets"));
+  const curL = col(maybe(b, "Total Current Liabilities"));
+  const totL = col(one(b, "Total Liabilities"));
+  const liabilityLines = b.filter((r) => r.kind === "line" && (r.group || "").includes("Liabilities") && toCents2(r.values.Total) !== 0n).map((r) => ({ account: r.label, section: (r.group || "").split(" > ").slice(-1)[0], balance: money2(toCents2(r.values.Total)) }));
+  const borrowing = b.filter((r) => r.kind === "line" && (r.group || "").includes("Liabilities") && /loan|line of credit|note payable|mortgage/i.test(r.label)).reduce((s, r) => s + toCents2(r.values.Total), 0n);
+  const arAge = agingTotals(ar);
+  const apAge = agingTotals(ap);
+  const arOver60 = toCents2(arAge["61 - 90"]) + toCents2(arAge["91 and over"]);
+  const arPastDue = toCents2(arAge.Total) - toCents2(arAge.Current);
+  const apPastDue = toCents2(apAge.Total) - toCents2(apAge.Current);
+  const p = rowsOf(pl), pp = rowsOf(plPrior);
+  const line = (rows, label, group2) => col(maybe(rows, label, group2));
+  const inc = line(p, "Total Income"), incP = line(pp, "Total Income");
+  const gp = line(p, "Gross Profit"), gpP = line(pp, "Gross Profit");
+  const ni = line(p, "Net Income"), niP = line(pp, "Net Income");
+  return text({
+    asOf,
+    basis: "Accrual",
+    cash: { totalInBank: money2(cash), accounts: bankLines.map((r) => ({ account: r.label, balance: money2(toCents2(r.values.Total)) })) },
+    receivables: {
+      total: money2(toCents2(arAge.Total)),
+      aging: arAge,
+      pastDue: money2(arPastDue),
+      moreThan60DaysPastDue: money2(arOver60),
+      moreThan60DaysPastDuePercentOfTotal: pct(arOver60, toCents2(arAge.Total))
+    },
+    payables: { total: money2(toCents2(apAge.Total)), aging: apAge, pastDue: money2(apPastDue) },
+    balanceSheet: {
+      totalCurrentAssets: money2(curA),
+      totalCurrentLiabilities: money2(curL),
+      currentRatio: ratio(curA, curL),
+      totalLiabilities: money2(totL),
+      borrowing: money2(borrowing),
+      liabilities: liabilityLines,
+      accountsReceivableOnBalanceSheet: money2(arTotal),
+      accountsPayableOnBalanceSheet: money2(apTotal)
+    },
+    cashMinusOpenBills: money2(cash - toCents2(apAge.Total)),
+    yearToDate: {
+      period: `${humanDate(ytdStart)} to ${humanDate(asOf)}`,
+      income: money2(inc),
+      grossProfit: money2(gp),
+      netIncome: money2(ni),
+      grossMarginPercent: pct(gp, inc),
+      netMarginPercent: pct(ni, inc)
+    },
+    samePeriodLastYear: {
+      period: `${humanDate(yearEarlier(ytdStart))} to ${humanDate(yearEarlier(asOf))}`,
+      income: money2(incP),
+      grossProfit: money2(gpP),
+      netIncome: money2(niP),
+      incomeChange: money2(inc - incP),
+      incomeChangePercent: pct(inc - incP, incP),
+      netIncomeChange: money2(ni - niP),
+      netIncomeChangePercent: pct(ni - niP, niP)
+    },
+    note: "All figures come from QuickBooks reports and are computed exactly by the connector; use them as given. Aging is by due date as of asOf. borrowing is the loan and line-of-credit balances."
+  });
+}
+var GetFinanceSnapshotTool = {
+  name: "get_finance_snapshot",
+  description: "One-call finance overview: cash in each bank account, receivables and payables with aging and past-due amounts, current ratio, liabilities and borrowing, cash minus open bills, and year-to-date income, gross profit and net income compared with the same period last year. Use it for a snapshot, cash, debt, short-term obligations or how the year is going. Every figure is computed exactly from QuickBooks.",
+  schema: snapshotSchema,
+  handler: async ({ params }) => {
+    try {
+      return await financeSnapshot(params);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+};
+var arSchema = external_exports.object({
+  as_of: external_exports.string().optional().describe("Date to age invoices to (YYYY-MM-DD). Leave empty for today."),
+  customer_id: external_exports.string().optional().describe("Only this customer (QuickBooks customer Id from search_customer_or_vendor)"),
+  top: external_exports.number().int().min(1).max(50).optional().describe("How many customers to list (default 10)")
+});
+async function receivables(params) {
+  const asOf = checkDate(params?.as_of, "as_of") || todayISO();
+  const top = params?.top ?? 10;
+  const crit = [{ field: "Balance", value: "0", operator: ">" }];
+  if (params?.customer_id) crit.push({ field: "CustomerRef", value: String(params.customer_id) });
+  const [invs, aging] = await Promise.all([
+    allRecords(searchQuickbooksInvoices, crit, "open invoices"),
+    report(getQuickbooksAgedReceivables, { report_date: asOf, aging_method: "Report_Date", days_per_aging_period: 30, num_periods: 4, ...params?.customer_id ? { customer: String(params.customer_id) } : {} }, "receivables aging")
+  ]);
+  const today = dayNumber(asOf);
+  const rows = invs.map((r) => {
+    const due = r.DueDate || r.TxnDate;
+    const daysPast = today - dayNumber(due);
+    return {
+      invoice: r.DocNumber || null,
+      customer: r.CustomerRef?.name ?? null,
+      customerId: r.CustomerRef?.value ?? null,
+      date: r.TxnDate,
+      dueDate: due,
+      total: toCents2(r.TotalAmt),
+      balance: toCents2(r.Balance),
+      daysPastDue: Math.max(daysPast, 0),
+      agingColumn: bucketFor(daysPast),
+      partlyPaid: toCents2(r.Balance) !== toCents2(r.TotalAmt)
+    };
+  });
+  const byCol = Object.fromEntries([...AGE_COLS, "Total"].map((c) => [c, 0n]));
+  const cust = /* @__PURE__ */ new Map();
+  for (const r of rows) {
+    byCol[r.agingColumn] += r.balance;
+    byCol.Total += r.balance;
+    const k = r.customerId || r.customer;
+    if (!cust.has(k)) cust.set(k, { customer: r.customer, customerId: r.customerId, owed: 0n, pastDue: 0n, openInvoices: 0, aging: Object.fromEntries(AGE_COLS.map((c2) => [c2, 0n])) });
+    const c = cust.get(k);
+    c.owed += r.balance;
+    c.openInvoices++;
+    c.aging[r.agingColumn] += r.balance;
+    if (r.daysPastDue > 0) c.pastDue += r.balance;
+  }
+  const qbo = agingTotals(aging);
+  const matches = AGE_COLS.every((c) => toCents2(qbo[c]) === byCol[c]) && toCents2(qbo.Total) === byCol.Total;
+  const fmt = (r) => ({ invoice: r.invoice, customer: r.customer, date: r.date, dueDate: r.dueDate, balance: money2(r.balance), ...r.partlyPaid ? { invoiceTotal: money2(r.total), partlyPaid: true } : {}, daysPastDue: r.daysPastDue, agingColumn: r.agingColumn });
+  const over60 = rows.filter((r) => r.daysPastDue > 60).sort((a, b) => b.balance > a.balance ? 1 : b.balance < a.balance ? -1 : b.daysPastDue - a.daysPastDue);
+  const other = rows.filter((r) => r.daysPastDue > 0 && r.daysPastDue <= 60).sort((a, b) => b.balance > a.balance ? 1 : b.balance < a.balance ? -1 : b.daysPastDue - a.daysPastDue);
+  const dueSoon = rows.filter((r) => r.daysPastDue === 0 && dayNumber(r.dueDate) - today <= 14).sort((a, b) => dayNumber(a.dueDate) - dayNumber(b.dueDate));
+  const customers = [...cust.values()].sort((a, b) => b.owed > a.owed ? 1 : b.owed < a.owed ? -1 : 0);
+  const pastDueRows = rows.filter((r) => r.daysPastDue > 0);
+  return text({
+    asOf,
+    totalOwed: money2(byCol.Total),
+    openInvoices: rows.length,
+    customersWithBalance: customers.length,
+    aging: Object.fromEntries([...AGE_COLS, "Total"].map((c) => [c, money2(byCol[c])])),
+    pastDue: money2(byCol.Total - byCol.Current),
+    matchesQuickBooksAgingReport: matches,
+    ...matches ? {} : { quickBooksAgingReport: qbo },
+    collectFirst: {
+      rule: "Largest balances more than 60 days past due first, then other past-due balances by size.",
+      moreThan60DaysPastDue: over60.map(fmt),
+      pastDue1To60Days: other.slice(0, 15).map(fmt),
+      ...other.length > 15 ? { morePastDue1To60Days: `${other.length - 15} more past-due invoices totalling ${money2(other.slice(15).reduce((s, r) => s + r.balance, 0n))}` } : {}
+    },
+    pastDueInvoiceCount: pastDueRows.length,
+    dueInNext14Days: { count: dueSoon.length, total: money2(dueSoon.reduce((s, r) => s + r.balance, 0n)), largest: dueSoon.slice().sort((a, b) => b.balance > a.balance ? 1 : -1).slice(0, 5).map(fmt) },
+    customersRankedByAmountOwed: customers.slice(0, top).map((c, i) => ({
+      rank: i + 1,
+      customer: c.customer,
+      owed: money2(c.owed),
+      pastDue: money2(c.pastDue),
+      openInvoices: c.openInvoices,
+      aging: Object.fromEntries(AGE_COLS.map((k) => [k, money2(c.aging[k])]))
+    })),
+    note: "Computed exactly by the connector from every open invoice, aged by due date as of asOf; lists are already sorted. Use these figures and this order as given. For a reminder email, get the contact with get_customer."
+  });
+}
+var GetReceivablesSummaryTool = {
+  name: "get_receivables_summary",
+  description: "Who owes us money, in one call: total owed, aging (Current, 1 - 30, 31 - 60, 61 - 90, 91 and over), past-due total, the collect-first list (invoice number, customer, due date, days past due, balance, already in priority order), invoices due in the next 14 days, and customers ranked by amount owed. Pass customer_id for one customer's open invoices (for a payment reminder). Computed exactly from every open invoice.",
+  schema: arSchema,
+  handler: async ({ params }) => {
+    try {
+      return await receivables(params);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+};
+var apSchema = external_exports.object({
+  as_of: external_exports.string().optional().describe("Date to age bills to (YYYY-MM-DD). Leave empty for today."),
+  vendor_id: external_exports.string().optional().describe("Only this vendor (QuickBooks vendor Id from search_customer_or_vendor)"),
+  due_within_days: external_exports.number().int().min(0).max(90).optional().describe("Also list bills due within this many days (default 7)"),
+  top: external_exports.number().int().min(1).max(50).optional().describe("How many vendors to list (default 10)")
+});
+async function payables(params) {
+  const asOf = checkDate(params?.as_of, "as_of") || todayISO();
+  const within = params?.due_within_days ?? 7;
+  const top = params?.top ?? 10;
+  const crit = [{ field: "Balance", value: "0", operator: ">" }];
+  if (params?.vendor_id) crit.push({ field: "VendorRef", value: String(params.vendor_id) });
+  const [bills, aging] = await Promise.all([
+    allRecords(searchQuickbooksBills, crit, "open bills"),
+    report(getQuickbooksAgedPayables, { report_date: asOf, aging_method: "Report_Date", days_per_aging_period: 30, num_periods: 4, ...params?.vendor_id ? { vendor: String(params.vendor_id) } : {} }, "payables aging")
+  ]);
+  const today = dayNumber(asOf);
+  const rows = bills.map((r) => {
+    const due = r.DueDate || r.TxnDate;
+    const d = today - dayNumber(due);
+    return { bill: r.DocNumber || null, vendor: r.VendorRef?.name ?? null, vendorId: r.VendorRef?.value ?? null, date: r.TxnDate, dueDate: due, balance: toCents2(r.Balance), daysPastDue: Math.max(d, 0), daysUntilDue: Math.max(-d, 0), agingColumn: bucketFor(d) };
+  });
+  const byCol = Object.fromEntries([...AGE_COLS, "Total"].map((c) => [c, 0n]));
+  const vend = /* @__PURE__ */ new Map();
+  for (const r of rows) {
+    byCol[r.agingColumn] += r.balance;
+    byCol.Total += r.balance;
+    const k = r.vendorId || r.vendor;
+    if (!vend.has(k)) vend.set(k, { vendor: r.vendor, owed: 0n, pastDue: 0n, openBills: 0 });
+    const v = vend.get(k);
+    v.owed += r.balance;
+    v.openBills++;
+    if (r.daysPastDue > 0) v.pastDue += r.balance;
+  }
+  const qbo = agingTotals(aging);
+  const matches = AGE_COLS.every((c) => toCents2(qbo[c]) === byCol[c]) && toCents2(qbo.Total) === byCol.Total;
+  const fmt = (r) => ({ bill: r.bill, vendor: r.vendor, date: r.date, dueDate: r.dueDate, balance: money2(r.balance), ...r.daysPastDue > 0 ? { daysPastDue: r.daysPastDue } : { daysUntilDue: r.daysUntilDue } });
+  const overdue = rows.filter((r) => r.daysPastDue > 0).sort((a, b) => dayNumber(a.dueDate) - dayNumber(b.dueDate) || (b.balance > a.balance ? 1 : -1));
+  const dueToday = rows.filter((r) => r.daysPastDue === 0 && r.daysUntilDue === 0);
+  const dueSoon = rows.filter((r) => r.daysPastDue === 0 && r.daysUntilDue > 0 && r.daysUntilDue <= within).sort((a, b) => dayNumber(a.dueDate) - dayNumber(b.dueDate));
+  const sum = (l2) => money2(l2.reduce((s, r) => s + r.balance, 0n));
+  const vendors = [...vend.values()].sort((a, b) => b.owed > a.owed ? 1 : b.owed < a.owed ? -1 : 0);
+  return text({
+    asOf,
+    totalOwed: money2(byCol.Total),
+    openBills: rows.length,
+    vendorsOwed: vendors.length,
+    aging: Object.fromEntries([...AGE_COLS, "Total"].map((c) => [c, money2(byCol[c])])),
+    matchesQuickBooksAgingReport: matches,
+    ...matches ? {} : { quickBooksAgingReport: qbo },
+    pastDue: { count: overdue.length, total: sum(overdue), bills: overdue.map(fmt) },
+    dueToday: { count: dueToday.length, total: sum(dueToday), bills: dueToday.map(fmt) },
+    dueSoon: { withinDays: within, count: dueSoon.length, total: sum(dueSoon), bills: dueSoon.slice(0, 20).map(fmt) },
+    pastDueOrDueToday: sum([...overdue, ...dueToday]),
+    vendorsRankedByAmountOwed: vendors.slice(0, top).map((v, i) => ({ rank: i + 1, vendor: v.vendor, owed: money2(v.owed), pastDue: money2(v.pastDue), openBills: v.openBills })),
+    note: "Computed exactly by the connector from every open bill, aged by due date as of asOf; lists are already sorted (past-due bills oldest first). Use these figures as given. A bill number of null means the bill has no number in QuickBooks: describe it by vendor, date and amount."
+  });
+}
+var GetPayablesSummaryTool = {
+  name: "get_payables_summary",
+  description: "What we owe vendors, in one call: total owed, aging, past-due bills (oldest first), bills due today, bills due in the next N days, the total past due or due today, and vendors ranked by amount owed. Pass vendor_id for one vendor. Computed exactly from every open bill.",
+  schema: apSchema,
+  handler: async ({ params }) => {
+    try {
+      return await payables(params);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+};
+var rankSchema = external_exports.object({
+  start_date: external_exports.string().describe("Start date (YYYY-MM-DD)"),
+  end_date: external_exports.string().describe("End date (YYYY-MM-DD)"),
+  top: external_exports.number().int().min(1).max(50).optional().describe("How many to list (default 10)")
+});
+function ranked(flat, nameKey, unassignedLabels) {
+  const rows = rowsOf(flat);
+  const grand = one(rows, "TOTAL");
+  const entries = [];
+  for (const r of rows) {
+    if (r.label === "TOTAL") continue;
+    if (r.kind === "line" && !r.group) entries.push({ name: r.label, amount: toCents2(r.values.Total) });
+    if (r.kind === "total" && r.group && !r.group.includes(" > ")) entries.push({ name: r.group, amount: toCents2(r.values.Total) });
+  }
+  const assigned = entries.filter((e) => !unassignedLabels.includes(e.name));
+  const unassigned = entries.filter((e) => unassignedLabels.includes(e.name));
+  const total = toCents2(grand.values.Total);
+  const check2 = entries.reduce((s, e) => s + e.amount, 0n);
+  if (check2 !== total) throw new Error(`report rows (${money2(check2)}) do not add up to the report total (${money2(total)})`);
+  assigned.sort((a, b) => b.amount > a.amount ? 1 : b.amount < a.amount ? -1 : a.name.localeCompare(b.name));
+  return { total, assigned, unassigned };
+}
+async function topCustomers(params) {
+  const start = checkDate(params?.start_date, "start_date"), end = checkDate(params?.end_date, "end_date");
+  const top = params?.top ?? 10;
+  const flat = await report(getQuickbooksCustomerSales, { start_date: start, end_date: end, summarize_column_by: "Total" }, "customer sales");
+  const { total, assigned } = ranked(flat, "customer", []);
+  const shown = assigned.slice(0, top);
+  const shownSum = shown.reduce((s, e) => s + e.amount, 0n);
+  return text({
+    period: `${humanDate(start)} to ${humanDate(end)}`,
+    totalSales: money2(total),
+    customersWithSales: assigned.length,
+    ranking: shown.map((e, i) => ({ rank: i + 1, customer: e.name, sales: money2(e.amount), percentOfTotal: pct(e.amount, total) })),
+    topListTotal: money2(shownSum),
+    topListPercentOfTotal: pct(shownSum, total),
+    note: "From the QuickBooks Customer Sales report; ranked and computed exactly by the connector. Keep this order and these figures."
+  });
+}
+var GetTopCustomersTool = {
+  name: "get_top_customers",
+  description: "Biggest customers by sales for a period, already ranked, with each customer's share of total sales (from the Customer Sales report).",
+  schema: rankSchema,
+  handler: async ({ params }) => {
+    try {
+      return await topCustomers(params);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+};
+async function topVendors(params) {
+  const start = checkDate(params?.start_date, "start_date"), end = checkDate(params?.end_date, "end_date");
+  const top = params?.top ?? 10;
+  const flat = await report(getQuickbooksVendorExpenses, { start_date: start, end_date: end, accounting_method: "Accrual", summarize_column_by: "Total" }, "vendor expenses");
+  const { total, assigned, unassigned } = ranked(flat, "vendor", ["Not Specified"]);
+  const shown = assigned.slice(0, top);
+  return text({
+    period: `${humanDate(start)} to ${humanDate(end)}`,
+    basis: "Accrual",
+    totalSpend: money2(total),
+    vendorsWithSpend: assigned.length,
+    ranking: shown.map((e, i) => ({ rank: i + 1, vendor: e.name, spend: money2(e.amount), percentOfTotal: pct(e.amount, total) })),
+    ...unassigned.length ? { noVendorRecorded: money2(unassigned.reduce((s, e) => s + e.amount, 0n)), noVendorNote: "Spending with no vendor on it (for example journal entries such as depreciation); not a vendor, so not ranked." } : {},
+    note: "From the QuickBooks Expenses by Vendor report; ranked and computed exactly by the connector. Keep this order and these figures."
+  });
+}
+var GetTopVendorsTool = {
+  name: "get_top_vendors",
+  description: "Vendors we spent the most with for a period, already ranked, with each vendor's share of total spending (from the Expenses by Vendor report).",
+  schema: rankSchema,
+  handler: async ({ params }) => {
+    try {
+      return await topVendors(params);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+};
+var cmpSchema = external_exports.object({
+  start_date: external_exports.string().describe("Start of the period (YYYY-MM-DD)"),
+  end_date: external_exports.string().describe("End of the period (YYYY-MM-DD)"),
+  compare_start_date: external_exports.string().optional().describe("Start of the period to compare with (default: the same dates one year earlier)"),
+  compare_end_date: external_exports.string().optional().describe("End of the period to compare with (default: the same dates one year earlier)")
+});
+var TOTALS = [
+  ["income", "Total Income", void 0],
+  ["costOfGoodsSold", "Total Cost of Goods Sold", "Cost of Goods Sold"],
+  ["grossProfit", "Gross Profit", void 0],
+  ["operatingExpenses", "Total Expenses", void 0],
+  ["netOperatingIncome", "Net Operating Income", void 0],
+  ["otherIncome", "Total Other Income", void 0],
+  ["otherExpenses", "Total Other Expenses", void 0],
+  ["netIncome", "Net Income", void 0]
+];
+async function profitComparison(params) {
+  const s = checkDate(params?.start_date, "start_date"), e = checkDate(params?.end_date, "end_date");
+  const cs = checkDate(params?.compare_start_date, "compare_start_date") || yearEarlier(s);
+  const ce = checkDate(params?.compare_end_date, "compare_end_date") || yearEarlier(e);
+  const [cur, pri] = await Promise.all([
+    report(getQuickbooksProfitAndLoss, { start_date: s, end_date: e, accounting_method: "Accrual", summarize_column_by: "Total" }, "profit and loss"),
+    report(getQuickbooksProfitAndLoss, { start_date: cs, end_date: ce, accounting_method: "Accrual", summarize_column_by: "Total" }, "profit and loss (comparison)")
+  ]);
+  const a = rowsOf(cur), b = rowsOf(pri);
+  const pair = (x, y) => ({ period: money2(x), comparePeriod: money2(y), change: money2(x - y), changePercent: pct(x - y, y) });
+  const totals = {};
+  const T = {};
+  for (const [k, label, group2] of TOTALS) {
+    const x = col(maybe(a, label, group2)), y = col(maybe(b, label, group2));
+    T[k] = [x, y];
+    totals[k] = pair(x, y);
+  }
+  const margin = (n, d) => pct(n, d);
+  const gm = [margin(T.grossProfit[0], T.income[0]), margin(T.grossProfit[1], T.income[1])];
+  const nm = [margin(T.netIncome[0], T.income[0]), margin(T.netIncome[1], T.income[1])];
+  const pp = (x, y) => x === null || y === null ? null : money2(toCents2(x) - toCents2(y));
+  const lines = (section) => {
+    const key = (r) => (r.group || "") + "|" + r.label;
+    const m = /* @__PURE__ */ new Map();
+    for (const [rows, i] of [[a, 0], [b, 1]]) {
+      for (const r of rows) {
+        if (r.kind !== "line" || !section.test(r.group || "")) continue;
+        const k = key(r);
+        if (!m.has(k)) m.set(k, { account: r.label, group: (r.group || "").split(" > ").slice(1).join(" > "), x: 0n, y: 0n });
+        const v = m.get(k);
+        if (i === 0) v.x += toCents2(r.values.Total);
+        else v.y += toCents2(r.values.Total);
+      }
+    }
+    return [...m.values()];
+  };
+  const fmtLine = (l2) => ({ account: l2.account, ...l2.group ? { under: l2.group } : {}, period: money2(l2.x), comparePeriod: money2(l2.y), change: money2(l2.x - l2.y), changePercent: pct(l2.x - l2.y, l2.y) });
+  const byGrowth = (l2) => l2.slice().sort((p, q) => {
+    if (p.y === 0n || q.y === 0n) return p.y === 0n ? 1 : -1;
+    const lp = (p.x - p.y) * q.y, lq = (q.x - q.y) * p.y;
+    return lq > lp ? 1 : lq < lp ? -1 : 0;
+  });
+  const bySize = (l2) => l2.slice().sort((p, q) => q.x > p.x ? 1 : q.x < p.x ? -1 : 0);
+  const byChange = (l2) => l2.slice().sort((p, q) => {
+    const dp = p.x - p.y, dq = q.x - q.y;
+    return dq > dp ? 1 : dq < dp ? -1 : 0;
+  });
+  const income = lines(/^Income( > |$)/);
+  const cogs = lines(/^Cost of Goods Sold( > |$)/);
+  const expenses = lines(/^Expenses( > |$)/);
+  const other = lines(/^Other (Income|Expenses)( > |$)/);
+  return text({
+    period: `${humanDate(s)} to ${humanDate(e)}`,
+    comparePeriod: `${humanDate(cs)} to ${humanDate(ce)}`,
+    basis: "Accrual",
+    totals,
+    grossMarginPercent: { period: gm[0], comparePeriod: gm[1], changePoints: pp(gm[0], gm[1]) },
+    netMarginPercent: { period: nm[0], comparePeriod: nm[1], changePoints: pp(nm[0], nm[1]) },
+    incomeLinesByGrowth: byGrowth(income).map(fmtLine),
+    costOfGoodsSoldLinesByChange: byChange(cogs).map(fmtLine),
+    expenseLinesBySize: bySize(expenses).map(fmtLine),
+    ...other.length ? { otherIncomeAndExpenseLines: bySize(other).map(fmtLine) } : {},
+    note: "From two QuickBooks Profit and Loss reports; every change, percentage and margin is computed exactly by the connector and every list is already sorted (income lines fastest growth first; cost lines biggest increase first; expense lines largest first). Use these figures and orders as given. Cost of goods sold is not an operating expense. changePoints is the change in percentage points."
+  });
+}
+var GetProfitComparisonTool = {
+  name: "get_profit_comparison",
+  description: "Compare profit for two periods in one call (default: the same dates one year earlier): income, cost of goods sold, gross profit, operating expenses, net income, gross and net margin, each with the change and percent change, plus income lines ranked by growth, cost lines ranked by increase and expense lines ranked by size. Use it for month-over-month, year-over-year, fastest-growing product lines, margin changes and biggest expenses.",
+  schema: cmpSchema,
+  handler: async ({ params }) => {
+    try {
+      return await profitComparison(params);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+};
+var buySchema = external_exports.object({
+  customer_id: external_exports.string().describe("QuickBooks customer Id (from search_customer_or_vendor)"),
+  start_date: external_exports.string().describe("Start date (YYYY-MM-DD)"),
+  end_date: external_exports.string().describe("End date (YYYY-MM-DD)")
+});
+async function customerPurchases(params) {
+  const s = checkDate(params?.start_date, "start_date"), e = checkDate(params?.end_date, "end_date");
+  const id = String(params?.customer_id || "").trim();
+  if (!id) throw new Error("customer_id is required");
+  const invs = await allRecords(searchQuickbooksInvoices, [
+    { field: "CustomerRef", value: id },
+    { field: "TxnDate", value: s, operator: ">=" },
+    { field: "TxnDate", value: e, operator: "<=" }
+  ], "invoices");
+  if (invs.length > 40) throw new Error(`${invs.length} invoices in this period; choose a shorter period (at most 40 invoices)`);
+  const full = await Promise.all(invs.map(async (i) => {
+    const r = await readQuickbooksInvoice(String(i.Id));
+    if (r.isError) throw new Error("invoice " + (i.DocNumber || i.Id) + ": " + r.error);
+    return r.result;
+  }));
+  const items = /* @__PURE__ */ new Map();
+  const list = [];
+  let total = 0n;
+  for (const inv of full.sort((p, q) => String(p.TxnDate).localeCompare(String(q.TxnDate)) || String(p.DocNumber).localeCompare(String(q.DocNumber)))) {
+    let lineSum = 0n;
+    const invLines = [];
+    for (const l2 of inv.Line || []) {
+      if (l2.DetailType !== "SalesItemLineDetail") continue;
+      const name = l2.SalesItemLineDetail?.ItemRef?.name || l2.Description || "Other";
+      const amt = toCents2(l2.Amount);
+      const qty = Number(l2.SalesItemLineDetail?.Qty ?? 0);
+      lineSum += amt;
+      if (!items.has(name)) items.set(name, { item: name, quantity: 0, amount: 0n, invoices: /* @__PURE__ */ new Set() });
+      const it = items.get(name);
+      it.quantity += qty;
+      it.amount += amt;
+      it.invoices.add(inv.DocNumber || inv.Id);
+      invLines.push({ item: name, description: l2.Description || void 0, quantity: qty, amount: money2(amt) });
+    }
+    total += toCents2(inv.TotalAmt);
+    list.push({ invoice: inv.DocNumber || null, date: inv.TxnDate, total: money2(toCents2(inv.TotalAmt)), balance: money2(toCents2(inv.Balance)), lines: invLines.length, largestLines: invLines.sort((p, q) => Number(toCents2(q.amount) - toCents2(p.amount))).slice(0, 4) });
+  }
+  const ranked2 = [...items.values()].sort((p, q) => q.amount > p.amount ? 1 : q.amount < p.amount ? -1 : 0);
+  return text({
+    customer: full[0]?.CustomerRef?.name ?? null,
+    period: `${humanDate(s)} to ${humanDate(e)}`,
+    invoiceCount: list.length,
+    totalSales: money2(total),
+    invoices: list,
+    itemsBySales: ranked2.slice(0, 15).map((r, i) => ({ rank: i + 1, item: r.item, quantity: r.quantity, sales: money2(r.amount), percentOfTotal: pct(r.amount, total), invoices: [...r.invoices] })),
+    ...ranked2.length > 15 ? { otherItems: `${ranked2.length - 15} more items totalling ${money2(ranked2.slice(15).reduce((p, r) => p + r.amount, 0n))}` } : {},
+    note: "Invoices dated in the period, read line by line by the connector; totals and rankings computed exactly. Use them as given."
+  });
+}
+var GetCustomerPurchasesTool = {
+  name: "get_customer_purchases",
+  description: "What one customer bought in a period, in one call: each invoice (number, date, total, balance, largest lines), the total, and items ranked by sales with quantities.",
+  schema: buySchema,
+  handler: async ({ params }) => {
+    try {
+      return await customerPurchases(params);
+    } catch (e) {
+      return fail(e);
+    }
+  }
+};
+var ANSWER_TOOLS = [
+  GetFinanceSnapshotTool,
+  GetReceivablesSummaryTool,
+  GetPayablesSummaryTool,
+  GetTopCustomersTool,
+  GetTopVendorsTool,
+  GetProfitComparisonTool,
+  GetCustomerPurchasesTool
+];
 
 // src/tools/get-profit-and-loss.tool.ts
 var toolName = "get_profit_and_loss";
@@ -80550,33 +81400,6 @@ var toolHandler = async ({ params }) => {
   return { content: [{ type: "text", text: `Profit and Loss Report:` }, { type: "text", text: JSON.stringify(response.result, null, 2) }] };
 };
 var GetProfitAndLossTool = { name: toolName, description: toolDescription, schema: toolSchema, handler: toolHandler };
-
-// src/handlers/get-quickbooks-balance-sheet.handler.ts
-async function getQuickbooksBalanceSheet(options) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    const params = {};
-    if (options.end_date) {
-      params.end_date = options.end_date;
-      params.start_date = options.start_date || `${options.end_date.substring(0, 4)}-01-01`;
-    } else if (options.start_date) {
-      params.start_date = options.start_date;
-    }
-    if (options.accounting_method) params.accounting_method = options.accounting_method;
-    if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
-    return new Promise((resolve) => {
-      quickbooks.reportBalanceSheet(params, (err, report) => {
-        if (err) {
-          resolve({ result: null, isError: true, error: formatError2(err) });
-        } else {
-          resolve({ result: report, isError: false, error: null });
-        }
-      });
-    });
-  } catch (error2) {
-    return { result: null, isError: true, error: formatError2(error2) };
-  }
-}
 
 // src/tools/get-balance-sheet.tool.ts
 var toolName2 = "get_balance_sheet";
@@ -80603,9 +81426,9 @@ async function getQuickbooksCashFlow(options) {
     if (options.end_date) params.end_date = options.end_date;
     if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
     return new Promise((resolve) => {
-      quickbooks.reportCashFlow(params, (err, report) => {
+      quickbooks.reportCashFlow(params, (err, report2) => {
         if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
+        else resolve({ result: report2, isError: false, error: null });
       });
     });
   } catch (error2) {
@@ -80637,9 +81460,9 @@ async function getQuickbooksTrialBalance(options) {
     if (options.end_date) params.end_date = options.end_date;
     if (options.accounting_method) params.accounting_method = options.accounting_method;
     return new Promise((resolve) => {
-      quickbooks.reportTrialBalance(params, (err, report) => {
+      quickbooks.reportTrialBalance(params, (err, report2) => {
         if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
+        else resolve({ result: report2, isError: false, error: null });
       });
     });
   } catch (error2) {
@@ -80662,27 +81485,6 @@ var toolHandler4 = async ({ params }) => {
 };
 var GetTrialBalanceTool = { name: toolName4, description: toolDescription4, schema: toolSchema4, handler: toolHandler4 };
 
-// src/handlers/get-quickbooks-aged-receivables.handler.ts
-async function getQuickbooksAgedReceivables(options) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    const params = {};
-    if (options.report_date) params.report_date = options.report_date;
-    if (options.customer) params.customer = options.customer;
-    if (options.aging_method) params.aging_method = options.aging_method;
-    if (options.days_per_aging_period) params.days_per_aging_period = options.days_per_aging_period;
-    if (options.num_periods) params.num_periods = options.num_periods;
-    return new Promise((resolve) => {
-      quickbooks.reportAgedReceivables(params, (err, report) => {
-        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
-      });
-    });
-  } catch (error2) {
-    return { result: null, isError: true, error: formatError2(error2) };
-  }
-}
-
 // src/tools/get-aged-receivables.tool.ts
 var toolName5 = "get_aged_receivables";
 var toolDescription5 = "Generate an Aged Receivables (A/R Aging) report from QuickBooks Online showing outstanding customer invoices.";
@@ -80699,27 +81501,6 @@ var toolHandler5 = async ({ params }) => {
   return { content: [{ type: "text", text: `Aged Receivables Report:` }, { type: "text", text: JSON.stringify(response.result, null, 2) }] };
 };
 var GetAgedReceivablesTool = { name: toolName5, description: toolDescription5, schema: toolSchema5, handler: toolHandler5 };
-
-// src/handlers/get-quickbooks-aged-payables.handler.ts
-async function getQuickbooksAgedPayables(options) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    const params = {};
-    if (options.report_date) params.report_date = options.report_date;
-    if (options.vendor) params.vendor = options.vendor;
-    if (options.aging_method) params.aging_method = options.aging_method;
-    if (options.days_per_aging_period) params.days_per_aging_period = options.days_per_aging_period;
-    if (options.num_periods) params.num_periods = options.num_periods;
-    return new Promise((resolve) => {
-      quickbooks.reportAgedPayables(params, (err, report) => {
-        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
-      });
-    });
-  } catch (error2) {
-    return { result: null, isError: true, error: formatError2(error2) };
-  }
-}
 
 // src/tools/get-aged-payables.tool.ts
 var toolName6 = "get_aged_payables";
@@ -80747,9 +81528,9 @@ async function getQuickbooksCustomerBalance(options) {
     if (options.customer) params.customer = options.customer;
     if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
     return new Promise((resolve) => {
-      quickbooks.reportCustomerBalance(params, (err, report) => {
+      quickbooks.reportCustomerBalance(params, (err, report2) => {
         if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
+        else resolve({ result: report2, isError: false, error: null });
       });
     });
   } catch (error2) {
@@ -80781,9 +81562,9 @@ async function getQuickbooksVendorBalance(options) {
     if (options.vendor) params.vendor = options.vendor;
     if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
     return new Promise((resolve) => {
-      quickbooks.reportVendorBalance(params, (err, report) => {
+      quickbooks.reportVendorBalance(params, (err, report2) => {
         if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
+        else resolve({ result: report2, isError: false, error: null });
       });
     });
   } catch (error2) {
@@ -80806,26 +81587,6 @@ var toolHandler8 = async ({ params }) => {
 };
 var GetVendorBalanceTool = { name: toolName8, description: toolDescription8, schema: toolSchema8, handler: toolHandler8 };
 
-// src/handlers/get-quickbooks-customer-sales.handler.ts
-async function getQuickbooksCustomerSales(options) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    const params = {};
-    if (options.start_date) params.start_date = options.start_date;
-    if (options.end_date) params.end_date = options.end_date;
-    if (options.customer) params.customer = options.customer;
-    if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
-    return new Promise((resolve) => {
-      quickbooks.reportCustomerSales(params, (err, report) => {
-        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
-      });
-    });
-  } catch (error2) {
-    return { result: null, isError: true, error: formatError2(error2) };
-  }
-}
-
 // src/tools/get-customer-sales.tool.ts
 var toolName9 = "get_customer_sales";
 var toolDescription9 = "Generate a Customer Sales report from QuickBooks Online showing sales by customer.";
@@ -80841,27 +81602,6 @@ var toolHandler9 = async ({ params }) => {
   return { content: [{ type: "text", text: `Customer Sales Report:` }, { type: "text", text: JSON.stringify(response.result, null, 2) }] };
 };
 var GetCustomerSalesTool = { name: toolName9, description: toolDescription9, schema: toolSchema9, handler: toolHandler9 };
-
-// src/handlers/get-quickbooks-vendor-expenses.handler.ts
-async function getQuickbooksVendorExpenses(options) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    const params = {};
-    if (options.start_date) params.start_date = options.start_date;
-    if (options.end_date) params.end_date = options.end_date;
-    if (options.vendor) params.vendor = options.vendor;
-    if (options.summarize_column_by) params.summarize_column_by = options.summarize_column_by;
-    if (options.accounting_method) params.accounting_method = options.accounting_method;
-    return new Promise((resolve) => {
-      quickbooks.reportVendorExpenses(params, (err, report) => {
-        if (err) resolve({ result: null, isError: true, error: formatError2(err) });
-        else resolve({ result: report, isError: false, error: null });
-      });
-    });
-  } catch (error2) {
-    return { result: null, isError: true, error: formatError2(error2) };
-  }
-}
 
 // src/tools/get-vendor-expenses.tool.ts
 var toolName10 = "get_vendor_expenses";
@@ -81028,78 +81768,6 @@ var GetCustomerTool = {
   handler: toolHandler13
 };
 
-// src/helpers/build-quickbooks-search-criteria.ts
-function buildQuickbooksSearchCriteria(input) {
-  if (Array.isArray(input)) {
-    return input;
-  }
-  const possibleAdvancedKeys = [
-    "filters",
-    "criteria",
-    "asc",
-    "desc",
-    "limit",
-    "offset",
-    "count",
-    "fetchAll"
-  ];
-  const inputKeys = Object.keys(input || {});
-  const isAdvanced = inputKeys.some(
-    (k) => possibleAdvancedKeys.includes(k)
-  );
-  if (!isAdvanced) {
-    return input;
-  }
-  const options = input;
-  const criteriaArr = [];
-  const filterList = options.filters ?? options.criteria;
-  filterList?.forEach((f) => {
-    criteriaArr.push({ field: f.field, value: f.value, operator: f.operator });
-  });
-  if (options.asc) {
-    criteriaArr.push({ field: "asc", value: options.asc });
-  }
-  if (options.desc) {
-    criteriaArr.push({ field: "desc", value: options.desc });
-  }
-  if (typeof options.limit === "number") {
-    criteriaArr.push({ field: "limit", value: options.limit });
-  }
-  if (typeof options.offset === "number") {
-    criteriaArr.push({ field: "offset", value: options.offset });
-  }
-  if (options.count) {
-    criteriaArr.push({ field: "count", value: true });
-  }
-  if (options.fetchAll) {
-    criteriaArr.push({ field: "fetchAll", value: true });
-  }
-  return criteriaArr.length > 0 ? criteriaArr : {};
-}
-
-// src/handlers/search-quickbooks-invoices.handler.ts
-async function searchQuickbooksInvoices(criteria) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    const normalizedCriteria = buildQuickbooksSearchCriteria(criteria);
-    return new Promise((resolve) => {
-      quickbooks.findInvoices(normalizedCriteria, (err, invoices) => {
-        if (err) {
-          resolve({ result: null, isError: true, error: formatError2(err) });
-        } else {
-          resolve({
-            result: invoices.QueryResponse.Invoice || [],
-            isError: false,
-            error: null
-          });
-        }
-      });
-    });
-  } catch (error2) {
-    return { result: null, isError: true, error: formatError2(error2) };
-  }
-}
-
 // src/tools/search-invoices.tool.ts
 var toolName14 = "search_invoices";
 var toolDescription14 = "Search invoices in QuickBooks Online using criteria (maps to node-quickbooks findInvoices).";
@@ -81208,36 +81876,6 @@ var SearchInvoicesTool = {
   schema: toolSchema14,
   handler: toolHandler14
 };
-
-// src/handlers/read-quickbooks-invoice.handler.ts
-async function readQuickbooksInvoice(invoiceId) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    return new Promise((resolve) => {
-      quickbooks.getInvoice(invoiceId, (err, invoice) => {
-        if (err) {
-          resolve({
-            result: null,
-            isError: true,
-            error: formatError2(err)
-          });
-        } else {
-          resolve({
-            result: invoice,
-            isError: false,
-            error: null
-          });
-        }
-      });
-    });
-  } catch (error2) {
-    return {
-      result: null,
-      isError: true,
-      error: formatError2(error2)
-    };
-  }
-}
 
 // src/tools/read-invoice.tool.ts
 var toolName15 = "read_invoice";
@@ -81804,36 +82442,6 @@ var GetVendorTool = {
   schema: toolSchema23,
   handler: toolHandler21
 };
-
-// src/handlers/search-quickbooks-bills.handler.ts
-async function searchQuickbooksBills(criteria = {}) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    return new Promise((resolve) => {
-      quickbooks.findBills(criteria, (err, bills) => {
-        if (err) {
-          resolve({
-            result: null,
-            isError: true,
-            error: formatError2(err)
-          });
-        } else {
-          resolve({
-            result: bills?.QueryResponse?.Bill ?? bills?.QueryResponse?.totalCount ?? [],
-            isError: false,
-            error: null
-          });
-        }
-      });
-    });
-  } catch (error2) {
-    return {
-      result: null,
-      isError: true,
-      error: formatError2(error2)
-    };
-  }
-}
 
 // src/tools/search-bills.tool.ts
 var toolName24 = "search_bills";
@@ -82791,7 +83399,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.5.1";
+var VERSION2 = "1.6.0";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;
@@ -82921,7 +83529,8 @@ var TOOLS = [
   SearchDepartmentsTool,
   SearchTermsTool,
   SearchCustomerOrVendorTool,
-  CalculateTool
+  CalculateTool,
+  ...ANSWER_TOOLS
 ];
 var READ_ONLY = /^(get|search|read)[_-]/;
 var LOCAL_ONLY = /* @__PURE__ */ new Set(["calculate"]);
@@ -82936,8 +83545,8 @@ function secretsToRedact() {
   const c = quickbooksClient;
   return [process.env.QUICKBOOKS_CLIENT_SECRET, process.env.QUICKBOOKS_REFRESH_TOKEN, c.refreshToken, c.accessToken, process.env.MCP_SHARED_SECRET].filter((s) => typeof s === "string" && s.length >= 12);
 }
-function redact(text) {
-  let out = text;
+function redact(text2) {
+  let out = text2;
   for (const s of secretsToRedact()) out = out.split(s).join("[redacted]");
   return out;
 }
@@ -82946,16 +83555,16 @@ function tidy(result2) {
   let total = 0;
   for (const item of result2.content) {
     if (item?.type !== "text" || typeof item.text !== "string") continue;
-    let text = item.text;
-    const trimmed = text.trim();
+    let text2 = item.text;
+    const trimmed = text2.trim();
     if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
       try {
         const parsed = JSON.parse(trimmed);
-        text = JSON.stringify(parsed);
+        text2 = JSON.stringify(parsed);
         if (isQuickBooksReport(parsed)) {
           try {
             const flat = flattenReport(parsed);
-            if (flat) text = JSON.stringify(flat);
+            if (flat) text2 = JSON.stringify(flat);
           } catch (e) {
             console.log("[connector] report kept in original form: " + (e?.message || String(e)).slice(0, 200));
           }
@@ -82963,10 +83572,10 @@ function tidy(result2) {
       } catch {
       }
     }
-    if (total + text.length > MAX_RESULT_CHARS) {
-      text = text.slice(0, Math.max(0, MAX_RESULT_CHARS - total)) + "\n[Truncated: this result was too large. Narrow the date range or add filters and try again.]";
+    if (total + text2.length > MAX_RESULT_CHARS) {
+      text2 = text2.slice(0, Math.max(0, MAX_RESULT_CHARS - total)) + "\n[Truncated: this result was too large. Narrow the date range or add filters and try again.]";
     }
-    item.text = redact(text);
+    item.text = redact(text2);
     total += item.text.length;
   }
   return result2;

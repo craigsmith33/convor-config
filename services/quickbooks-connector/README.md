@@ -25,6 +25,12 @@ assistant never does mental math; it does not call QuickBooks, `src/convor-calc.
 - Tools take their arguments at the top level (for example `{"end_date": "2026-09-30"}`) instead of upstream's
   single `params` wrapper, which models often omitted on the first call. Handlers still receive `{ params }`,
   and unknown arguments are reported and stripped as upstream does (`registerFlat` in `src/convor-connector.ts`).
+- Answer-ready tools (1.6, `src/convor-answers.ts`): `get_finance_snapshot`, `get_receivables_summary`,
+  `get_payables_summary`, `get_top_customers`, `get_top_vendors`, `get_profit_comparison` and `get_customer_purchases`.
+  Each gathers what a common question needs in one call and does the aging, sorting, ranking and arithmetic in code
+  (exact cents), so the assistant only presents the result. Receivables and payables totals are cross-checked against
+  QuickBooks' own aging reports (`matchesQuickBooksAgingReport`). "Today" is taken in `CONVOR_TIMEZONE`
+  (default America/New_York).
 - `search_invoices` and `search_bills` results are compacted to each record's key fields (number, customer or
   vendor, dates, total, balance, terms) plus `totalBalance` / `totalAmount`, exact sums computed by the connector,
   so the assistant never adds up long lists itself (`src/convor-lists.ts`). Anything unexpected keeps the original

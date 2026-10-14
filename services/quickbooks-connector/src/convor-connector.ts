@@ -14,6 +14,7 @@ import { z } from "zod";
 import { flattenReport, isQuickBooksReport } from "./convor-reports.js";
 import { calculateAll } from "./convor-calc.js";
 import { compactSearchResult } from "./convor-lists.js";
+import { ANSWER_TOOLS } from "./convor-answers.js";
 
 // Reports
 import { GetProfitAndLossTool } from "./tools/get-profit-and-loss.tool.js";
@@ -59,7 +60,7 @@ import { SearchClassesTool } from "./tools/search-classes.tool.js";
 import { SearchDepartmentsTool } from "./tools/search-departments.tool.js";
 import { SearchTermsTool } from "./tools/search-terms.tool.js";
 
-const VERSION = "1.5.1";
+const VERSION = "1.6.0";
 const PORT = Number(process.env.PORT || 8080);
 const MAX_RESULT_CHARS = 150_000;
 const KEEPALIVE_MS = 6 * 60 * 60 * 1000;
@@ -173,6 +174,7 @@ const TOOLS: any[] = [
   SearchAccountsTool, GetAccountTool, SearchItemsTool, ReadItemTool, SearchBudgetsTool, SearchDepositsTool,
   SearchClassesTool, SearchDepartmentsTool, SearchTermsTool,
   SearchCustomerOrVendorTool, CalculateTool,
+  ...ANSWER_TOOLS,
 ];
 
 // Belt and braces: refuse to serve anything that is not a read (plus the
