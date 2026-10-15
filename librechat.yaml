@@ -96,11 +96,9 @@ modelSpecs:
         endpoint: "agents"
         agent_id: "agent_pC6dz1FShUHinMKvFgmZ2"
     - name: "hr-team-engine"
-      label: "HR Team Assistant"
-      description: "For the HR team: job descriptions, interview kits, resume screening, onboarding plans"
+      label: "HR Team Assistant (HR team only)"
+      description: "For the HR team: job descriptions, interview kits, resume screening, onboarding plans. Access is limited to the HR team."
       default: false
-      # Hidden from the shared menu; HR users open it from their Agents list, which only shows agents shared with them.
-      showInMenu: false
       preset:
         default: false
         endpoint: "agents"
