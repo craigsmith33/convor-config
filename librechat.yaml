@@ -99,6 +99,8 @@ modelSpecs:
       label: "HR Team Assistant"
       description: "For the HR team: job descriptions, interview kits, resume screening, onboarding plans"
       default: false
+      # Hidden from the shared menu; HR users open it from their Agents list, which only shows agents shared with them.
+      showInMenu: false
       preset:
         default: false
         endpoint: "agents"
