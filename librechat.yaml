@@ -95,3 +95,19 @@ modelSpecs:
         default: false
         endpoint: "agents"
         agent_id: "agent_pzx4BrXk9nE2y_fRNTA-g"
+    - name: "helpdesk-engine"
+      label: "Employee Help Desk"
+      description: "Policies, benefits, leave and expenses, answered from company documents"
+      default: false
+      preset:
+        default: false
+        endpoint: "agents"
+        agent_id: "agent_pC6dz1FShUHinMKvFgmZ2"
+    - name: "hr-team-engine"
+      label: "HR Team Assistant"
+      description: "For the HR team: job descriptions, interview kits, resume screening, onboarding plans"
+      default: false
+      preset:
+        default: false
+        endpoint: "agents"
+        agent_id: "agent_A_xLXp9of-etmQ9jnriMu"
