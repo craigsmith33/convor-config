@@ -71,14 +71,6 @@ modelSpecs:
   addedEndpoints:
     - agents
   list:
-    - name: "hr-engine"
-      label: "People Ops Assistant"
-      description: "Policies, benefits, onboarding and hiring"
-      default: true
-      preset:
-        default: true
-        endpoint: "agents"
-        agent_id: "agent_g81AUn460eTHJg8RczE3s"
     - name: "sales-engine"
       label: "Sales Assistant"
       description: "Products, quotes, call prep and follow-ups (sample company)"
@@ -98,9 +90,9 @@ modelSpecs:
     - name: "helpdesk-engine"
       label: "Employee Help Desk"
       description: "Policies, benefits, leave and expenses, answered from company documents"
-      default: false
+      default: true
       preset:
-        default: false
+        default: true
         endpoint: "agents"
         agent_id: "agent_pC6dz1FShUHinMKvFgmZ2"
     - name: "hr-team-engine"
