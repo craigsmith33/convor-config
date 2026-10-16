@@ -69,8 +69,8 @@ mcpServers:
   documents:
     type: streamable-http
     title: "Proposal documents"
-    description: "Creates the Google Doc for an approved proposal"
-    url: "https://us1.make.com/mcp?scenarioId=4979928"
+    description: "Creates the Google Doc for an approved proposal and sends it for e-signature after the rep confirms"
+    url: "https://us1.make.com/mcp?scenarioId[]=4979928&scenarioId[]=4981416"
     headers:
       Authorization: "Bearer ${MAKE_MCP_TOKEN}"
     timeout: 120000
