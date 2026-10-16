@@ -15,7 +15,9 @@ import { flattenReport, isQuickBooksReport } from "./convor-reports.js";
 import { calculateAll } from "./convor-calc.js";
 import { compactSearchResult } from "./convor-lists.js";
 import { ANSWER_TOOLS, toCents } from "./convor-answers.js";
-import { makeHubSpotTools, hubspotConfigured, hubspotSecrets, type QbSide } from "./convor-hubspot.js";
+import { makeHubSpotTools, hubspotConfigured, hubspotSecrets } from "./convor-hubspot.js";
+import { makePricingTool, type QbPricingSide } from "./convor-pricing.js";
+import { searchQuickbooksItems } from "./handlers/search-quickbooks-items.handler.js";
 import { searchQuickbooksInvoices } from "./handlers/search-quickbooks-invoices.handler.js";
 import { getQuickbooksCustomerSales } from "./handlers/get-quickbooks-customer-sales.handler.js";
 
@@ -63,7 +65,7 @@ import { SearchClassesTool } from "./tools/search-classes.tool.js";
 import { SearchDepartmentsTool } from "./tools/search-departments.tool.js";
 import { SearchTermsTool } from "./tools/search-terms.tool.js";
 
-const VERSION = "1.7.0";
+const VERSION = "1.8.0";
 const PORT = Number(process.env.PORT || 8080);
 const MAX_RESULT_CHARS = 150_000;
 const KEEPALIVE_MS = 6 * 60 * 60 * 1000;
@@ -168,7 +170,7 @@ const CalculateTool = {
 
 // Convor addition (1.7): the QuickBooks reads the HubSpot cross-check tools need.
 const normName = (s: string) => s.toLowerCase().replace(/&/g, " and ").replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\b(inc|llc|co|corp|corporation|company|ltd)\b/g, " ").replace(/\s+/g, " ").trim();
-const QB_SIDE: QbSide = {
+const QB_SIDE: QbPricingSide = {
   async openInvoices() {
     const r = await searchQuickbooksInvoices([{ field: "Balance", value: "0", operator: ">" }, { field: "fetchAll", value: true }]);
     if (r.isError) throw new Error("QuickBooks open invoices: " + r.error);
@@ -187,7 +189,16 @@ const QB_SIDE: QbSide = {
     const hits = (Array.isArray(r.result) ? r.result : []).filter((c: any) => !c.Job && normName(String(c.DisplayName || "")) === want);
     if (hits.length !== 1) return null;
     const c = hits[0];
-    return { id: String(c.Id), name: String(c.DisplayName), balance: toCents(c.BalanceWithJobs ?? c.Balance ?? 0), email: c.PrimaryEmailAddr?.Address || null, terms: c.SalesTermRef?.name || null };
+    return { id: String(c.Id), name: String(c.DisplayName), balance: toCents(c.BalanceWithJobs ?? c.Balance ?? 0), email: c.PrimaryEmailAddr?.Address || null, terms: c.SalesTermRef?.name || null, notes: c.Notes || null };
+  },
+  async items() {
+    const r = await searchQuickbooksItems([{ field: "fetchAll", value: true }]);
+    if (r.isError) throw new Error("QuickBooks items: " + r.error);
+    if (!Array.isArray(r.result)) throw new Error("QuickBooks items: unexpected result");
+    return r.result.map((x: any) => ({
+      sku: String(x.Sku || x.Name || ""), name: String(x.Name || ""), description: x.Description || null, type: String(x.Type || ""),
+      price: toCents(x.UnitPrice ?? 0), active: x.Active !== false,
+    }));
   },
   async customerSales(customerId: string, start: string, end: string) {
     const r = await getQuickbooksCustomerSales({ start_date: start, end_date: end, customer: customerId, summarize_column_by: "Total" });
@@ -198,7 +209,7 @@ const QB_SIDE: QbSide = {
     return total ? toCents(total.values?.Total) : 0n;
   },
 };
-const HUBSPOT_TOOLS = makeHubSpotTools(QB_SIDE);
+const HUBSPOT_TOOLS = [...makeHubSpotTools(QB_SIDE), makePricingTool(QB_SIDE)];
 
 const TOOLS: any[] = [
   GetProfitAndLossTool, GetBalanceSheetTool, GetCashFlowTool, GetTrialBalanceTool, GetAgedReceivablesTool,

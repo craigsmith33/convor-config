@@ -1104,11 +1104,11 @@ var require_util = __commonJS({
       return false;
     }
     exports2.schemaHasRules = schemaHasRules;
-    function schemaHasRulesButRef(schema, RULES) {
+    function schemaHasRulesButRef(schema, RULES2) {
       if (typeof schema == "boolean")
         return !schema;
       for (const key in schema)
-        if (key !== "$ref" && RULES.all[key])
+        if (key !== "$ref" && RULES2.all[key])
           return true;
       return false;
     }
@@ -2502,17 +2502,17 @@ var require_validate = __commonJS({
     }
     function schemaKeywords(it, types, typeErrors, errsCount) {
       const { gen, schema, data, allErrors, opts, self: self2 } = it;
-      const { RULES } = self2;
-      if (schema.$ref && (opts.ignoreKeywordsWithRef || !(0, util_1.schemaHasRulesButRef)(schema, RULES))) {
-        gen.block(() => keywordCode(it, "$ref", RULES.all.$ref.definition));
+      const { RULES: RULES2 } = self2;
+      if (schema.$ref && (opts.ignoreKeywordsWithRef || !(0, util_1.schemaHasRulesButRef)(schema, RULES2))) {
+        gen.block(() => keywordCode(it, "$ref", RULES2.all.$ref.definition));
         return;
       }
       if (!opts.jtd)
         checkStrictTypes(it, types);
       gen.block(() => {
-        for (const group2 of RULES.rules)
+        for (const group2 of RULES2.rules)
           groupKeywords(group2);
-        groupKeywords(RULES.post);
+        groupKeywords(RULES2.post);
       });
       function groupKeywords(group2) {
         if (!(0, applicability_1.shouldUseGroup)(schema, group2))
@@ -4610,10 +4610,10 @@ var require_core = __commonJS({
       }
       // Remove keyword
       removeKeyword(keyword) {
-        const { RULES } = this;
-        delete RULES.keywords[keyword];
-        delete RULES.all[keyword];
-        for (const group2 of RULES.rules) {
+        const { RULES: RULES2 } = this;
+        delete RULES2.keywords[keyword];
+        delete RULES2.all[keyword];
+        for (const group2 of RULES2.rules) {
           const i = group2.rules.findIndex((rule) => rule.keyword === keyword);
           if (i >= 0)
             group2.rules.splice(i, 1);
@@ -4630,7 +4630,7 @@ var require_core = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text3, msg) => text3 + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text4, msg) => text4 + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -4781,9 +4781,9 @@ var require_core = __commonJS({
     }
     var KEYWORD_NAME = /^[a-z_$][a-z0-9_$:-]*$/i;
     function checkKeyword(keyword, def) {
-      const { RULES } = this;
+      const { RULES: RULES2 } = this;
       (0, util_1.eachItem)(keyword, (kwd) => {
-        if (RULES.keywords[kwd])
+        if (RULES2.keywords[kwd])
           throw new Error(`Keyword ${kwd} is already defined`);
         if (!KEYWORD_NAME.test(kwd))
           throw new Error(`Keyword ${kwd} has invalid name`);
@@ -4799,13 +4799,13 @@ var require_core = __commonJS({
       const post = definition === null || definition === void 0 ? void 0 : definition.post;
       if (dataType && post)
         throw new Error('keyword with "post" flag cannot have "type"');
-      const { RULES } = this;
-      let ruleGroup = post ? RULES.post : RULES.rules.find(({ type: t }) => t === dataType);
+      const { RULES: RULES2 } = this;
+      let ruleGroup = post ? RULES2.post : RULES2.rules.find(({ type: t }) => t === dataType);
       if (!ruleGroup) {
         ruleGroup = { type: dataType, rules: [] };
-        RULES.rules.push(ruleGroup);
+        RULES2.rules.push(ruleGroup);
       }
-      RULES.keywords[keyword] = true;
+      RULES2.keywords[keyword] = true;
       if (!definition)
         return;
       const rule = {
@@ -4820,7 +4820,7 @@ var require_core = __commonJS({
         addBeforeRule.call(this, ruleGroup, rule, definition.before);
       else
         ruleGroup.rules.push(rule);
-      RULES.all[keyword] = rule;
+      RULES2.all[keyword] = rule;
       (_a = definition.implements) === null || _a === void 0 ? void 0 : _a.forEach((kwd) => this.addKeyword(kwd));
     }
     function addBeforeRule(ruleGroup, rule, before2) {
@@ -8155,11 +8155,11 @@ var require_util2 = __commonJS({
       return false;
     }
     exports2.schemaHasRules = schemaHasRules;
-    function schemaHasRulesButRef(schema, RULES) {
+    function schemaHasRulesButRef(schema, RULES2) {
       if (typeof schema == "boolean")
         return !schema;
       for (const key in schema)
-        if (key !== "$ref" && RULES.all[key])
+        if (key !== "$ref" && RULES2.all[key])
           return true;
       return false;
     }
@@ -9518,17 +9518,17 @@ var require_validate2 = __commonJS({
     }
     function schemaKeywords(it, types, typeErrors, errsCount) {
       const { gen, schema, data, allErrors, opts, self: self2 } = it;
-      const { RULES } = self2;
-      if (schema.$ref && (opts.ignoreKeywordsWithRef || !(0, util_1.schemaHasRulesButRef)(schema, RULES))) {
-        gen.block(() => keywordCode(it, "$ref", RULES.all.$ref.definition));
+      const { RULES: RULES2 } = self2;
+      if (schema.$ref && (opts.ignoreKeywordsWithRef || !(0, util_1.schemaHasRulesButRef)(schema, RULES2))) {
+        gen.block(() => keywordCode(it, "$ref", RULES2.all.$ref.definition));
         return;
       }
       if (!opts.jtd)
         checkStrictTypes(it, types);
       gen.block(() => {
-        for (const group2 of RULES.rules)
+        for (const group2 of RULES2.rules)
           groupKeywords(group2);
-        groupKeywords(RULES.post);
+        groupKeywords(RULES2.post);
       });
       function groupKeywords(group2) {
         if (!(0, applicability_1.shouldUseGroup)(schema, group2))
@@ -10508,10 +10508,10 @@ var require_core3 = __commonJS({
       }
       // Remove keyword
       removeKeyword(keyword) {
-        const { RULES } = this;
-        delete RULES.keywords[keyword];
-        delete RULES.all[keyword];
-        for (const group2 of RULES.rules) {
+        const { RULES: RULES2 } = this;
+        delete RULES2.keywords[keyword];
+        delete RULES2.all[keyword];
+        for (const group2 of RULES2.rules) {
           const i = group2.rules.findIndex((rule) => rule.keyword === keyword);
           if (i >= 0)
             group2.rules.splice(i, 1);
@@ -10528,7 +10528,7 @@ var require_core3 = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text3, msg) => text3 + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text4, msg) => text4 + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -10679,9 +10679,9 @@ var require_core3 = __commonJS({
     }
     var KEYWORD_NAME = /^[a-z_$][a-z0-9_$:-]*$/i;
     function checkKeyword(keyword, def) {
-      const { RULES } = this;
+      const { RULES: RULES2 } = this;
       (0, util_1.eachItem)(keyword, (kwd) => {
-        if (RULES.keywords[kwd])
+        if (RULES2.keywords[kwd])
           throw new Error(`Keyword ${kwd} is already defined`);
         if (!KEYWORD_NAME.test(kwd))
           throw new Error(`Keyword ${kwd} has invalid name`);
@@ -10697,13 +10697,13 @@ var require_core3 = __commonJS({
       const post = definition === null || definition === void 0 ? void 0 : definition.post;
       if (dataType && post)
         throw new Error('keyword with "post" flag cannot have "type"');
-      const { RULES } = this;
-      let ruleGroup = post ? RULES.post : RULES.rules.find(({ type: t }) => t === dataType);
+      const { RULES: RULES2 } = this;
+      let ruleGroup = post ? RULES2.post : RULES2.rules.find(({ type: t }) => t === dataType);
       if (!ruleGroup) {
         ruleGroup = { type: dataType, rules: [] };
-        RULES.rules.push(ruleGroup);
+        RULES2.rules.push(ruleGroup);
       }
-      RULES.keywords[keyword] = true;
+      RULES2.keywords[keyword] = true;
       if (!definition)
         return;
       const rule = {
@@ -10718,7 +10718,7 @@ var require_core3 = __commonJS({
         addBeforeRule.call(this, ruleGroup, rule, definition.before);
       else
         ruleGroup.rules.push(rule);
-      RULES.all[keyword] = rule;
+      RULES2.all[keyword] = rule;
       (_a = definition.implements) === null || _a === void 0 ? void 0 : _a.forEach((kwd) => this.addKeyword(kwd));
     }
     function addBeforeRule(ruleGroup, rule, before2) {
@@ -27486,20 +27486,20 @@ var require_axios = __commonJS({
       if (parts[0] !== "127") return false;
       return parts.every((p) => /^\d+$/.test(p) && Number(p) >= 0 && Number(p) <= 255);
     };
-    var parseIPv4Octet = (text3) => {
-      if (/^0[xX][0-9a-fA-F]+$/.test(text3)) {
-        const n = parseInt(text3.slice(2), 16);
+    var parseIPv4Octet = (text4) => {
+      if (/^0[xX][0-9a-fA-F]+$/.test(text4)) {
+        const n = parseInt(text4.slice(2), 16);
         return Number.isFinite(n) ? n : null;
       }
-      if (text3.length > 1 && /^0[0-7]+$/.test(text3)) {
-        const n = parseInt(text3, 8);
+      if (text4.length > 1 && /^0[0-7]+$/.test(text4)) {
+        const n = parseInt(text4, 8);
         return Number.isFinite(n) ? n : null;
       }
-      if (text3.length > 1 && /^0[0-9]+$/.test(text3)) {
+      if (text4.length > 1 && /^0[0-9]+$/.test(text4)) {
         return null;
       }
-      if (/^[0-9]+$/.test(text3)) {
-        const n = parseInt(text3, 10);
+      if (/^[0-9]+$/.test(text4)) {
+        const n = parseInt(text4, 10);
         return Number.isFinite(n) ? n : null;
       }
       return null;
@@ -32355,7 +32355,7 @@ var init_templateSettings = __esm({
 function escapeChar(match) {
   return "\\" + escapes[match];
 }
-function template(text3, settings, oldSettings) {
+function template(text4, settings, oldSettings) {
   if (!settings && oldSettings) settings = oldSettings;
   settings = defaults_default({}, settings, _2.templateSettings);
   var matcher2 = RegExp([
@@ -32365,8 +32365,8 @@ function template(text3, settings, oldSettings) {
   ].join("|") + "|$", "g");
   var index = 0;
   var source = "__p+='";
-  text3.replace(matcher2, function(match, escape2, interpolate, evaluate2, offset) {
-    source += text3.slice(index, offset).replace(escapeRegExp, escapeChar);
+  text4.replace(matcher2, function(match, escape2, interpolate, evaluate2, offset) {
+    source += text4.slice(index, offset).replace(escapeRegExp, escapeChar);
     index = offset + match.length;
     if (escape2) {
       source += "'+\n((__t=(" + escape2 + "))==null?'':_.escape(__t))+\n'";
@@ -36154,7 +36154,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail3(reason) {
+      function fail4(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -36183,7 +36183,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail3,
+                fail4,
                 void 0,
                 this,
                 void 0
@@ -36200,11 +36200,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler, type, success, fail4) {
+      Promise2.prototype._passThrough = function(handler, type, success, fail5) {
         if (typeof handler !== "function") return this.then();
         return this._then(
           success,
-          fail4,
+          fail5,
           void 0,
           new PassThroughHandlerContext(this, type, handler),
           void 0
@@ -43062,10 +43062,10 @@ var require_supports_colors = __commonJS({
 // node_modules/@colors/colors/lib/custom/trap.js
 var require_trap = __commonJS({
   "node_modules/@colors/colors/lib/custom/trap.js"(exports2, module2) {
-    module2["exports"] = function runTheTrap(text3, options) {
+    module2["exports"] = function runTheTrap(text4, options) {
       var result2 = "";
-      text3 = text3 || "Run the trap, drop the bass";
-      text3 = text3.split("");
+      text4 = text4 || "Run the trap, drop the bass";
+      text4 = text4.split("");
       var trap = {
         a: ["@", "\u0104", "\u023A", "\u0245", "\u0394", "\u039B", "\u0414"],
         b: ["\xDF", "\u0181", "\u0243", "\u026E", "\u03B2", "\u0E3F"],
@@ -43113,7 +43113,7 @@ var require_trap = __commonJS({
         y: ["\xA5", "\u04B0", "\u04CB"],
         z: ["\u01B5", "\u0240"]
       };
-      text3.forEach(function(c) {
+      text4.forEach(function(c) {
         c = c.toLowerCase();
         var chars = trap[c] || [" "];
         var rand = Math.floor(Math.random() * chars.length);
@@ -43131,8 +43131,8 @@ var require_trap = __commonJS({
 // node_modules/@colors/colors/lib/custom/zalgo.js
 var require_zalgo = __commonJS({
   "node_modules/@colors/colors/lib/custom/zalgo.js"(exports2, module2) {
-    module2["exports"] = function zalgo(text3, options) {
-      text3 = text3 || "   he is here   ";
+    module2["exports"] = function zalgo(text4, options) {
+      text4 = text4 || "   he is here   ";
       var soul = {
         "up": [
           "\u030D",
@@ -43265,7 +43265,7 @@ var require_zalgo = __commonJS({
         });
         return bool;
       }
-      function heComes(text4, options2) {
+      function heComes(text5, options2) {
         var result2 = "";
         var counts;
         var l2;
@@ -43274,12 +43274,12 @@ var require_zalgo = __commonJS({
         options2["mid"] = typeof options2["mid"] !== "undefined" ? options2["mid"] : true;
         options2["down"] = typeof options2["down"] !== "undefined" ? options2["down"] : true;
         options2["size"] = typeof options2["size"] !== "undefined" ? options2["size"] : "maxi";
-        text4 = text4.split("");
-        for (l2 in text4) {
+        text5 = text5.split("");
+        for (l2 in text5) {
           if (isChar(l2)) {
             continue;
           }
-          result2 = result2 + text4[l2];
+          result2 = result2 + text5[l2];
           counts = { "up": 0, "down": 0, "mid": 0 };
           switch (options2.size) {
             case "mini":
@@ -43310,7 +43310,7 @@ var require_zalgo = __commonJS({
         }
         return result2;
       }
-      return heComes(text3, options);
+      return heComes(text4, options);
     };
   }
 });
@@ -44084,8 +44084,8 @@ var require_safe_stable_stringify = __commonJS({
     }
     function configure(options) {
       options = { ...options };
-      const fail3 = getStrictOption(options);
-      if (fail3) {
+      const fail4 = getStrictOption(options);
+      if (fail4) {
         if (options.bigint === void 0) {
           options.bigint = false;
         }
@@ -44196,7 +44196,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
+            return isFinite(value) ? String(value) : fail4 ? fail4(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44207,7 +44207,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail3 ? fail3(value) : void 0;
+            return fail4 ? fail4(value) : void 0;
         }
       }
       function stringifyArrayReplacer(key, value, stack, replacer, spacer, indentation) {
@@ -44287,7 +44287,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
+            return isFinite(value) ? String(value) : fail4 ? fail4(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44298,7 +44298,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail3 ? fail3(value) : void 0;
+            return fail4 ? fail4(value) : void 0;
         }
       }
       function stringifyIndent(key, value, stack, spacer, indentation) {
@@ -44399,7 +44399,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
+            return isFinite(value) ? String(value) : fail4 ? fail4(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44410,7 +44410,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail3 ? fail3(value) : void 0;
+            return fail4 ? fail4(value) : void 0;
         }
       }
       function stringifySimple(key, value, stack) {
@@ -44495,7 +44495,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
+            return isFinite(value) ? String(value) : fail4 ? fail4(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44506,7 +44506,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail3 ? fail3(value) : void 0;
+            return fail4 ? fail4(value) : void 0;
         }
       }
       function stringify2(value, replacer, space) {
@@ -50694,10 +50694,10 @@ var require_index_cjs = __commonJS({
 var require_kuler = __commonJS({
   "node_modules/kuler/index.js"(exports2, module2) {
     "use strict";
-    function Kuler(text3, color) {
-      if (color) return new Kuler(text3).style(color);
-      if (!(this instanceof Kuler)) return new Kuler(text3);
-      this.text = text3;
+    function Kuler(text4, color) {
+      if (color) return new Kuler(text4).style(color);
+      if (!(this instanceof Kuler)) return new Kuler(text4);
+      this.text = text4;
     }
     Kuler.prototype.prefix = "\x1B[";
     Kuler.prototype.suffix = "m";
@@ -57170,7 +57170,7 @@ var require_AuthResponse = __commonJS({
     AuthResponse.prototype.getToken = function getToken() {
       return this.token.getToken();
     };
-    AuthResponse.prototype.text = function text3() {
+    AuthResponse.prototype.text = function text4() {
       return this.body;
     };
     AuthResponse.prototype.status = function status2() {
@@ -59353,14 +59353,14 @@ var require_BigInteger = __commonJS({
         }
         return low.add(Integer.fromArray(result2, BASE, false));
       }
-      var parseBase = function(text3, base, alphabet, caseSensitive) {
+      var parseBase = function(text4, base, alphabet, caseSensitive) {
         alphabet = alphabet || DEFAULT_ALPHABET;
-        text3 = String(text3);
+        text4 = String(text4);
         if (!caseSensitive) {
-          text3 = text3.toLowerCase();
+          text4 = text4.toLowerCase();
           alphabet = alphabet.toLowerCase();
         }
-        var length = text3.length;
+        var length = text4.length;
         var i2;
         var absBase = Math.abs(base);
         var alphabetValues = {};
@@ -59368,7 +59368,7 @@ var require_BigInteger = __commonJS({
           alphabetValues[alphabet[i2]] = i2;
         }
         for (i2 = 0; i2 < length; i2++) {
-          var c = text3[i2];
+          var c = text4[i2];
           if (c === "-") continue;
           if (c in alphabetValues) {
             if (alphabetValues[c] >= absBase) {
@@ -59379,16 +59379,16 @@ var require_BigInteger = __commonJS({
         }
         base = parseValue(base);
         var digits = [];
-        var isNegative = text3[0] === "-";
-        for (i2 = isNegative ? 1 : 0; i2 < text3.length; i2++) {
-          var c = text3[i2];
+        var isNegative = text4[0] === "-";
+        for (i2 = isNegative ? 1 : 0; i2 < text4.length; i2++) {
+          var c = text4[i2];
           if (c in alphabetValues) digits.push(parseValue(alphabetValues[c]));
           else if (c === "<") {
             var start = i2;
             do {
               i2++;
-            } while (text3[i2] !== ">" && i2 < text3.length);
-            digits.push(parseValue(text3.slice(start + 1, i2)));
+            } while (text4[i2] !== ">" && i2 < text4.length);
+            digits.push(parseValue(text4.slice(start + 1, i2)));
           } else throw new Error(c + " is not a valid character");
         }
         return parseBaseFromArray(digits, base, isNegative);
@@ -59520,15 +59520,15 @@ var require_BigInteger = __commonJS({
           if (exp[0] === "+") exp = exp.slice(1);
           exp = +exp;
           if (exp !== truncate(exp) || !isPrecise(exp)) throw new Error("Invalid integer: " + exp + " is not a valid exponent.");
-          var text3 = split[0];
-          var decimalPlace = text3.indexOf(".");
+          var text4 = split[0];
+          var decimalPlace = text4.indexOf(".");
           if (decimalPlace >= 0) {
-            exp -= text3.length - decimalPlace - 1;
-            text3 = text3.slice(0, decimalPlace) + text3.slice(decimalPlace + 1);
+            exp -= text4.length - decimalPlace - 1;
+            text4 = text4.slice(0, decimalPlace) + text4.slice(decimalPlace + 1);
           }
           if (exp < 0) throw new Error("Cannot include negative exponent part for integers");
-          text3 += new Array(exp + 1).join("0");
-          v = text3;
+          text4 += new Array(exp + 1).join("0");
+          v = text4;
         }
         var isValid2 = /^([0-9][0-9]*)$/.test(v);
         if (!isValid2) throw new Error("Invalid integer: " + v);
@@ -68993,13 +68993,13 @@ function _array(Class2, element, params) {
   });
 }
 function _custom(Class2, fn, _params) {
-  const norm2 = normalizeParams(_params);
-  norm2.abort ?? (norm2.abort = true);
+  const norm3 = normalizeParams(_params);
+  norm3.abort ?? (norm3.abort = true);
   const schema = new Class2({
     type: "custom",
     check: "custom",
     fn,
-    ...norm2
+    ...norm3
   });
   return schema;
 }
@@ -80294,9 +80294,9 @@ var Dec = class _Dec {
     this.n = n;
     this.s = s;
   }
-  static parse(text3) {
-    const m = /^(\d+)(?:\.(\d+))?$/.exec(text3);
-    if (!m) throw new Error(`not a number: ${text3}`);
+  static parse(text4) {
+    const m = /^(\d+)(?:\.(\d+))?$/.exec(text4);
+    if (!m) throw new Error(`not a number: ${text4}`);
     const frac = m[2] || "";
     return new _Dec(BigInt(m[1] + frac), frac.length);
   }
@@ -82088,6 +82088,287 @@ function makeHubSpotTools(qb) {
   return [GetSalesPipelineTool, GetDealsClosingTool, GetDealsNeedingAttentionTool, GetSalesFollowupsTool, GetAccountBriefTool, GetDealsWithPastDueBalancesTool];
 }
 
+// src/convor-pricing.ts
+var RULES = {
+  source: "Tallmark Product Catalog and Price Guide 2026, sections 1-8",
+  tiers: [
+    // annual purchases: over 250,000 -> A; 50,000 to 250,000 -> B; under 50,000 (and all new accounts) -> C
+    { tier: "A", minExclusive: 25000000n, discountBp: 1500 },
+    { tier: "B", minInclusive: 5000000n, discountBp: 1e3 },
+    { tier: "C", minInclusive: 0n, discountBp: 500 }
+  ],
+  volumeAddOnBp: 300,
+  volumeMinQty: 10,
+  cobotSkus: /* @__PURE__ */ new Set(["CB-5", "CB-10", "CB-PAL"]),
+  cobotCapBp: 1200,
+  otherCapBp: 2500,
+  approvals: [
+    { maxBp: 1e3, who: "Sales rep" },
+    { maxBp: 1800, who: "Branch manager" },
+    { maxBp: 2500, who: "Deal Desk" }
+  ],
+  leadTimes: {
+    "TM-SV200": "Stock",
+    "TM-SV400": "Stock",
+    "TM-SV750": "Stock",
+    "TM-SV1K5": "Stock",
+    "TM-SD400": "Stock",
+    "TM-SD1K5": "Stock",
+    "TM-CBL-05": "Stock",
+    "TM-GH60-10": "2 weeks",
+    "TM-ST23": "Stock",
+    "TM-SDR23": "Stock",
+    "CL-PLC-16": "Stock",
+    "CL-PLC-32": "Stock",
+    "CL-IO-8DI": "Stock",
+    "CL-IO-8DO": "Stock",
+    "CL-HMI-7": "Stock",
+    "CL-HMI-10": "Stock",
+    "CL-SR-2": "Stock",
+    "SL-PE-R": "Stock",
+    "SL-PE-D": "Stock",
+    "SL-PX-12": "Stock",
+    "SL-PX-18": "Stock",
+    "SL-VS-1": "2 weeks",
+    "SL-KIT-PE": "Stock",
+    "FC-B300-1M": "3 weeks",
+    "FC-B300-2M": "3 weeks",
+    "FC-B450-2M": "3 weeks",
+    "FC-CRV-90": "4 weeks",
+    "FC-DRV-90": "Stock",
+    "FC-STD": "Stock",
+    "CB-5": "4 weeks",
+    "CB-10": "4 weeks",
+    "CB-GR-E": "Stock",
+    "CB-PAL": "6 weeks",
+    "FP-CYL-32-100": "Stock",
+    "FP-VLV-52": "Stock",
+    "FP-FRL-14": "Stock"
+  },
+  // services are billed at standard rates (no account discount)
+  serviceMinimums: { "SVC-FIELD": { qty: 2, why: "Field service has a 2-hour minimum" } },
+  freightFreeMinCents: 50000n,
+  freightSeparatePrefixes: ["FC-", "CB-"],
+  quoteValidDays: 30,
+  newAccountTerms: "New account: credit card (up to $10,000) or prepayment until credit is approved by the Deal Desk"
+};
+function dayNumber3(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return Math.round(Date.UTC(y, m - 1, d) / 864e5);
+}
+function addDays2(iso, n) {
+  return new Date((dayNumber3(iso) + n) * 864e5).toISOString().slice(0, 10);
+}
+var ISO3 = /^\d{4}-\d{2}-\d{2}$/;
+function checkDate3(v, name) {
+  if (v === void 0 || v === null || v === "") return void 0;
+  const s = String(v).trim();
+  if (!ISO3.test(s) || isNaN(dayNumber3(s))) throw new Error(`${name} must be a date written YYYY-MM-DD`);
+  return s;
+}
+var bpText = (bp) => (bp % 100 === 0 ? String(bp / 100) : (bp / 100).toFixed(2).replace(/0$/, "")) + "%";
+var dollars2 = (c) => {
+  const m = money2(c);
+  const neg = m.startsWith("-");
+  const [w, f] = (neg ? m.slice(1) : m).split(".");
+  return (neg ? "-$" : "$") + w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + f;
+};
+var applyBp = (cents, bp) => (cents * BigInt(1e4 - bp) * 2n + 10000n) / 20000n;
+var norm2 = (s) => s.toLowerCase().replace(/&/g, " and ").replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\b(inc|llc|co|corp|corporation|company|ltd)\b/g, " ").replace(/\s+/g, " ").trim();
+function text3(obj2) {
+  return { content: [{ type: "text", text: JSON.stringify(obj2) }] };
+}
+function fail3(e) {
+  return { isError: true, content: [{ type: "text", text: "Error: " + (e?.message || String(e)) }] };
+}
+function tierFor(purchases) {
+  for (const t of RULES.tiers) {
+    if ("minExclusive" in t && t.minExclusive !== void 0 && purchases > t.minExclusive) return t;
+    if ("minInclusive" in t && t.minInclusive !== void 0 && purchases >= t.minInclusive) return t;
+  }
+  return RULES.tiers[RULES.tiers.length - 1];
+}
+function approverFor(bp) {
+  if (bp <= 0) return "None";
+  return (RULES.approvals.find((a) => bp <= a.maxBp) || RULES.approvals[RULES.approvals.length - 1]).who;
+}
+var APPROVER_RANK = { None: 0, "Sales rep": 1, "Branch manager": 2, "Deal Desk": 3 };
+var pricingSchema = external_exports.object({
+  customer: external_exports.string().min(2).describe('Customer or prospect company name, for example "Lakeshore Plastics Group"'),
+  items: external_exports.array(external_exports.object({
+    sku: external_exports.string().min(1).describe('SKU from the price guide, for example "CB-10" or "SVC-FIELD"'),
+    quantity: external_exports.number().positive().describe("Quantity (hours for SVC-FIELD, days for SVC-TRAIN, plans for preventive maintenance)")
+  })).min(1).max(60).describe("Every line on the quote or proposal"),
+  extra_discount_percent: external_exports.number().min(0).max(25).optional().describe("Additional discount the rep wants to offer on top of the standard tier and volume discounts, in percent (for example 3). Leave empty for standard pricing."),
+  as_of: external_exports.string().optional().describe("Quote date (YYYY-MM-DD). Leave empty for today.")
+});
+function makePricingTool(qb) {
+  async function pricing(params) {
+    const today = checkDate3(params?.as_of, "as_of") || todayISO();
+    const name = String(params?.customer ?? "").replace(/[‘’]/g, "'").trim();
+    const extraBp = Math.round(Number(params?.extra_discount_percent ?? 0) * 100);
+    const [items, cust, invs] = await Promise.all([qb.items(), qb.findCustomer(name), qb.openInvoices()]);
+    const bySku = new Map(items.filter((i) => i.active).map((i) => [i.sku.toUpperCase(), i]));
+    const yearStart = addDays2(today, -364);
+    const purchases = cust ? await qb.customerSales(cust.id, yearStart, today) : 0n;
+    const tier = cust ? tierFor(purchases) : RULES.tiers[RULES.tiers.length - 1];
+    const mine = cust ? invs.filter((i) => norm2(String(i.customer).split(":")[0]) === norm2(cust.name)) : [];
+    const t = dayNumber3(today);
+    const pastDue = mine.filter((i) => t > dayNumber3(i.due));
+    const pastDueTotal = pastDue.reduce((s, i) => s + i.balance, 0n);
+    const recorded = cust?.notes ? /\bTier ([ABC])\b/i.exec(cust.notes)?.[1]?.toUpperCase() || null : null;
+    const merged = /* @__PURE__ */ new Map();
+    for (const it of params.items) {
+      const sku = String(it.sku).trim().toUpperCase();
+      merged.set(sku, (merged.get(sku) || 0) + Number(it.quantity));
+    }
+    const lines = [], toQuote = [], unknown2 = [], notes = [];
+    let listTotal = 0n, netTotal = 0n, worst = "None";
+    for (const [sku, qtyIn] of merged) {
+      const item = bySku.get(sku);
+      if (!item) {
+        unknown2.push(sku);
+        continue;
+      }
+      const isService = item.type === "Service";
+      if (item.price <= 0n) {
+        toQuote.push({ sku, description: item.description || item.name, quantity: qtyIn, reason: sku === "SVC-PANEL" ? "Panel building and turnkey cells are quoted per project" : "No list price; quoted per job" });
+        continue;
+      }
+      let qty = qtyIn;
+      const min2 = RULES.serviceMinimums[sku];
+      if (min2 && qty < min2.qty) {
+        notes.push(`${sku}: quantity raised from ${qty} to ${min2.qty}. ${min2.why}.`);
+        qty = min2.qty;
+      }
+      if (!Number.isInteger(qty * 100)) throw new Error(`quantity for ${sku} must have at most 2 decimals`);
+      const qtyHundredths = BigInt(Math.round(qty * 100));
+      let bp = 0;
+      const parts = [];
+      let capped = false;
+      if (!isService) {
+        bp = tier.discountBp;
+        parts.push(`Tier ${tier.tier} ${bpText(tier.discountBp)}`);
+        if (qty >= RULES.volumeMinQty) {
+          bp += RULES.volumeAddOnBp;
+          parts.push(`volume +${bpText(RULES.volumeAddOnBp)}`);
+        }
+        if (extraBp > 0) {
+          bp += extraBp;
+          parts.push(`extra +${bpText(extraBp)}`);
+        }
+        const cap = RULES.cobotSkus.has(sku) ? RULES.cobotCapBp : RULES.otherCapBp;
+        if (bp > cap) {
+          capped = true;
+          parts.push(`capped at ${bpText(cap)} (${RULES.cobotSkus.has(sku) ? "cobot limit" : "house-brand limit"})`);
+          bp = cap;
+        }
+      }
+      const netEach = applyBp(item.price, bp);
+      const lineList = (item.price * qtyHundredths + 50n) / 100n;
+      const lineNet = (netEach * qtyHundredths + 50n) / 100n;
+      listTotal += lineList;
+      netTotal += lineNet;
+      const approver = isService ? "None" : approverFor(bp);
+      if (APPROVER_RANK[approver] > APPROVER_RANK[worst]) worst = approver;
+      lines.push({
+        sku,
+        description: item.description || item.name,
+        quantity: qty,
+        listEach: money2(item.price),
+        discountPercent: bpText(bp).replace("%", ""),
+        discountBuiltFrom: isService ? "Service rate, not discounted" : parts.join(", "),
+        netEach: money2(netEach),
+        lineTotal: money2(lineNet),
+        leadTime: isService ? "Scheduled" : RULES.leadTimes[sku] || "Confirm with Inside Sales Desk",
+        approval: approver,
+        ...capped ? { capped: true } : {}
+      });
+    }
+    if (unknown2.length) notes.push(`Not in the QuickBooks item list or price guide: ${unknown2.join(", ")}. Confirm with the Inside Sales Desk before quoting.`);
+    const q = (s) => merged.get(s) || 0;
+    const checks = [];
+    const small = q("TM-SV200") + q("TM-SV400"), big = q("TM-SV750") + q("TM-SV1K5");
+    if (small > q("TM-SD400")) checks.push(`${small} servo motor(s) up to 400 W but ${q("TM-SD400")} TM-SD400 drive(s). Each servo axis needs a matching drive.`);
+    if (big > q("TM-SD1K5")) checks.push(`${big} servo motor(s) of 750 W or 1.5 kW but ${q("TM-SD1K5")} TM-SD1K5 drive(s). Each servo axis needs a matching drive.`);
+    if (small + big > q("TM-CBL-05")) checks.push(`${small + big} servo motor(s) but ${q("TM-CBL-05")} TM-CBL-05 cable set(s). Each servo axis needs a cable set.`);
+    const sections = q("FC-B300-1M") + q("FC-B300-2M") + q("FC-B450-2M");
+    if (sections > q("FC-STD")) checks.push(`${sections} straight conveyor section(s) but ${q("FC-STD")} pair(s) of FC-STD stands. Each section needs one pair.`);
+    if (sections > 0 && q("FC-DRV-90") === 0) checks.push("Conveyor sections but no FC-DRV-90 drive unit. Each straight run needs one drive unit.");
+    if (q("CB-PAL") > q("CB-10")) checks.push(`${q("CB-PAL")} CB-PAL palletizing kit(s) but ${q("CB-10")} CB-10 robot(s). The kit is designed for the CB-10.`);
+    const reviews = [];
+    if ([...merged.keys()].some((s) => RULES.cobotSkus.has(s) || s === "CB-GR-E")) reviews.push("Applications Engineering review and risk assessment (required for every cobot application before the quote is final).");
+    if ([...merged.keys()].some((s) => /^(TM-SV|FC-|SL-VS)/.test(s))) reviews.push("Applications Engineering: servo sizing, conveyor layout or vision application review (playbook).");
+    if (toQuote.length) reviews.push("Applications Engineering or Inside Sales Desk to price: " + toQuote.map((x) => x.sku).join(", ") + ".");
+    const separate = [...merged.keys()].filter((s) => RULES.freightSeparatePrefixes.some((p) => s.startsWith(p)));
+    const freight = separate.length ? `Conveyors and cobots (${separate.join(", ")}) ship with freight quoted separately; ${netTotal >= RULES.freightFreeMinCents ? "other items ship free standard ground (order of $500 or more)" : "other items: freight at cost (order under $500)"}.` : netTotal >= RULES.freightFreeMinCents ? "Free standard ground shipping (order of $500 or more)." : "Freight charged at cost (order under $500).";
+    let terms = cust ? (cust.terms || "Net 30") + " (approved credit account)" : RULES.newAccountTerms;
+    const warnings = [];
+    if (cust && pastDueTotal > 0n) warnings.push(`${cust.name} has ${dollars2(pastDueTotal)} past due in QuickBooks across ${pastDue.length} invoice(s), oldest ${Math.max(...pastDue.map((i) => t - dayNumber3(i.due)))} days. Do not offer longer terms or extra discount without Deal Desk approval; consider asking for the past-due balance to be cleared before the order ships.`);
+    if (cust && recorded && recorded !== tier.tier) warnings.push(`QuickBooks notes list ${cust.name} as Tier ${recorded}, but its purchases in the last 12 months (${dollars2(purchases)}) make it Tier ${tier.tier} under the price guide. This quote uses Tier ${tier.tier}; confirm with the branch manager before using Tier ${recorded}.`);
+    if (extraBp > 0) warnings.push(`Includes an extra ${bpText(extraBp)} discount requested by the rep.`);
+    if (!cust) warnings.push(`No QuickBooks customer named "${name}": priced as a new account (Tier C).`);
+    const effPct = listTotal > 0n ? Number(((listTotal - netTotal) * 1000000n * 2n + listTotal) / (2n * listTotal)) / 1e4 : 0;
+    const lead = (v) => v.replace(/ weeks?$/, (m) => m.trim() === "week" ? " wk" : " wks");
+    const table = [
+      "| Item | Qty | List each | Discount | Net each | Line total | Lead time |",
+      "|---|---:|---:|---:|---:|---:|---|",
+      ...lines.map((l2) => `| ${l2.sku} \u2013 ${l2.description} | ${l2.quantity} | ${dollars2(toCents2(l2.listEach))} | ${l2.discountPercent}% | ${dollars2(toCents2(l2.netEach))} | ${dollars2(toCents2(l2.lineTotal))} | ${lead(l2.leadTime)} |`),
+      ...toQuote.map((x) => `| ${x.sku} \u2013 ${x.description} | ${x.quantity} | Quoted separately | | | To be quoted | |`),
+      `| **Total** | | ${dollars2(listTotal)} | | | **${dollars2(netTotal)}** | |`
+    ].join("\n");
+    return text3({
+      quoteDate: today,
+      validUntil: addDays2(today, RULES.quoteValidDays),
+      customer: cust ? { name: cust.name, inQuickBooks: true, purchasesLast12Months: money2(purchases), purchasesPeriod: `${yearStart} to ${today}`, tier: tier.tier, tierDiscountPercent: bpText(tier.discountBp).replace("%", ""), ...recorded ? { tierInQuickBooksNotes: recorded } : {}, paymentTerms: cust.terms, pastDue: money2(pastDueTotal) } : { name, inQuickBooks: false, tier: "C", tierDiscountPercent: bpText(RULES.tiers[2].discountBp).replace("%", ""), note: "New account" },
+      lines,
+      ...toQuote.length ? { toBeQuotedSeparately: toQuote } : {},
+      totals: { list: money2(listTotal), discount: money2(listTotal - netTotal), net: money2(netTotal), effectiveDiscountPercent: effPct.toFixed(2) },
+      approvalNeeded: worst === "None" || worst === "Sales rep" ? "None: within sales rep authority" : `${worst}: under the price guide, a total discount over 10% needs the branch manager and over 18% needs the Deal Desk (this applies even when it is the account's standard tier discount)`,
+      freight,
+      paymentTerms: terms,
+      validity: `${RULES.quoteValidDays} days (until ${addDays2(today, RULES.quoteValidDays)})`,
+      requiredReviews: reviews,
+      configurationChecks: checks,
+      warnings,
+      notes,
+      pricingTableMarkdown: table,
+      note: `Prices from the QuickBooks item list; tier from the customer's QuickBooks purchases; discounts, caps, approvals, lead times and freight from the ${RULES.source}. Computed exactly by the connector: use these numbers and pricingTableMarkdown as given, never recalculate. A draft for the rep to review, not a binding offer.`
+    });
+  }
+  return {
+    name: "get_proposal_pricing",
+    description: "Exact pricing for a quote or proposal in one call: list prices live from QuickBooks, the customer's tier from their last 12 months of QuickBooks purchases, volume add-on, an optional extra discount, product-type caps, the approval needed, lead times, freight, payment terms, validity, required engineering reviews, configuration checks (for example missing drives or stands) and past-due warnings, plus a ready pricing table. Use for every price, quote or proposal; never price by hand.",
+    schema: pricingSchema,
+    handler: async ({ params }) => {
+      try {
+        return await pricing(params);
+      } catch (e) {
+        return fail3(e);
+      }
+    }
+  };
+}
+
+// src/handlers/search-quickbooks-items.handler.ts
+async function searchQuickbooksItems(criteria) {
+  try {
+    const quickbooks = await QuickbooksClient.getInstance();
+    const normalizedCriteria = buildQuickbooksSearchCriteria(criteria);
+    return new Promise((resolve) => {
+      quickbooks.findItems(normalizedCriteria, (err, items) => {
+        if (err) {
+          resolve({ result: null, isError: true, error: formatError2(err) });
+        } else {
+          resolve({ result: items.QueryResponse.Item || [], isError: false, error: null });
+        }
+      });
+    });
+  } catch (error2) {
+    return { result: null, isError: true, error: formatError2(error2) };
+  }
+}
+
 // src/tools/get-profit-and-loss.tool.ts
 var toolName = "get_profit_and_loss";
 var toolDescription = "Generate a Profit and Loss (Income Statement) report from QuickBooks Online.";
@@ -83758,25 +84039,6 @@ var GetAccountTool = {
   handler: toolHandler28
 };
 
-// src/handlers/search-quickbooks-items.handler.ts
-async function searchQuickbooksItems(criteria) {
-  try {
-    const quickbooks = await QuickbooksClient.getInstance();
-    const normalizedCriteria = buildQuickbooksSearchCriteria(criteria);
-    return new Promise((resolve) => {
-      quickbooks.findItems(normalizedCriteria, (err, items) => {
-        if (err) {
-          resolve({ result: null, isError: true, error: formatError2(err) });
-        } else {
-          resolve({ result: items.QueryResponse.Item || [], isError: false, error: null });
-        }
-      });
-    });
-  } catch (error2) {
-    return { result: null, isError: true, error: formatError2(error2) };
-  }
-}
-
 // src/tools/search-items.tool.ts
 var toolName32 = "search_items";
 var toolDescription32 = "Search items in QuickBooks Online using criteria (maps to node-quickbooks findItems).";
@@ -84107,7 +84369,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.7.0";
+var VERSION2 = "1.8.0";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;
@@ -84222,7 +84484,20 @@ var QB_SIDE = {
     const hits = (Array.isArray(r.result) ? r.result : []).filter((c2) => !c2.Job && normName(String(c2.DisplayName || "")) === want);
     if (hits.length !== 1) return null;
     const c = hits[0];
-    return { id: String(c.Id), name: String(c.DisplayName), balance: toCents2(c.BalanceWithJobs ?? c.Balance ?? 0), email: c.PrimaryEmailAddr?.Address || null, terms: c.SalesTermRef?.name || null };
+    return { id: String(c.Id), name: String(c.DisplayName), balance: toCents2(c.BalanceWithJobs ?? c.Balance ?? 0), email: c.PrimaryEmailAddr?.Address || null, terms: c.SalesTermRef?.name || null, notes: c.Notes || null };
+  },
+  async items() {
+    const r = await searchQuickbooksItems([{ field: "fetchAll", value: true }]);
+    if (r.isError) throw new Error("QuickBooks items: " + r.error);
+    if (!Array.isArray(r.result)) throw new Error("QuickBooks items: unexpected result");
+    return r.result.map((x) => ({
+      sku: String(x.Sku || x.Name || ""),
+      name: String(x.Name || ""),
+      description: x.Description || null,
+      type: String(x.Type || ""),
+      price: toCents2(x.UnitPrice ?? 0),
+      active: x.Active !== false
+    }));
   },
   async customerSales(customerId, start, end) {
     const r = await getQuickbooksCustomerSales({ start_date: start, end_date: end, customer: customerId, summarize_column_by: "Total" });
@@ -84233,7 +84508,7 @@ var QB_SIDE = {
     return total ? toCents2(total.values?.Total) : 0n;
   }
 };
-var HUBSPOT_TOOLS = makeHubSpotTools(QB_SIDE);
+var HUBSPOT_TOOLS = [...makeHubSpotTools(QB_SIDE), makePricingTool(QB_SIDE)];
 var TOOLS = [
   GetProfitAndLossTool,
   GetBalanceSheetTool,
@@ -84293,8 +84568,8 @@ function secretsToRedact() {
   const c = quickbooksClient;
   return [process.env.QUICKBOOKS_CLIENT_SECRET, process.env.QUICKBOOKS_REFRESH_TOKEN, c.refreshToken, c.accessToken, process.env.MCP_SHARED_SECRET, ...hubspotSecrets()].filter((s) => typeof s === "string" && s.length >= 12);
 }
-function redact(text3) {
-  let out = text3;
+function redact(text4) {
+  let out = text4;
   for (const s of secretsToRedact()) out = out.split(s).join("[redacted]");
   return out;
 }
@@ -84303,16 +84578,16 @@ function tidy(result2) {
   let total = 0;
   for (const item of result2.content) {
     if (item?.type !== "text" || typeof item.text !== "string") continue;
-    let text3 = item.text;
-    const trimmed = text3.trim();
+    let text4 = item.text;
+    const trimmed = text4.trim();
     if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
       try {
         const parsed = JSON.parse(trimmed);
-        text3 = JSON.stringify(parsed);
+        text4 = JSON.stringify(parsed);
         if (isQuickBooksReport(parsed)) {
           try {
             const flat = flattenReport(parsed);
-            if (flat) text3 = JSON.stringify(flat);
+            if (flat) text4 = JSON.stringify(flat);
           } catch (e) {
             console.log("[connector] report kept in original form: " + (e?.message || String(e)).slice(0, 200));
           }
@@ -84320,10 +84595,10 @@ function tidy(result2) {
       } catch {
       }
     }
-    if (total + text3.length > MAX_RESULT_CHARS) {
-      text3 = text3.slice(0, Math.max(0, MAX_RESULT_CHARS - total)) + "\n[Truncated: this result was too large. Narrow the date range or add filters and try again.]";
+    if (total + text4.length > MAX_RESULT_CHARS) {
+      text4 = text4.slice(0, Math.max(0, MAX_RESULT_CHARS - total)) + "\n[Truncated: this result was too large. Narrow the date range or add filters and try again.]";
     }
-    item.text = redact(text3);
+    item.text = redact(text4);
     total += item.text.length;
   }
   return result2;

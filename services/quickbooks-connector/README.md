@@ -49,3 +49,7 @@ A second endpoint, `/mcp-crm`, serves the Sales Assistant. `/mcp` (Finance) keep
 - Read-only by construction: only GET requests and HubSpot's search, batch-read and association batch-read endpoints are allowed (`READ_ONLY_POSTS`); anything else is refused before it is sent.
 - Every call reads HubSpot at that moment (no cache). Totals, weighting (amount x stage probability), staleness and date math are done in code.
 - Variables: `HUBSPOT_TOKEN` (private app, read scopes only; redacted from logs and results); optional `HUBSPOT_DATASET_PROPERTY` / `HUBSPOT_DATASET_VALUE` to limit to tagged records (demo: `convor_demo_dataset` = `tallmark`); `HUBSPOT_PIPELINE_ID`; `HUBSPOT_PRODUCT_LINE_PROPERTY`.
+
+## 1.8: proposal pricing (`src/convor-pricing.ts`)
+
+`get_proposal_pricing` (on `/mcp-crm`) prices a quote or proposal exactly: list prices live from the QuickBooks item list, the customer's tier from their last 12 months of QuickBooks purchases, volume add-on, optional extra discount, caps, approvals, lead times, freight, payment terms, validity, configuration checks and past-due warnings, plus a ready Markdown pricing table. The price-guide rules (tiers, caps, approvals, lead times, freight) for the demo company are in `RULES`.

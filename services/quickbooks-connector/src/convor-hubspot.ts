@@ -341,7 +341,7 @@ const LINE_LABEL = (v: string | null) => (v ? v.replace(/_/g, " ").replace(/\b\w
 // ---------------------------------------------------------------- QuickBooks side (injected)
 
 export type QbInvoice = { customer: string; customerId: string | null; invoice: string | null; date: string; due: string; total: bigint; balance: bigint };
-export type QbCustomer = { id: string; name: string; balance: bigint; email: string | null; terms: string | null };
+export type QbCustomer = { id: string; name: string; balance: bigint; email: string | null; terms: string | null; notes?: string | null };
 export interface QbSide {
   openInvoices(): Promise<QbInvoice[]>;
   findCustomer(name: string): Promise<QbCustomer | null>;

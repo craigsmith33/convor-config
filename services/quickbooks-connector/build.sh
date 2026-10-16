@@ -2,7 +2,7 @@
 # Rebuilds out/quickbooks-connector.mjs from Intuit's pinned source + Convor wrapper.
 set -e
 Q=$(cd "$(dirname "$0")" && pwd)
-cp "$Q/connector/convor-preflight.ts" "$Q/connector/convor-connector.ts" "$Q/connector/convor-reports.ts" "$Q/connector/convor-calc.ts" "$Q/connector/convor-lists.ts" "$Q/connector/convor-answers.ts" "$Q/connector/convor-hubspot.ts" "$Q/src/src/"
+cp "$Q/connector/convor-preflight.ts" "$Q/connector/convor-connector.ts" "$Q/connector/convor-reports.ts" "$Q/connector/convor-calc.ts" "$Q/connector/convor-lists.ts" "$Q/connector/convor-answers.ts" "$Q/connector/convor-hubspot.ts" "$Q/connector/convor-pricing.ts" "$Q/src/src/"
 cd "$Q/src"
 "$Q/tools/node_modules/.bin/esbuild" src/convor-connector.ts --bundle --platform=node --target=node20 --format=esm \
   --outfile="$Q/out/quickbooks-connector.mjs" \
