@@ -57,3 +57,5 @@ A second endpoint, `/mcp-crm`, serves the Sales Assistant. `/mcp` (Finance) keep
 ## 1.9: customer-facing proposal sections
 
 `get_proposal_pricing` also returns `proposalSections`: ready Markdown for the Investment (pricing table, freight, payment terms, validity, items quoted separately), Timeline (built from the lead times), Why Tallmark and Warranty and support sections of a proposal. The assistant pastes them as given, so every row, date and term in the customer document comes from the connector. They contain nothing internal (no approvals, tiers or balances).
+
+1.9.1 adds `proposalNumber`, `date` and `validUntil` to `proposalSections`, and `skuSuggestions` for SKUs that are not in the item list (suggestions only; nothing is substituted automatically).

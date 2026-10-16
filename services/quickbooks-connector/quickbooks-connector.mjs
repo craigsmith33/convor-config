@@ -82236,7 +82236,11 @@ function buildSections(o) {
   if (nr.length) w.push(`Built-to-order items are not returnable: ${nr.join("; ")}.`);
   w.push(RULES.repairLine);
   const warranty = w.map((x) => `- ${x}`).join("\n");
+  const initials = (cust?.name || o.name).replace(/&/g, " ").split(/\s+/).filter((w2) => w2 && !/^(and|of|the|inc|llc|co|corp|ltd)$/i.test(w2)).map((w2) => w2[0].toUpperCase()).join("").slice(0, 3).padEnd(3, "X");
   return {
+    proposalNumber: `TP-${o.today.replace(/-/g, "")}-${initials}`,
+    date: longDate(o.today),
+    validUntil: longDate(validUntil),
     investment: inv,
     timeline,
     whyTallmark: RULES.whyTallmark.map((x) => `- ${x}`).join("\n"),
@@ -82376,7 +82380,20 @@ function makePricingTool(qb) {
         ...capped ? { capped: true } : {}
       });
     }
-    if (unknown2.length) notes.push(`Not in the QuickBooks item list or price guide: ${unknown2.join(", ")}. Confirm with the Inside Sales Desk before quoting.`);
+    const alnum = (x) => x.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const skuSuggestions = [];
+    for (const u of unknown2) {
+      const parts = u.toUpperCase().split(/[^A-Z0-9]+/).filter((x) => x.length >= 2);
+      const scored = [...bySku.values()].map((it) => {
+        const hay = alnum(it.sku + " " + (it.description || "") + " " + it.name);
+        let score = 0;
+        for (const p of parts) if (hay.includes(p)) score += p.length;
+        if (alnum(it.sku) === alnum(u)) score += 100;
+        return { it, score };
+      }).filter((x) => x.score >= 3).sort((x, y) => y.score - x.score).slice(0, 3);
+      skuSuggestions.push({ sku: u, didYouMean: scored.map((x) => ({ sku: x.it.sku, description: x.it.description || x.it.name })) });
+    }
+    if (unknown2.length) notes.push(`Not in the QuickBooks item list or price guide, so NOT priced and NOT in the table: ${unknown2.join(", ")}. ${skuSuggestions.some((x) => x.didYouMean.length) ? "Check skuSuggestions and call again with the right SKU, or confirm" : "Confirm"} with the Inside Sales Desk before quoting.`);
     const q = (s) => merged.get(s) || 0;
     const checks = [];
     const small = q("TM-SV200") + q("TM-SV400"), big = q("TM-SV750") + q("TM-SV1K5");
@@ -82409,13 +82426,14 @@ function makePricingTool(qb) {
       `| **Total** | | ${dollars2(listTotal)} | | | **${dollars2(netTotal)}** | |`
     ].join("\n");
     const validUntil = addDays2(today, RULES.quoteValidDays);
-    const proposalSections = buildSections({ lines, toQuote, skus: [...merged.keys()].filter((s) => bySku.has(s)), cust, netTotal, validUntil, table, separate });
+    const proposalSections = buildSections({ lines, toQuote, skus: [...merged.keys()].filter((s) => bySku.has(s)), cust, name, today, netTotal, validUntil, table, separate });
     return text3({
       quoteDate: today,
       validUntil: addDays2(today, RULES.quoteValidDays),
       customer: cust ? { name: cust.name, inQuickBooks: true, purchasesLast12Months: money2(purchases), purchasesPeriod: `${yearStart} to ${today}`, tier: tier.tier, tierDiscountPercent: bpText(tier.discountBp).replace("%", ""), ...recorded ? { tierInQuickBooksNotes: recorded } : {}, paymentTerms: cust.terms, pastDue: money2(pastDueTotal) } : { name, inQuickBooks: false, tier: "C", tierDiscountPercent: bpText(RULES.tiers[2].discountBp).replace("%", ""), note: "New account" },
       lines,
       ...toQuote.length ? { toBeQuotedSeparately: toQuote } : {},
+      ...unknown2.length ? { unknownSkus: unknown2, skuSuggestions } : {},
       totals: { list: money2(listTotal), discount: money2(listTotal - netTotal), net: money2(netTotal), effectiveDiscountPercent: effPct.toFixed(2) },
       approvalNeeded: worst === "None" || worst === "Sales rep" ? "None: within sales rep authority" : `${worst}: under the price guide, a total discount over 10% needs the branch manager and over 18% needs the Deal Desk (this applies even when it is the account's standard tier discount)`,
       freight,
@@ -82428,7 +82446,7 @@ function makePricingTool(qb) {
       pricingTableMarkdown: table,
       proposalSections: {
         ...proposalSections,
-        howToUse: "Customer-facing Markdown for a proposal. Paste investment under '## Investment', timeline under '## Timeline', whyTallmark under '## Why Tallmark' and warrantyAndSupport under '## Warranty and support', each exactly as given (every row and bullet). Nothing internal is in these blocks."
+        howToUse: "Customer-facing Markdown for a proposal. Use proposalNumber, date and validUntil in the header. Paste investment under '## Investment', timeline under '## Timeline', whyTallmark under '## Why Tallmark' and warrantyAndSupport under '## Warranty and support', each exactly as given (every row and bullet). Nothing internal is in these blocks."
       },
       note: `Prices from the QuickBooks item list; tier from the customer's QuickBooks purchases; discounts, caps, approvals, lead times and freight from the ${RULES.source}. Computed exactly by the connector: use these numbers and pricingTableMarkdown as given, never recalculate. A draft for the rep to review, not a binding offer.`
     });
@@ -84466,7 +84484,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.9.0";
+var VERSION2 = "1.9.1";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;

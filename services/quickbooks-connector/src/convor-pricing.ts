@@ -84,7 +84,7 @@ const listJoin = (xs: string[]) => xs.length <= 1 ? (xs[0] || "") : xs.length ==
 const lcFirst = (s: string) => /^[A-Z][a-z]/.test(s) && !/^(FlexConvey|ControlLine|SenseLine|MotionPro|Tallmark|UL)\b/.test(s) ? s[0].toLowerCase() + s.slice(1) : s;
 
 /** Customer-facing proposal sections built from the priced lines, so the model copies them instead of retyping numbers. */
-function buildSections(o: { lines: any[]; toQuote: any[]; skus: string[]; cust: any; netTotal: bigint; validUntil: string; table: string; separate: string[] }) {
+function buildSections(o: { lines: any[]; toQuote: any[]; skus: string[]; cust: any; name: string; today: string; netTotal: bigint; validUntil: string; table: string; separate: string[] }) {
   const { lines, toQuote, skus, cust, netTotal, validUntil, table, separate } = o;
   // Investment
   const freight = separate.length
@@ -141,7 +141,11 @@ function buildSections(o: { lines: any[]; toQuote: any[]; skus: string[]; cust: 
   w.push(RULES.repairLine);
   const warranty = w.map((x) => `- ${x}`).join("\n");
 
+  const initials = (cust?.name || o.name).replace(/&/g, " ").split(/\s+/).filter((w: string) => w && !/^(and|of|the|inc|llc|co|corp|ltd)$/i.test(w)).map((w: string) => w[0].toUpperCase()).join("").slice(0, 3).padEnd(3, "X");
   return {
+    proposalNumber: `TP-${o.today.replace(/-/g, "")}-${initials}`,
+    date: longDate(o.today),
+    validUntil: longDate(validUntil),
     investment: inv,
     timeline,
     whyTallmark: RULES.whyTallmark.map((x) => `- ${x}`).join("\n"),
@@ -254,7 +258,21 @@ export function makePricingTool(qb: QbPricingSide) {
         approval: approver, ...(capped ? { capped: true } : {}),
       });
     }
-    if (unknown.length) notes.push(`Not in the QuickBooks item list or price guide: ${unknown.join(", ")}. Confirm with the Inside Sales Desk before quoting.`);
+    // suggest likely SKUs for unknown ones (never substituted automatically)
+    const alnum = (x: string) => x.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    const skuSuggestions: { sku: string; didYouMean: { sku: string; description: string }[] }[] = [];
+    for (const u of unknown) {
+      const parts = u.toUpperCase().split(/[^A-Z0-9]+/).filter((x) => x.length >= 2);
+      const scored = [...bySku.values()].map((it) => {
+        const hay = alnum(it.sku + " " + (it.description || "") + " " + it.name);
+        let score = 0;
+        for (const p of parts) if (hay.includes(p)) score += p.length;
+        if (alnum(it.sku) === alnum(u)) score += 100;
+        return { it, score };
+      }).filter((x) => x.score >= 3).sort((x, y) => y.score - x.score).slice(0, 3);
+      skuSuggestions.push({ sku: u, didYouMean: scored.map((x) => ({ sku: x.it.sku, description: x.it.description || x.it.name })) });
+    }
+    if (unknown.length) notes.push(`Not in the QuickBooks item list or price guide, so NOT priced and NOT in the table: ${unknown.join(", ")}. ${skuSuggestions.some((x) => x.didYouMean.length) ? "Check skuSuggestions and call again with the right SKU, or confirm" : "Confirm"} with the Inside Sales Desk before quoting.`);
 
     // configuration checks from the price guide
     const q = (s: string) => merged.get(s) || 0;
@@ -295,7 +313,7 @@ export function makePricingTool(qb: QbPricingSide) {
       `| **Total** | | ${dollars(listTotal)} | | | **${dollars(netTotal)}** | |`,
     ].join("\n");
     const validUntil = addDays(today, RULES.quoteValidDays);
-    const proposalSections = buildSections({ lines, toQuote, skus: [...merged.keys()].filter((s) => bySku.has(s)), cust, netTotal, validUntil, table, separate });
+    const proposalSections = buildSections({ lines, toQuote, skus: [...merged.keys()].filter((s) => bySku.has(s)), cust, name, today, netTotal, validUntil, table, separate });
 
     return text({
       quoteDate: today,
@@ -305,6 +323,7 @@ export function makePricingTool(qb: QbPricingSide) {
         : { name, inQuickBooks: false, tier: "C", tierDiscountPercent: bpText(RULES.tiers[2].discountBp).replace("%", ""), note: "New account" },
       lines,
       ...(toQuote.length ? { toBeQuotedSeparately: toQuote } : {}),
+      ...(unknown.length ? { unknownSkus: unknown, skuSuggestions } : {}),
       totals: { list: money(listTotal), discount: money(listTotal - netTotal), net: money(netTotal), effectiveDiscountPercent: effPct.toFixed(2) },
       approvalNeeded: worst === "None" || worst === "Sales rep" ? "None: within sales rep authority" : `${worst}: under the price guide, a total discount over 10% needs the branch manager and over 18% needs the Deal Desk (this applies even when it is the account's standard tier discount)`,
       freight,
@@ -317,7 +336,7 @@ export function makePricingTool(qb: QbPricingSide) {
       pricingTableMarkdown: table,
       proposalSections: {
         ...proposalSections,
-        howToUse: "Customer-facing Markdown for a proposal. Paste investment under '## Investment', timeline under '## Timeline', whyTallmark under '## Why Tallmark' and warrantyAndSupport under '## Warranty and support', each exactly as given (every row and bullet). Nothing internal is in these blocks.",
+        howToUse: "Customer-facing Markdown for a proposal. Use proposalNumber, date and validUntil in the header. Paste investment under '## Investment', timeline under '## Timeline', whyTallmark under '## Why Tallmark' and warrantyAndSupport under '## Warranty and support', each exactly as given (every row and bullet). Nothing internal is in these blocks.",
       },
       note: `Prices from the QuickBooks item list; tier from the customer's QuickBooks purchases; discounts, caps, approvals, lead times and freight from the ${RULES.source}. Computed exactly by the connector: use these numbers and pricingTableMarkdown as given, never recalculate. A draft for the rep to review, not a binding offer.`,
     });
