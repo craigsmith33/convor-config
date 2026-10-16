@@ -51,7 +51,103 @@ const RULES = {
   freightSeparatePrefixes: ["FC-", "CB-"],
   quoteValidDays: 30,
   newAccountTerms: "New account: credit card (up to $10,000) or prepayment until credit is approved by the Deal Desk",
+  // customer-facing wording (1.9), from the Warranty, Returns and Service Policy 2026 and the Company Overview 2026
+  warranty: [
+    { test: /^(TM-|CL-|SL-|FC-)/, line: "@HOUSE products: 2 years from ship date, parts and repair." },
+    { test: /^CB-/, line: "Tallmark CoBot robots and accessories: 1 year from ship date; extended coverage is available at $1,900 per robot per year." },
+    { test: /^FP-/, line: "Fluid power products: 1 year from ship date." },
+  ],
+  warrantyCommon: "Warranty covers defects in materials and workmanship. It does not cover misuse, improper installation, unauthorized modification or normal wear items such as belts and gripper fingers.",
+  houseBrands: [["TM-", "MotionPro"], ["CL-", "ControlLine"], ["SL-", "SenseLine"], ["FC-", "FlexConvey"]] as [string, string][],
+  nonReturnable: [[/^FC-(B|CRV)/, "FlexConvey sections and curves"], [/^SVC-PANEL$/, "control panels and turnkey cells"]] as [RegExp, string][],
+  exchange: { test: /^TM-(SV|SD)/, line: "Advance exchange units are available for MotionPro servo motors and drives." },
+  pmPlans: {
+    "SVC-PM-ESS": "Essential preventive maintenance plan: one annual inspection visit and report.",
+    "SVC-PM-STD": "Standard preventive maintenance plan: quarterly visits, wear-part inspection and firmware updates.",
+    "SVC-PM-PREM": "Premium preventive maintenance plan: quarterly visits, response within 4 business hours and 10% off repairs.",
+  } as Record<string, string>,
+  repairLine: "Tallmark Repair Center: standard repair in 5 business days; repairs carry a 12-month warranty. Field service is available at standard rates.",
+  whyTallmark: [
+    "**Local engineering.** An applications engineer in every branch, at no charge for sizing, selection and application review.",
+    "**One supplier.** Motion, controls, sensing, conveyors, cobots and fluid power on one order and one invoice.",
+    "**Speed.** Same-day shipping on 28,000+ stocked items ordered by 3:00 p.m. Eastern, and 97.2% on-time delivery in 2025.",
+    "**Uptime support.** A repair center with 5-day standard turnaround, exchange units, preventive maintenance plans and stocking of critical spares.",
+  ],
+  leadTimeNote: "Lead times are typical and are confirmed with the Inside Sales Desk when the order is placed.",
 };
+
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const longDate = (iso: string) => { const [y, m, d] = iso.split("-").map(Number); return `${MONTHS[m - 1]} ${d}, ${y}`; };
+/** "FlexConvey belt conveyor section, 450 mm x 2 m" -> "FlexConvey belt conveyor section" */
+const shortName = (desc: string) => desc.split(",")[0].replace(/\s*\(.*?\)\s*/g, " ").trim();
+const listJoin = (xs: string[]) => xs.length <= 1 ? (xs[0] || "") : xs.length === 2 ? `${xs[0]} and ${xs[1]}` : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`;
+const lcFirst = (s: string) => /^[A-Z][a-z]/.test(s) && !/^(FlexConvey|ControlLine|SenseLine|MotionPro|Tallmark|UL)\b/.test(s) ? s[0].toLowerCase() + s.slice(1) : s;
+
+/** Customer-facing proposal sections built from the priced lines, so the model copies them instead of retyping numbers. */
+function buildSections(o: { lines: any[]; toQuote: any[]; skus: string[]; cust: any; netTotal: bigint; validUntil: string; table: string; separate: string[] }) {
+  const { lines, toQuote, skus, cust, netTotal, validUntil, table, separate } = o;
+  // Investment
+  const freight = separate.length
+    ? `conveyors and cobots ship with freight quoted separately; ${netTotal >= RULES.freightFreeMinCents ? "all other items ship free standard ground" : "other items ship with freight at cost"}.`
+    : netTotal >= RULES.freightFreeMinCents ? "free standard ground shipping." : "freight charged at cost.";
+  const terms = cust ? `${cust.terms || "Net 30"}.` : "credit card or prepayment until your credit account is approved.";
+  const inv = [table, "",
+    `- **Freight:** ${freight}`,
+    `- **Payment terms:** ${terms}`,
+    `- **Validity:** this proposal is valid for ${RULES.quoteValidDays} days, until ${longDate(validUntil)}.`,
+    ...(toQuote.length ? [`- **Quoted separately:** ${listJoin(toQuote.map((x) => lcFirst(shortName(x.description))))}, priced per project after the Applications Engineering review.`] : []),
+  ].join("\n");
+
+  // Timeline from lead times
+  const tl: string[] = [];
+  const hasCobot = skus.some((s) => RULES.cobotSkus.has(s) || s === "CB-GR-E");
+  const needsReview = hasCobot || toQuote.length > 0 || skus.some((s) => /^(TM-SV|FC-|SL-VS)/.test(s));
+  if (needsReview) {
+    const what: string[] = [];
+    if (skus.some((s) => s.startsWith("TM-SV"))) what.push("servo sizing");
+    if (skus.some((s) => s.startsWith("FC-"))) what.push("conveyor layout");
+    if (skus.some((s) => s.startsWith("SL-VS"))) what.push("vision application");
+    if (hasCobot) what.push("cobot application and risk assessment");
+    if (!what.length) what.push("application");
+    tl.push(`- **At order:** purchase order and Applications Engineering review (${listJoin(what)}).`);
+  }
+  const products = lines.filter((l) => l.leadTime !== "Scheduled");
+  const stock = products.filter((l) => l.leadTime === "Stock");
+  if (stock.length) tl.push(`- **Same day as order:** stocked items ship (${listJoin([...new Set(stock.map((l) => lcFirst(shortName(l.description))))])}) when ordered by 3:00 p.m. Eastern.`);
+  const byWeeks = new Map<number, string[]>();
+  const other: string[] = [];
+  for (const l of products) {
+    const m = /^(\d+) weeks?$/.exec(l.leadTime);
+    if (m) { const w = Number(m[1]); byWeeks.set(w, [...(byWeeks.get(w) || []), lcFirst(shortName(l.description))]); }
+    else if (l.leadTime !== "Stock") other.push(lcFirst(shortName(l.description)));
+  }
+  for (const w of [...byWeeks.keys()].sort((a, b) => a - b)) tl.push(`- **About ${w} week${w === 1 ? "" : "s"}:** ${listJoin([...new Set(byWeeks.get(w)!)])} ship${byWeeks.get(w)!.length === 1 ? "s" : ""}.`);
+  if (other.length) tl.push(`- **To be confirmed:** lead time for ${listJoin(other)} is confirmed by the Inside Sales Desk.`);
+  if (toQuote.length) tl.push(`- **After the review:** Tallmark sends the separate quote for ${listJoin(toQuote.map((x) => lcFirst(shortName(x.description))))}.`);
+  const svc = lines.filter((l) => l.leadTime === "Scheduled");
+  if (svc.length) tl.push(`- **After delivery:** ${listJoin([...new Set(svc.map((l) => lcFirst(shortName(l.description))))])} scheduled with your team.`);
+  const timeline = [...tl, "", RULES.leadTimeNote].join("\n");
+
+  // Warranty and support
+  const all = [...skus, ...toQuote.map((x) => x.sku)];
+  const w: string[] = [];
+  const house = RULES.houseBrands.filter(([p]) => all.some((s) => s.startsWith(p))).map(([, b]) => b);
+  for (const r of RULES.warranty) if (all.some((s) => r.test.test(s))) w.push(r.line.replace("@HOUSE", listJoin(house)));
+  if (w.length) w.push(RULES.warrantyCommon);
+  if (all.some((s) => RULES.exchange.test.test(s))) w.push(RULES.exchange.line);
+  for (const s of all) if (RULES.pmPlans[s]) w.push(RULES.pmPlans[s]);
+  const nr = RULES.nonReturnable.filter(([re]) => all.some((s) => re.test(s))).map(([, t]) => t);
+  if (nr.length) w.push(`Built-to-order items are not returnable: ${nr.join("; ")}.`);
+  w.push(RULES.repairLine);
+  const warranty = w.map((x) => `- ${x}`).join("\n");
+
+  return {
+    investment: inv,
+    timeline,
+    whyTallmark: RULES.whyTallmark.map((x) => `- ${x}`).join("\n"),
+    warrantyAndSupport: warranty,
+  };
+}
 
 // ---------------------------------------------------------------- helpers
 
@@ -198,6 +294,8 @@ export function makePricingTool(qb: QbPricingSide) {
       ...toQuote.map((x) => `| ${x.sku} – ${x.description} | ${x.quantity} | Quoted separately | | | To be quoted | |`),
       `| **Total** | | ${dollars(listTotal)} | | | **${dollars(netTotal)}** | |`,
     ].join("\n");
+    const validUntil = addDays(today, RULES.quoteValidDays);
+    const proposalSections = buildSections({ lines, toQuote, skus: [...merged.keys()].filter((s) => bySku.has(s)), cust, netTotal, validUntil, table, separate });
 
     return text({
       quoteDate: today,
@@ -217,6 +315,10 @@ export function makePricingTool(qb: QbPricingSide) {
       warnings,
       notes,
       pricingTableMarkdown: table,
+      proposalSections: {
+        ...proposalSections,
+        howToUse: "Customer-facing Markdown for a proposal. Paste investment under '## Investment', timeline under '## Timeline', whyTallmark under '## Why Tallmark' and warrantyAndSupport under '## Warranty and support', each exactly as given (every row and bullet). Nothing internal is in these blocks.",
+      },
       note: `Prices from the QuickBooks item list; tier from the customer's QuickBooks purchases; discounts, caps, approvals, lead times and freight from the ${RULES.source}. Computed exactly by the connector: use these numbers and pricingTableMarkdown as given, never recalculate. A draft for the rep to review, not a binding offer.`,
     });
   }

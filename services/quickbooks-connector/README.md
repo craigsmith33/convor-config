@@ -53,3 +53,7 @@ A second endpoint, `/mcp-crm`, serves the Sales Assistant. `/mcp` (Finance) keep
 ## 1.8: proposal pricing (`src/convor-pricing.ts`)
 
 `get_proposal_pricing` (on `/mcp-crm`) prices a quote or proposal exactly: list prices live from the QuickBooks item list, the customer's tier from their last 12 months of QuickBooks purchases, volume add-on, optional extra discount, caps, approvals, lead times, freight, payment terms, validity, configuration checks and past-due warnings, plus a ready Markdown pricing table. The price-guide rules (tiers, caps, approvals, lead times, freight) for the demo company are in `RULES`.
+
+## 1.9: customer-facing proposal sections
+
+`get_proposal_pricing` also returns `proposalSections`: ready Markdown for the Investment (pricing table, freight, payment terms, validity, items quoted separately), Timeline (built from the lead times), Why Tallmark and Warranty and support sections of a proposal. The assistant pastes them as given, so every row, date and term in the customer document comes from the connector. They contain nothing internal (no approvals, tiers or balances).
