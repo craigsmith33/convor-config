@@ -54,10 +54,10 @@ mcpServers:
     chatMenu: false
     serverInstructions: false
     requiresOAuth: false
-  hubspot:
+  crm:
     type: streamable-http
-    title: "HubSpot"
-    description: "Read-only HubSpot sales data (deals, contacts, activity, tasks) with QuickBooks balances and pricing"
+    title: "CRM"
+    description: "Read-only sales data (deals, contacts, activity, tasks) with balances and pricing"
     url: "http://quickbooks-connector.railway.internal:8080/mcp-crm"
     headers:
       Authorization: "Bearer ${QBO_MCP_SECRET}"
@@ -66,10 +66,10 @@ mcpServers:
     chatMenu: false
     serverInstructions: false
     requiresOAuth: false
-  make:
+  documents:
     type: streamable-http
-    title: "Make"
-    description: "Runs approved Make scenarios (proposal documents)"
+    title: "Proposal documents"
+    description: "Creates the Google Doc for an approved proposal"
     url: "https://us1.make.com/mcp?scenarioId=4979928"
     headers:
       Authorization: "Bearer ${MAKE_MCP_TOKEN}"
@@ -97,7 +97,7 @@ modelSpecs:
   list:
     - name: "sales-engine"
       label: "Sales Assistant"
-      description: "Pipeline, accounts, quotes and proposals from HubSpot and QuickBooks (sample company)"
+      description: "Pipeline, accounts, quotes and proposals from the CRM and QuickBooks (sample company)"
       default: false
       preset:
         default: false
