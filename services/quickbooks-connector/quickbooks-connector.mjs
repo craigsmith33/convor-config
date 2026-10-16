@@ -4630,7 +4630,7 @@ var require_core = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text2, msg) => text2 + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text3, msg) => text3 + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -10528,7 +10528,7 @@ var require_core3 = __commonJS({
       errorsText(errors = this.errors, { separator = ", ", dataVar = "data" } = {}) {
         if (!errors || errors.length === 0)
           return "No errors";
-        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text2, msg) => text2 + separator + msg);
+        return errors.map((e) => `${dataVar}${e.instancePath} ${e.message}`).reduce((text3, msg) => text3 + separator + msg);
       }
       $dataMetaSchema(metaSchema, keywordsJsonPointers) {
         const rules = this.RULES.all;
@@ -27486,20 +27486,20 @@ var require_axios = __commonJS({
       if (parts[0] !== "127") return false;
       return parts.every((p) => /^\d+$/.test(p) && Number(p) >= 0 && Number(p) <= 255);
     };
-    var parseIPv4Octet = (text2) => {
-      if (/^0[xX][0-9a-fA-F]+$/.test(text2)) {
-        const n = parseInt(text2.slice(2), 16);
+    var parseIPv4Octet = (text3) => {
+      if (/^0[xX][0-9a-fA-F]+$/.test(text3)) {
+        const n = parseInt(text3.slice(2), 16);
         return Number.isFinite(n) ? n : null;
       }
-      if (text2.length > 1 && /^0[0-7]+$/.test(text2)) {
-        const n = parseInt(text2, 8);
+      if (text3.length > 1 && /^0[0-7]+$/.test(text3)) {
+        const n = parseInt(text3, 8);
         return Number.isFinite(n) ? n : null;
       }
-      if (text2.length > 1 && /^0[0-9]+$/.test(text2)) {
+      if (text3.length > 1 && /^0[0-9]+$/.test(text3)) {
         return null;
       }
-      if (/^[0-9]+$/.test(text2)) {
-        const n = parseInt(text2, 10);
+      if (/^[0-9]+$/.test(text3)) {
+        const n = parseInt(text3, 10);
         return Number.isFinite(n) ? n : null;
       }
       return null;
@@ -32355,7 +32355,7 @@ var init_templateSettings = __esm({
 function escapeChar(match) {
   return "\\" + escapes[match];
 }
-function template(text2, settings, oldSettings) {
+function template(text3, settings, oldSettings) {
   if (!settings && oldSettings) settings = oldSettings;
   settings = defaults_default({}, settings, _2.templateSettings);
   var matcher2 = RegExp([
@@ -32365,8 +32365,8 @@ function template(text2, settings, oldSettings) {
   ].join("|") + "|$", "g");
   var index = 0;
   var source = "__p+='";
-  text2.replace(matcher2, function(match, escape2, interpolate, evaluate2, offset) {
-    source += text2.slice(index, offset).replace(escapeRegExp, escapeChar);
+  text3.replace(matcher2, function(match, escape2, interpolate, evaluate2, offset) {
+    source += text3.slice(index, offset).replace(escapeRegExp, escapeChar);
     index = offset + match.length;
     if (escape2) {
       source += "'+\n((__t=(" + escape2 + "))==null?'':_.escape(__t))+\n'";
@@ -36154,7 +36154,7 @@ var require_finally = __commonJS({
       function succeed() {
         return finallyHandler.call(this, this.promise._target()._settledValue());
       }
-      function fail2(reason) {
+      function fail3(reason) {
         if (checkCancel(this, reason)) return;
         errorObj2.e = reason;
         return errorObj2;
@@ -36183,7 +36183,7 @@ var require_finally = __commonJS({
               }
               return maybePromise._then(
                 succeed,
-                fail2,
+                fail3,
                 void 0,
                 this,
                 void 0
@@ -36200,11 +36200,11 @@ var require_finally = __commonJS({
           return reasonOrValue;
         }
       }
-      Promise2.prototype._passThrough = function(handler, type, success, fail3) {
+      Promise2.prototype._passThrough = function(handler, type, success, fail4) {
         if (typeof handler !== "function") return this.then();
         return this._then(
           success,
-          fail3,
+          fail4,
           void 0,
           new PassThroughHandlerContext(this, type, handler),
           void 0
@@ -43062,10 +43062,10 @@ var require_supports_colors = __commonJS({
 // node_modules/@colors/colors/lib/custom/trap.js
 var require_trap = __commonJS({
   "node_modules/@colors/colors/lib/custom/trap.js"(exports2, module2) {
-    module2["exports"] = function runTheTrap(text2, options) {
+    module2["exports"] = function runTheTrap(text3, options) {
       var result2 = "";
-      text2 = text2 || "Run the trap, drop the bass";
-      text2 = text2.split("");
+      text3 = text3 || "Run the trap, drop the bass";
+      text3 = text3.split("");
       var trap = {
         a: ["@", "\u0104", "\u023A", "\u0245", "\u0394", "\u039B", "\u0414"],
         b: ["\xDF", "\u0181", "\u0243", "\u026E", "\u03B2", "\u0E3F"],
@@ -43113,7 +43113,7 @@ var require_trap = __commonJS({
         y: ["\xA5", "\u04B0", "\u04CB"],
         z: ["\u01B5", "\u0240"]
       };
-      text2.forEach(function(c) {
+      text3.forEach(function(c) {
         c = c.toLowerCase();
         var chars = trap[c] || [" "];
         var rand = Math.floor(Math.random() * chars.length);
@@ -43131,8 +43131,8 @@ var require_trap = __commonJS({
 // node_modules/@colors/colors/lib/custom/zalgo.js
 var require_zalgo = __commonJS({
   "node_modules/@colors/colors/lib/custom/zalgo.js"(exports2, module2) {
-    module2["exports"] = function zalgo(text2, options) {
-      text2 = text2 || "   he is here   ";
+    module2["exports"] = function zalgo(text3, options) {
+      text3 = text3 || "   he is here   ";
       var soul = {
         "up": [
           "\u030D",
@@ -43265,7 +43265,7 @@ var require_zalgo = __commonJS({
         });
         return bool;
       }
-      function heComes(text3, options2) {
+      function heComes(text4, options2) {
         var result2 = "";
         var counts;
         var l2;
@@ -43274,12 +43274,12 @@ var require_zalgo = __commonJS({
         options2["mid"] = typeof options2["mid"] !== "undefined" ? options2["mid"] : true;
         options2["down"] = typeof options2["down"] !== "undefined" ? options2["down"] : true;
         options2["size"] = typeof options2["size"] !== "undefined" ? options2["size"] : "maxi";
-        text3 = text3.split("");
-        for (l2 in text3) {
+        text4 = text4.split("");
+        for (l2 in text4) {
           if (isChar(l2)) {
             continue;
           }
-          result2 = result2 + text3[l2];
+          result2 = result2 + text4[l2];
           counts = { "up": 0, "down": 0, "mid": 0 };
           switch (options2.size) {
             case "mini":
@@ -43310,7 +43310,7 @@ var require_zalgo = __commonJS({
         }
         return result2;
       }
-      return heComes(text2, options);
+      return heComes(text3, options);
     };
   }
 });
@@ -44084,8 +44084,8 @@ var require_safe_stable_stringify = __commonJS({
     }
     function configure(options) {
       options = { ...options };
-      const fail2 = getStrictOption(options);
-      if (fail2) {
+      const fail3 = getStrictOption(options);
+      if (fail3) {
         if (options.bigint === void 0) {
           options.bigint = false;
         }
@@ -44196,7 +44196,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
+            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44207,7 +44207,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail2 ? fail2(value) : void 0;
+            return fail3 ? fail3(value) : void 0;
         }
       }
       function stringifyArrayReplacer(key, value, stack, replacer, spacer, indentation) {
@@ -44287,7 +44287,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
+            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44298,7 +44298,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail2 ? fail2(value) : void 0;
+            return fail3 ? fail3(value) : void 0;
         }
       }
       function stringifyIndent(key, value, stack, spacer, indentation) {
@@ -44399,7 +44399,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
+            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44410,7 +44410,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail2 ? fail2(value) : void 0;
+            return fail3 ? fail3(value) : void 0;
         }
       }
       function stringifySimple(key, value, stack) {
@@ -44495,7 +44495,7 @@ ${originalIndentation}`;
             return `{${res}}`;
           }
           case "number":
-            return isFinite(value) ? String(value) : fail2 ? fail2(value) : "null";
+            return isFinite(value) ? String(value) : fail3 ? fail3(value) : "null";
           case "boolean":
             return value === true ? "true" : "false";
           case "undefined":
@@ -44506,7 +44506,7 @@ ${originalIndentation}`;
             }
           // fallthrough
           default:
-            return fail2 ? fail2(value) : void 0;
+            return fail3 ? fail3(value) : void 0;
         }
       }
       function stringify2(value, replacer, space) {
@@ -48948,7 +48948,7 @@ var require_pipeline = __commonJS({
       if (typeof streams[streams.length - 1] !== "function") return noop2;
       return streams.pop();
     }
-    function pipeline() {
+    function pipeline2() {
       for (var _len = arguments.length, streams = new Array(_len), _key = 0; _key < _len; _key++) {
         streams[_key] = arguments[_key];
       }
@@ -48971,7 +48971,7 @@ var require_pipeline = __commonJS({
       });
       return streams.reduce(pipe2);
     }
-    module2.exports = pipeline;
+    module2.exports = pipeline2;
   }
 });
 
@@ -50694,10 +50694,10 @@ var require_index_cjs = __commonJS({
 var require_kuler = __commonJS({
   "node_modules/kuler/index.js"(exports2, module2) {
     "use strict";
-    function Kuler(text2, color) {
-      if (color) return new Kuler(text2).style(color);
-      if (!(this instanceof Kuler)) return new Kuler(text2);
-      this.text = text2;
+    function Kuler(text3, color) {
+      if (color) return new Kuler(text3).style(color);
+      if (!(this instanceof Kuler)) return new Kuler(text3);
+      this.text = text3;
     }
     Kuler.prototype.prefix = "\x1B[";
     Kuler.prototype.suffix = "m";
@@ -57170,7 +57170,7 @@ var require_AuthResponse = __commonJS({
     AuthResponse.prototype.getToken = function getToken() {
       return this.token.getToken();
     };
-    AuthResponse.prototype.text = function text2() {
+    AuthResponse.prototype.text = function text3() {
       return this.body;
     };
     AuthResponse.prototype.status = function status2() {
@@ -58415,16 +58415,16 @@ var require_BigInteger = __commonJS({
         return Math.ceil(n);
       }
       function add(a, b) {
-        var l_a = a.length, l_b = b.length, r = new Array(l_a), carry = 0, base = BASE, sum, i2;
+        var l_a = a.length, l_b = b.length, r = new Array(l_a), carry = 0, base = BASE, sum2, i2;
         for (i2 = 0; i2 < l_b; i2++) {
-          sum = a[i2] + b[i2] + carry;
-          carry = sum >= base ? 1 : 0;
-          r[i2] = sum - carry * base;
+          sum2 = a[i2] + b[i2] + carry;
+          carry = sum2 >= base ? 1 : 0;
+          r[i2] = sum2 - carry * base;
         }
         while (i2 < l_a) {
-          sum = a[i2] + carry;
-          carry = sum === base ? 1 : 0;
-          r[i2++] = sum - carry * base;
+          sum2 = a[i2] + carry;
+          carry = sum2 === base ? 1 : 0;
+          r[i2++] = sum2 - carry * base;
         }
         if (carry > 0) r.push(carry);
         return r;
@@ -58434,11 +58434,11 @@ var require_BigInteger = __commonJS({
         return add(b, a);
       }
       function addSmall(a, carry) {
-        var l2 = a.length, r = new Array(l2), base = BASE, sum, i2;
+        var l2 = a.length, r = new Array(l2), base = BASE, sum2, i2;
         for (i2 = 0; i2 < l2; i2++) {
-          sum = a[i2] - base + carry;
-          carry = Math.floor(sum / base);
-          r[i2] = sum - carry * base;
+          sum2 = a[i2] - base + carry;
+          carry = Math.floor(sum2 / base);
+          r[i2] = sum2 - carry * base;
           carry += 1;
         }
         while (carry > 0) {
@@ -59238,11 +59238,11 @@ var require_BigInteger = __commonJS({
           yRem = yDivMod[0];
           result2.push(fn(xDigit, yDigit));
         }
-        var sum = fn(xSign ? 1 : 0, ySign ? 1 : 0) !== 0 ? bigInt(-1) : bigInt(0);
+        var sum2 = fn(xSign ? 1 : 0, ySign ? 1 : 0) !== 0 ? bigInt(-1) : bigInt(0);
         for (var i2 = result2.length - 1; i2 >= 0; i2 -= 1) {
-          sum = sum.multiply(highestPower2).add(bigInt(result2[i2]));
+          sum2 = sum2.multiply(highestPower2).add(bigInt(result2[i2]));
         }
-        return sum;
+        return sum2;
       }
       BigInteger.prototype.not = function() {
         return this.negate().prev();
@@ -59353,14 +59353,14 @@ var require_BigInteger = __commonJS({
         }
         return low.add(Integer.fromArray(result2, BASE, false));
       }
-      var parseBase = function(text2, base, alphabet, caseSensitive) {
+      var parseBase = function(text3, base, alphabet, caseSensitive) {
         alphabet = alphabet || DEFAULT_ALPHABET;
-        text2 = String(text2);
+        text3 = String(text3);
         if (!caseSensitive) {
-          text2 = text2.toLowerCase();
+          text3 = text3.toLowerCase();
           alphabet = alphabet.toLowerCase();
         }
-        var length = text2.length;
+        var length = text3.length;
         var i2;
         var absBase = Math.abs(base);
         var alphabetValues = {};
@@ -59368,7 +59368,7 @@ var require_BigInteger = __commonJS({
           alphabetValues[alphabet[i2]] = i2;
         }
         for (i2 = 0; i2 < length; i2++) {
-          var c = text2[i2];
+          var c = text3[i2];
           if (c === "-") continue;
           if (c in alphabetValues) {
             if (alphabetValues[c] >= absBase) {
@@ -59379,16 +59379,16 @@ var require_BigInteger = __commonJS({
         }
         base = parseValue(base);
         var digits = [];
-        var isNegative = text2[0] === "-";
-        for (i2 = isNegative ? 1 : 0; i2 < text2.length; i2++) {
-          var c = text2[i2];
+        var isNegative = text3[0] === "-";
+        for (i2 = isNegative ? 1 : 0; i2 < text3.length; i2++) {
+          var c = text3[i2];
           if (c in alphabetValues) digits.push(parseValue(alphabetValues[c]));
           else if (c === "<") {
             var start = i2;
             do {
               i2++;
-            } while (text2[i2] !== ">" && i2 < text2.length);
-            digits.push(parseValue(text2.slice(start + 1, i2)));
+            } while (text3[i2] !== ">" && i2 < text3.length);
+            digits.push(parseValue(text3.slice(start + 1, i2)));
           } else throw new Error(c + " is not a valid character");
         }
         return parseBaseFromArray(digits, base, isNegative);
@@ -59520,15 +59520,15 @@ var require_BigInteger = __commonJS({
           if (exp[0] === "+") exp = exp.slice(1);
           exp = +exp;
           if (exp !== truncate(exp) || !isPrecise(exp)) throw new Error("Invalid integer: " + exp + " is not a valid exponent.");
-          var text2 = split[0];
-          var decimalPlace = text2.indexOf(".");
+          var text3 = split[0];
+          var decimalPlace = text3.indexOf(".");
           if (decimalPlace >= 0) {
-            exp -= text2.length - decimalPlace - 1;
-            text2 = text2.slice(0, decimalPlace) + text2.slice(decimalPlace + 1);
+            exp -= text3.length - decimalPlace - 1;
+            text3 = text3.slice(0, decimalPlace) + text3.slice(decimalPlace + 1);
           }
           if (exp < 0) throw new Error("Cannot include negative exponent part for integers");
-          text2 += new Array(exp + 1).join("0");
-          v = text2;
+          text3 += new Array(exp + 1).join("0");
+          v = text3;
         }
         var isValid2 = /^([0-9][0-9]*)$/.test(v);
         if (!isValid2) throw new Error("Invalid integer: " + v);
@@ -68993,13 +68993,13 @@ function _array(Class2, element, params) {
   });
 }
 function _custom(Class2, fn, _params) {
-  const norm = normalizeParams(_params);
-  norm.abort ?? (norm.abort = true);
+  const norm2 = normalizeParams(_params);
+  norm2.abort ?? (norm2.abort = true);
   const schema = new Class2({
     type: "custom",
     check: "custom",
     fn,
-    ...norm
+    ...norm2
   });
   return schema;
 }
@@ -80294,9 +80294,9 @@ var Dec = class _Dec {
     this.n = n;
     this.s = s;
   }
-  static parse(text2) {
-    const m = /^(\d+)(?:\.(\d+))?$/.exec(text2);
-    if (!m) throw new Error(`not a number: ${text2}`);
+  static parse(text3) {
+    const m = /^(\d+)(?:\.(\d+))?$/.exec(text3);
+    if (!m) throw new Error(`not a number: ${text3}`);
     const frac = m[2] || "";
     return new _Dec(BigInt(m[1] + frac), frac.length);
   }
@@ -81102,7 +81102,7 @@ async function payables(params) {
   const overdue = rows.filter((r) => r.daysPastDue > 0).sort((a, b) => dayNumber(a.dueDate) - dayNumber(b.dueDate) || (b.balance > a.balance ? 1 : -1));
   const dueToday = rows.filter((r) => r.daysPastDue === 0 && r.daysUntilDue === 0);
   const dueSoon = rows.filter((r) => r.daysPastDue === 0 && r.daysUntilDue > 0 && r.daysUntilDue <= within).sort((a, b) => dayNumber(a.dueDate) - dayNumber(b.dueDate));
-  const sum = (l2) => money2(l2.reduce((s, r) => s + r.balance, 0n));
+  const sum2 = (l2) => money2(l2.reduce((s, r) => s + r.balance, 0n));
   const vendors = [...vend.values()].sort((a, b) => b.owed > a.owed ? 1 : b.owed < a.owed ? -1 : 0);
   return text({
     asOf,
@@ -81112,10 +81112,10 @@ async function payables(params) {
     aging: Object.fromEntries([...AGE_COLS, "Total"].map((c) => [c, money2(byCol[c])])),
     matchesQuickBooksAgingReport: matches,
     ...matches ? {} : { quickBooksAgingReport: qbo },
-    pastDue: { count: overdue.length, total: sum(overdue), bills: overdue.map(fmt) },
-    dueToday: { count: dueToday.length, total: sum(dueToday), bills: dueToday.map(fmt) },
-    dueSoon: { withinDays: within, count: dueSoon.length, total: sum(dueSoon), bills: dueSoon.slice(0, 20).map(fmt) },
-    pastDueOrDueToday: sum([...overdue, ...dueToday]),
+    pastDue: { count: overdue.length, total: sum2(overdue), bills: overdue.map(fmt) },
+    dueToday: { count: dueToday.length, total: sum2(dueToday), bills: dueToday.map(fmt) },
+    dueSoon: { withinDays: within, count: dueSoon.length, total: sum2(dueSoon), bills: dueSoon.slice(0, 20).map(fmt) },
+    pastDueOrDueToday: sum2([...overdue, ...dueToday]),
     vendorsRankedByAmountOwed: vendors.slice(0, top).map((v, i) => ({ rank: i + 1, vendor: v.vendor, owed: money2(v.owed), pastDue: money2(v.pastDue), openBills: v.openBills })),
     note: "Computed exactly by the connector from every open bill, aged by due date as of asOf; lists are already sorted (past-due bills oldest first). Use these figures as given. A bill number of null means the bill has no number in QuickBooks: describe it by vendor, date and amount."
   });
@@ -81379,6 +81379,714 @@ var ANSWER_TOOLS = [
   GetProfitComparisonTool,
   GetCustomerPurchasesTool
 ];
+
+// src/convor-hubspot.ts
+var TZ2 = process.env.CONVOR_TIMEZONE || "America/New_York";
+var ISO2 = /^\d{4}-\d{2}-\d{2}$/;
+var MAX_DEALS = 2e3;
+function cfg() {
+  return {
+    token: (process.env.HUBSPOT_TOKEN || "").trim(),
+    base: (process.env.HUBSPOT_API_BASE || "https://api.hubapi.com").replace(/\/+$/, ""),
+    dsProp: (process.env.HUBSPOT_DATASET_PROPERTY || "").trim(),
+    dsValue: (process.env.HUBSPOT_DATASET_VALUE || "").trim(),
+    pipeline: (process.env.HUBSPOT_PIPELINE_ID || "").trim(),
+    lineProp: (process.env.HUBSPOT_PRODUCT_LINE_PROPERTY || "").trim()
+  };
+}
+function hubspotConfigured() {
+  const t = cfg().token;
+  return t.length >= 20 && !/^(x+|changeme|placeholder|todo)$/i.test(t);
+}
+function hubspotSecrets() {
+  const t = cfg().token;
+  return t.length >= 12 ? [t] : [];
+}
+function dayNumber2(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return Math.round(Date.UTC(y, m - 1, d) / 864e5);
+}
+function addDays(iso, n) {
+  return new Date((dayNumber2(iso) + n) * 864e5).toISOString().slice(0, 10);
+}
+function checkDate2(v, name) {
+  if (v === void 0 || v === null || v === "") return void 0;
+  const s = String(v).trim();
+  if (!ISO2.test(s) || isNaN(dayNumber2(s))) throw new Error(`${name} must be a date written YYYY-MM-DD`);
+  return s;
+}
+var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function humanDate2(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return `${MONTHS[m - 1]} ${d}, ${y}`;
+}
+function localDate(v) {
+  if (v === void 0 || v === null || v === "") return null;
+  const s = String(v);
+  const ms = /^\d+$/.test(s) ? Number(s) : Date.parse(s);
+  if (isNaN(ms)) return null;
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ2, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ms));
+}
+function monthStart(iso) {
+  return iso.slice(0, 8) + "01";
+}
+function monthEnd(iso) {
+  const [y, m] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10);
+}
+function quarterStart(iso) {
+  const [y, m] = iso.split("-").map(Number);
+  const q = Math.floor((m - 1) / 3) * 3 + 1;
+  return `${y}-${String(q).padStart(2, "0")}-01`;
+}
+function quarterEnd(iso) {
+  return monthEnd(addDays(quarterStart(iso), 62));
+}
+var READ_ONLY_POSTS = [
+  /^\/crm\/v3\/objects\/[a-z_0-9]+\/search$/,
+  /^\/crm\/v3\/objects\/[a-z_0-9]+\/batch\/read$/,
+  /^\/crm\/v4\/associations\/[a-z_0-9]+\/[a-z_0-9]+\/batch\/read$/
+];
+var sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function hs(path6, body) {
+  const c = cfg();
+  if (!hubspotConfigured()) throw new Error("HubSpot is not connected yet: the HUBSPOT_TOKEN variable on the connector service is missing.");
+  const method = body === void 0 ? "GET" : "POST";
+  if (method === "POST" && !READ_ONLY_POSTS.some((re) => re.test(path6))) throw new Error("Refusing a non-read HubSpot request: " + path6);
+  for (let attempt = 0; ; attempt++) {
+    const r = await fetch(c.base + path6, {
+      method,
+      headers: { Authorization: "Bearer " + c.token, Accept: "application/json", ...body !== void 0 ? { "Content-Type": "application/json" } : {} },
+      ...body !== void 0 ? { body: JSON.stringify(body) } : {},
+      signal: AbortSignal.timeout(3e4)
+    });
+    if ((r.status === 429 || r.status >= 500) && attempt < 3) {
+      const wait = Number(r.headers.get("retry-after")) * 1e3 || 1e3 * (attempt + 1);
+      await sleep(Math.min(wait, 1e4));
+      continue;
+    }
+    const txt = await r.text();
+    if (!r.ok) {
+      if (r.status === 401) throw new Error("HubSpot rejected the access token (401). The private app token may have been deleted or rotated.");
+      if (r.status === 403) throw new Error("HubSpot denied access (403): the private app is missing a read scope for " + path6.split("/").slice(3, 5).join("/") + ". " + txt.slice(0, 200));
+      throw new Error(`HubSpot ${r.status} on ${path6}: ${txt.slice(0, 300)}`);
+    }
+    return txt ? JSON.parse(txt) : {};
+  }
+}
+function datasetFilters() {
+  const c = cfg();
+  return c.dsProp && c.dsValue ? [{ propertyName: c.dsProp, operator: "EQ", value: c.dsValue }] : [];
+}
+async function searchAll(type, filters, properties, cap, query) {
+  const rows = [];
+  let after2;
+  for (; ; ) {
+    const body = { filterGroups: filters.length ? [{ filters }] : [], properties, limit: 200, sorts: [{ propertyName: "hs_object_id", direction: "ASCENDING" }] };
+    if (query) body.query = query;
+    if (after2) body.after = after2;
+    const r = await hs(`/crm/v3/objects/${type}/search`, body);
+    rows.push(...r.results || []);
+    after2 = r.paging?.next?.after;
+    if (!after2) return { rows, truncated: false };
+    if (rows.length >= cap) return { rows: rows.slice(0, cap), truncated: true };
+  }
+}
+async function batchRead(type, ids, properties) {
+  const out = /* @__PURE__ */ new Map();
+  const uniq2 = [...new Set(ids)];
+  for (let i = 0; i < uniq2.length; i += 100) {
+    const r = await hs(`/crm/v3/objects/${type}/batch/read`, { inputs: uniq2.slice(i, i + 100).map((id) => ({ id })), properties });
+    for (const x of r.results || []) out.set(String(x.id), x);
+  }
+  return out;
+}
+async function assoc(from, to, ids) {
+  const out = /* @__PURE__ */ new Map();
+  const uniq2 = [...new Set(ids)];
+  for (let i = 0; i < uniq2.length; i += 1e3) {
+    const r = await hs(`/crm/v4/associations/${from}/${to}/batch/read`, { inputs: uniq2.slice(i, i + 1e3).map((id) => ({ id })) });
+    for (const x of r.results || []) {
+      const k = String(x.from?.id);
+      const list = out.get(k) || [];
+      for (const t of x.to || []) list.push(String(t.toObjectId));
+      out.set(k, [...new Set(list)]);
+    }
+  }
+  return out;
+}
+var STRIP = (s, max2 = 300) => {
+  const t = String(s ?? "").replace(/<br\s*\/?>/gi, " ").replace(/<\/p>/gi, " ").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, " ").trim();
+  return t.length > max2 ? t.slice(0, max2 - 1) + "\u2026" : t;
+};
+var ENGAGEMENTS = [
+  { type: "calls", props: ["hs_call_title", "hs_call_body", "hs_timestamp", "hs_call_direction"], read: (p) => ({ title: STRIP(p.hs_call_title, 120) || "Call", detail: STRIP(p.hs_call_body), when: p.hs_timestamp }) },
+  { type: "emails", props: ["hs_email_subject", "hs_email_text", "hs_timestamp", "hs_email_direction"], read: (p) => ({ title: STRIP(p.hs_email_subject, 120) || "Email", detail: STRIP(p.hs_email_text), when: p.hs_timestamp }) },
+  { type: "notes", props: ["hs_note_body", "hs_timestamp"], read: (p) => ({ title: "Note", detail: STRIP(p.hs_note_body), when: p.hs_timestamp }) },
+  { type: "meetings", props: ["hs_meeting_title", "hs_meeting_body", "hs_meeting_start_time", "hs_timestamp"], read: (p) => ({ title: STRIP(p.hs_meeting_title, 120) || "Meeting", detail: STRIP(p.hs_meeting_body), when: p.hs_meeting_start_time || p.hs_timestamp }) }
+];
+var TYPE_LABEL = { calls: "call", emails: "email", notes: "note", meetings: "meeting" };
+async function loadStages() {
+  const r = await hs("/crm/v3/pipelines/deals");
+  const out = /* @__PURE__ */ new Map();
+  for (const p of r.results || []) {
+    for (const s of p.stages || []) {
+      const isClosed = String(s.metadata?.isClosed) === "true";
+      const prob = s.metadata?.probability !== void 0 && s.metadata?.probability !== "" ? Number(s.metadata.probability) : null;
+      out.set(String(s.id), {
+        id: String(s.id),
+        label: String(s.label),
+        order: Number(s.displayOrder ?? 0),
+        isClosed,
+        won: isClosed && prob === 1,
+        lost: isClosed && prob !== 1,
+        probability: prob !== null && !isNaN(prob) ? prob : null
+      });
+    }
+  }
+  return out;
+}
+async function optionLabels(prop) {
+  try {
+    const r = await hs(`/crm/v3/properties/deals/${encodeURIComponent(prop)}`);
+    return new Map((r.options || []).map((o) => [String(o.value), String(o.label)]));
+  } catch {
+    return /* @__PURE__ */ new Map();
+  }
+}
+var DEAL_PROPS = ["dealname", "amount", "dealstage", "pipeline", "closedate", "hs_next_step", "description"];
+async function loadDeals(opts = {}) {
+  const c = cfg();
+  const filters = [...datasetFilters()];
+  if (c.pipeline) filters.push({ propertyName: "pipeline", operator: "EQ", value: c.pipeline });
+  const props = [...DEAL_PROPS, ...c.lineProp ? [c.lineProp] : []];
+  const [stages, found, lineLabels] = await Promise.all([loadStages(), searchAll("deals", filters, props, MAX_DEALS), c.lineProp ? optionLabels(c.lineProp) : Promise.resolve(/* @__PURE__ */ new Map())]);
+  let rows = found.rows;
+  let ids = rows.map((d) => String(d.id));
+  const [dc, dk] = await Promise.all([assoc("deals", "companies", ids), assoc("deals", "contacts", ids)]);
+  if (opts.companyIds) {
+    const want = new Set(opts.companyIds);
+    rows = rows.filter((d) => (dc.get(String(d.id)) || []).some((x) => want.has(x)));
+    ids = rows.map((d) => String(d.id));
+  }
+  const engAssoc = await Promise.all([...ENGAGEMENTS.map((e) => e.type), "tasks"].map((t) => assoc("deals", t, ids)));
+  const engObjs = await Promise.all(ENGAGEMENTS.map((e, i) => batchRead(e.type, [...engAssoc[i].values()].flat(), e.props)));
+  const taskObjs = await batchRead("tasks", [...engAssoc[ENGAGEMENTS.length].values()].flat(), ["hs_task_subject", "hs_timestamp", "hs_task_status", "hs_task_priority"]);
+  const companyIds = [...new Set([...dc.values()].flat())];
+  const contactIds = [...new Set([...dk.values()].flat())];
+  const [co, ct] = await Promise.all([
+    batchRead("companies", companyIds, ["name", "city", "state", "domain", "description"]),
+    batchRead("contacts", contactIds, ["firstname", "lastname", "jobtitle", "email", "phone"])
+  ]);
+  const companies = /* @__PURE__ */ new Map();
+  for (const [id, x] of co) companies.set(id, { id, name: STRIP(x.properties?.name, 200) || "(no name)", city: x.properties?.city || null, state: x.properties?.state || null, domain: x.properties?.domain || null, description: x.properties?.description ? STRIP(x.properties.description) : null });
+  const contacts = /* @__PURE__ */ new Map();
+  for (const [id, x] of ct) {
+    const p = x.properties || {};
+    contacts.set(id, { id, name: [p.firstname, p.lastname].filter(Boolean).join(" ") || p.email || "(no name)", title: p.jobtitle || null, email: p.email || null, phone: p.phone || null });
+  }
+  const unknownStage = (id) => ({ id, label: id || "(no stage)", order: 999, isClosed: false, won: false, lost: false, probability: null });
+  const deals = rows.map((d) => {
+    const p = d.properties || {};
+    const id = String(d.id);
+    const activities = [];
+    ENGAGEMENTS.forEach((e, i) => {
+      for (const eid of engAssoc[i].get(id) || []) {
+        const o = engObjs[i].get(eid);
+        if (!o) continue;
+        const v = e.read(o.properties || {});
+        activities.push({ id: eid, type: TYPE_LABEL[e.type], date: localDate(v.when), title: v.title, detail: v.detail });
+      }
+    });
+    activities.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const tasks = [];
+    for (const tid of engAssoc[ENGAGEMENTS.length].get(id) || []) {
+      const o = taskObjs.get(tid);
+      if (!o) continue;
+      const q = o.properties || {};
+      const status2 = String(q.hs_task_status || "NOT_STARTED");
+      tasks.push({ id: tid, subject: STRIP(q.hs_task_subject, 200) || "(no subject)", due: localDate(q.hs_timestamp), status: status2, priority: String(q.hs_task_priority || "NONE"), open: status2 !== "COMPLETED" });
+    }
+    const hasAmount = p.amount !== void 0 && p.amount !== null && String(p.amount).trim() !== "";
+    return {
+      id,
+      name: STRIP(p.dealname, 200) || "(no name)",
+      amount: hasAmount ? toCents2(p.amount) : 0n,
+      hasAmount,
+      stage: stages.get(String(p.dealstage)) || unknownStage(String(p.dealstage || "")),
+      pipeline: String(p.pipeline || ""),
+      closeDate: localDate(p.closedate),
+      nextStep: p.hs_next_step ? STRIP(p.hs_next_step, 200) : null,
+      description: p.description ? STRIP(p.description) : null,
+      productLine: c.lineProp && p[c.lineProp] ? String(p[c.lineProp]).split(";").map((v) => lineLabels.get(v) || LINE_LABEL(v)).join(", ") : null,
+      companyIds: dc.get(id) || [],
+      contactIds: dk.get(id) || [],
+      activities,
+      tasks
+    };
+  });
+  return { deals, companies, contacts, truncated: found.truncated };
+}
+var byAmountDesc = (a, b) => b.amount > a.amount ? 1 : b.amount < a.amount ? -1 : a.name.localeCompare(b.name);
+var sum = (l2) => l2.reduce((s, d) => s + d.amount, 0n);
+function weighted(d) {
+  if (d.stage.probability === null) return null;
+  const p = BigInt(Math.round(d.stage.probability * 1e4));
+  return (d.amount * p * 2n + 10000n) / 20000n;
+}
+function companyName(d, companies) {
+  const names = d.companyIds.map((id) => companies.get(id)?.name).filter(Boolean);
+  return names.length ? names.join(", ") : null;
+}
+function primaryContact(d, contacts) {
+  const c = d.contactIds.map((id) => contacts.get(id)).find(Boolean);
+  return c ? { name: c.name, title: c.title, email: c.email } : null;
+}
+function lastActivity(d, today) {
+  return d.activities.find((a) => a.date !== null && a.date <= today) || null;
+}
+function dealLine(d, companies, today, extra = {}) {
+  const last2 = lastActivity(d, today);
+  return {
+    deal: d.name,
+    company: companyName(d, companies),
+    amount: d.hasAmount ? money2(d.amount) : null,
+    stage: d.stage.label,
+    closeDate: d.closeDate,
+    ...d.nextStep ? { nextStep: d.nextStep } : {},
+    lastActivity: last2 ? { date: last2.date, daysAgo: dayNumber2(today) - dayNumber2(last2.date), type: last2.type, summary: last2.title === "Note" ? last2.detail : `${last2.title}: ${last2.detail}`.replace(/: $/, "") } : null,
+    ...extra
+  };
+}
+function text2(obj2) {
+  return { content: [{ type: "text", text: JSON.stringify(obj2) }] };
+}
+function fail2(e) {
+  return { isError: true, content: [{ type: "text", text: "Error: " + (e?.message || String(e)) }] };
+}
+function scopeNote(truncated) {
+  const c = cfg();
+  const parts = [];
+  if (c.dsProp && c.dsValue) parts.push(`Only records tagged ${c.dsProp} = ${c.dsValue} are included.`);
+  if (c.pipeline) parts.push(`Only deals in pipeline ${c.pipeline} are included.`);
+  if (truncated) parts.push(`Only the first ${MAX_DEALS} deals were read; totals may be incomplete.`);
+  return parts.join(" ");
+}
+var norm = (s) => s.toLowerCase().replace(/&/g, " and ").replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\b(inc|llc|co|corp|corporation|company|ltd)\b/g, " ").replace(/\s+/g, " ").trim();
+var dollars = (c) => {
+  const m = money2(c);
+  const neg = m.startsWith("-");
+  const [w, f] = (neg ? m.slice(1) : m).split(".");
+  return (neg ? "-$" : "$") + w.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + f;
+};
+var LINE_LABEL = (v) => v ? v.replace(/_/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()) : "Not set";
+function invoicesFor(name, invs) {
+  const n = norm(name);
+  return invs.filter((i) => norm(String(i.customer).split(":")[0]) === n);
+}
+function balanceSummary(invs, today) {
+  const t = dayNumber2(today);
+  const rows = invs.map((i) => ({ ...i, daysPastDue: Math.max(t - dayNumber2(i.due), 0) }));
+  const past = rows.filter((r) => r.daysPastDue > 0);
+  const owed = rows.reduce((s, r) => s + r.balance, 0n);
+  const pastDue = past.reduce((s, r) => s + r.balance, 0n);
+  const over60 = past.filter((r) => r.daysPastDue > 60).reduce((s, r) => s + r.balance, 0n);
+  return {
+    owed,
+    pastDue,
+    over60,
+    oldestDaysPastDue: past.length ? Math.max(...past.map((r) => r.daysPastDue)) : 0,
+    openInvoices: rows.length,
+    pastDueInvoices: past.length,
+    list: rows.sort((a, b) => b.daysPastDue - a.daysPastDue || (b.balance > a.balance ? 1 : -1)).map((r) => ({
+      invoice: r.invoice,
+      date: r.date,
+      dueDate: r.due,
+      balance: money2(r.balance),
+      daysPastDue: r.daysPastDue
+    }))
+  };
+}
+var asOfSchema = external_exports.string().optional().describe("Treat this date as today (YYYY-MM-DD). Leave empty for today.");
+var pipelineSchema = external_exports.object({ as_of: asOfSchema });
+async function pipeline(params) {
+  const today = checkDate2(params?.as_of, "as_of") || todayISO();
+  const { deals, companies, truncated } = await loadDeals();
+  const open2 = deals.filter((d) => !d.stage.isClosed);
+  const stageList = [...new Map(deals.map((d) => [d.stage.id, d.stage])).values()].sort((a, b) => a.order - b.order);
+  const w = (l2) => {
+    const ws = l2.map(weighted);
+    return ws.some((x) => x === null) ? null : money2(ws.reduce((s, x) => s + x, 0n));
+  };
+  const byStage = stageList.filter((s) => !s.isClosed).map((s) => {
+    const l2 = open2.filter((d) => d.stage.id === s.id).sort(byAmountDesc);
+    return { stage: s.label, ...s.probability !== null ? { probabilityPercent: Math.round(s.probability * 100) } : {}, deals: l2.length, value: money2(sum(l2)), weightedValue: w(l2), dealList: l2.map((d) => ({ deal: d.name, company: companyName(d, companies), amount: d.hasAmount ? money2(d.amount) : null, closeDate: d.closeDate })) };
+  });
+  const lines = /* @__PURE__ */ new Map();
+  if (cfg().lineProp) for (const d of open2) {
+    const k = d.productLine || "Not set";
+    lines.set(k, [...lines.get(k) || [], d]);
+  }
+  const closedIn = (start, end) => {
+    const inR = deals.filter((d) => d.stage.isClosed && d.closeDate && d.closeDate >= start && d.closeDate <= end);
+    const won = inR.filter((d) => d.stage.won), lost = inR.filter((d) => d.stage.lost);
+    return {
+      period: `${humanDate2(start)} to ${humanDate2(end)}`,
+      won: { deals: won.length, value: money2(sum(won)), list: won.sort(byAmountDesc).map((d) => ({ deal: d.name, company: companyName(d, companies), amount: money2(d.amount), closeDate: d.closeDate })) },
+      lost: { deals: lost.length, value: money2(sum(lost)), list: lost.sort(byAmountDesc).map((d) => ({ deal: d.name, company: companyName(d, companies), amount: money2(d.amount), closeDate: d.closeDate, reason: d.activities.find((a) => /\blost\b/i.test(a.detail))?.detail || d.description || null })) },
+      winRateByCountPercent: pct(BigInt(won.length), BigInt(won.length + lost.length)),
+      winRateByValuePercent: pct(sum(won), sum(won) + sum(lost))
+    };
+  };
+  const ms = monthStart(today), me = monthEnd(today);
+  const closingThisMonth = open2.filter((d) => d.closeDate && d.closeDate >= ms && d.closeDate <= me);
+  const pastClose = open2.filter((d) => d.closeDate && d.closeDate < today);
+  const noAmount = open2.filter((d) => !d.hasAmount);
+  return text2({
+    asOf: today,
+    openPipeline: { deals: open2.length, value: money2(sum(open2)), weightedValue: w(open2), averageDealSize: open2.length ? money2(sum(open2) / BigInt(open2.length)) : null },
+    byStage,
+    ...lines.size ? { byProductLine: [...lines.entries()].map(([k, l2]) => ({ productLine: k, deals: l2.length, value: money2(sum(l2)) })).sort((a, b) => Number(toCents2(b.value) - toCents2(a.value))) } : {},
+    largestOpenDeals: open2.slice().sort(byAmountDesc).slice(0, 5).map((d) => dealLine(d, companies, today)),
+    expectedToCloseThisMonth: { period: `${humanDate2(ms)} to ${humanDate2(me)}`, deals: closingThisMonth.length, value: money2(sum(closingThisMonth)) },
+    openDealsPastCloseDate: { deals: pastClose.length, value: money2(sum(pastClose)), list: pastClose.sort(byAmountDesc).map((d) => ({ deal: d.name, company: companyName(d, companies), amount: money2(d.amount), closeDate: d.closeDate, daysPastCloseDate: dayNumber2(today) - dayNumber2(d.closeDate) })) },
+    closedThisMonth: closedIn(ms, me < today ? me : today),
+    closedQuarterToDate: closedIn(quarterStart(today), today),
+    closedYearToDate: closedIn(today.slice(0, 4) + "-01-01", today),
+    ...noAmount.length ? { openDealsWithNoAmount: noAmount.map((d) => d.name) } : {},
+    note: "Live from HubSpot; totals, weighting (amount x stage probability) and sorting computed exactly by the connector. Use these figures as given. " + scopeNote(truncated)
+  });
+}
+var GetSalesPipelineTool = {
+  name: "get_sales_pipeline",
+  description: "Sales pipeline overview from HubSpot, live, in one call: open deals by stage (count, value, weighted value, each deal), by product line, the largest open deals with their last activity, what is expected to close this month, open deals already past their close date, and deals won and lost this month, quarter to date and year to date with win rates. Use for any pipeline, forecast, or win/loss question.",
+  schema: pipelineSchema,
+  handler: async ({ params }) => {
+    try {
+      return await pipeline(params);
+    } catch (e) {
+      return fail2(e);
+    }
+  }
+};
+var closingSchema = external_exports.object({
+  period: external_exports.enum(["this_month", "next_month", "this_quarter", "next_quarter", "next_30_days", "next_90_days"]).optional().describe("Which period (default this_month). Ignored if start_date and end_date are given."),
+  start_date: external_exports.string().optional().describe("Start of a custom period (YYYY-MM-DD)"),
+  end_date: external_exports.string().optional().describe("End of a custom period (YYYY-MM-DD)"),
+  as_of: asOfSchema
+});
+function periodRange(params, today) {
+  const s = checkDate2(params?.start_date, "start_date"), e = checkDate2(params?.end_date, "end_date");
+  if (s && e) {
+    if (e < s) throw new Error("end_date is before start_date");
+    return [s, e, "custom"];
+  }
+  if (s || e) throw new Error("give both start_date and end_date, or neither");
+  const p = params?.period || "this_month";
+  if (p === "this_month") return [monthStart(today), monthEnd(today), p];
+  if (p === "next_month") {
+    const n = addDays(monthEnd(today), 1);
+    return [n, monthEnd(n), p];
+  }
+  if (p === "this_quarter") return [quarterStart(today), quarterEnd(today), p];
+  if (p === "next_quarter") {
+    const n = addDays(quarterEnd(today), 1);
+    return [n, quarterEnd(n), p];
+  }
+  if (p === "next_30_days") return [today, addDays(today, 30), p];
+  return [today, addDays(today, 90), p];
+}
+async function closing(params) {
+  const today = checkDate2(params?.as_of, "as_of") || todayISO();
+  const [start, end, label] = periodRange(params, today);
+  const { deals, companies, contacts, truncated } = await loadDeals();
+  const inRange = (d) => !!d.closeDate && d.closeDate >= start && d.closeDate <= end;
+  const open2 = deals.filter((d) => !d.stage.isClosed && inRange(d)).sort((a, b) => String(a.closeDate).localeCompare(String(b.closeDate)) || byAmountDesc(a, b));
+  const won = deals.filter((d) => d.stage.won && inRange(d)).sort(byAmountDesc);
+  const lost = deals.filter((d) => d.stage.lost && inRange(d)).sort(byAmountDesc);
+  const past = deals.filter((d) => !d.stage.isClosed && d.closeDate && d.closeDate < today && !inRange(d)).sort(byAmountDesc);
+  const ws = open2.map(weighted);
+  return text2({
+    asOf: today,
+    period: `${humanDate2(start)} to ${humanDate2(end)}`,
+    periodName: label,
+    stillOpen: {
+      deals: open2.length,
+      value: money2(sum(open2)),
+      weightedValue: ws.some((x) => x === null) ? null : money2(ws.reduce((s, x) => s + x, 0n)),
+      list: open2.map((d) => dealLine(d, companies, today, {
+        contact: primaryContact(d, contacts),
+        ...d.closeDate < today ? { closeDatePassed: true, daysPastCloseDate: dayNumber2(today) - dayNumber2(d.closeDate) } : { daysUntilClose: dayNumber2(d.closeDate) - dayNumber2(today) },
+        openTasks: d.tasks.filter((t) => t.open).map((t) => ({ task: t.subject, due: t.due, ...t.due && t.due < today ? { overdue: true } : {} }))
+      }))
+    },
+    alreadyWon: { deals: won.length, value: money2(sum(won)), list: won.map((d) => ({ deal: d.name, company: companyName(d, companies), amount: money2(d.amount), closeDate: d.closeDate })) },
+    alreadyLost: { deals: lost.length, value: money2(sum(lost)), list: lost.map((d) => ({ deal: d.name, company: companyName(d, companies), amount: money2(d.amount), closeDate: d.closeDate })) },
+    openDealsWithCloseDateAlreadyPassedBeforeThisPeriod: past.map((d) => ({ deal: d.name, company: companyName(d, companies), amount: money2(d.amount), stage: d.stage.label, closeDate: d.closeDate, daysPastCloseDate: dayNumber2(today) - dayNumber2(d.closeDate) })),
+    note: "Live from HubSpot by deal close date; stillOpen is sorted by close date. Computed exactly by the connector; use as given. " + scopeNote(truncated)
+  });
+}
+var GetDealsClosingTool = {
+  name: "get_deals_closing",
+  description: "Deals with a close date in a period (this month by default; also next month, this or next quarter, next 30 or 90 days, or custom dates), live from HubSpot: deals still open (amount, stage, days until close, next step, last activity, contact, open tasks), deals already won or lost in the period, and open deals whose close date has already passed. Use for 'what is closing this month', forecast and commit questions.",
+  schema: closingSchema,
+  handler: async ({ params }) => {
+    try {
+      return await closing(params);
+    } catch (e) {
+      return fail2(e);
+    }
+  }
+};
+var attentionSchema = external_exports.object({
+  stale_days: external_exports.number().int().min(1).max(365).optional().describe("A deal is stale with no call, email, note or meeting in this many days (default 14)"),
+  as_of: asOfSchema
+});
+async function attention(params) {
+  const today = checkDate2(params?.as_of, "as_of") || todayISO();
+  const days = params?.stale_days ?? 14;
+  const { deals, companies, contacts, truncated } = await loadDeals();
+  const open2 = deals.filter((d) => !d.stage.isClosed);
+  const t = dayNumber2(today);
+  const rows = open2.map((d) => {
+    const last2 = lastActivity(d, today);
+    const since = last2 ? t - dayNumber2(last2.date) : null;
+    const overdueTasks = d.tasks.filter((x) => x.open && x.due && x.due < today);
+    const reasons = [];
+    if (since === null) reasons.push("no logged activity");
+    else if (since > days) reasons.push(`no activity in ${since} days`);
+    if (d.closeDate && d.closeDate < today) reasons.push(`close date passed ${t - dayNumber2(d.closeDate)} days ago`);
+    if (overdueTasks.length) reasons.push(`${overdueTasks.length} overdue follow-up task${overdueTasks.length > 1 ? "s" : ""}`);
+    if (!d.nextStep) reasons.push("no next step recorded");
+    return { d, since, overdueTasks, reasons };
+  });
+  const flagged = rows.filter((r) => r.reasons.length).sort((a, b) => b.reasons.length - a.reasons.length || byAmountDesc(a.d, b.d));
+  const stale = rows.filter((r) => r.since === null || r.since > days);
+  return text2({
+    asOf: today,
+    staleRule: `No call, email, note or meeting logged in more than ${days} days`,
+    openDeals: open2.length,
+    staleDeals: { deals: stale.length, value: money2(sum(stale.map((r) => r.d))) },
+    dealsNeedingAttention: flagged.map((r) => dealLine(r.d, companies, today, {
+      reasons: r.reasons,
+      contact: primaryContact(r.d, contacts),
+      ...r.overdueTasks.length ? { overdueTasks: r.overdueTasks.map((x) => ({ task: x.subject, due: x.due, daysOverdue: t - dayNumber2(x.due) })) } : {}
+    })),
+    healthyOpenDeals: rows.filter((r) => !r.reasons.length).length,
+    note: "Live from HubSpot. Already sorted: most reasons first, then largest amount. Last activity is computed from the calls, emails, notes and meetings logged on each deal. " + scopeNote(truncated)
+  });
+}
+var GetDealsNeedingAttentionTool = {
+  name: "get_deals_needing_attention",
+  description: "Open deals at risk, live from HubSpot, in one call: stale deals (no call, email, note or meeting in N days, default 14), deals past their close date, deals with overdue follow-up tasks, and deals with no next step. Each deal shows the reasons, amount, stage, last activity and contact, already sorted by priority. Use for 'which deals are stalling', 'what needs my attention', or pipeline hygiene.",
+  schema: attentionSchema,
+  handler: async ({ params }) => {
+    try {
+      return await attention(params);
+    } catch (e) {
+      return fail2(e);
+    }
+  }
+};
+var followSchema = external_exports.object({
+  days_ahead: external_exports.number().int().min(0).max(60).optional().describe("Also list tasks due within this many days (default 7)"),
+  as_of: asOfSchema
+});
+async function followups(params) {
+  const today = checkDate2(params?.as_of, "as_of") || todayISO();
+  const ahead = params?.days_ahead ?? 7;
+  const { deals, companies, contacts, truncated } = await loadDeals();
+  const t = dayNumber2(today);
+  const items = [];
+  for (const d of deals) for (const x of d.tasks) if (x.open) items.push({ x, d });
+  const fmt = ({ x, d }, extra) => ({ task: x.subject, due: x.due, priority: x.priority, deal: d.name, dealStage: d.stage.label, dealAmount: d.hasAmount ? money2(d.amount) : null, company: companyName(d, companies), contact: primaryContact(d, contacts), ...extra });
+  const overdue = items.filter((i) => i.x.due && i.x.due < today).sort((a, b) => a.x.due.localeCompare(b.x.due));
+  const dueToday = items.filter((i) => i.x.due === today);
+  const soon = items.filter((i) => i.x.due && i.x.due > today && dayNumber2(i.x.due) - t <= ahead).sort((a, b) => a.x.due.localeCompare(b.x.due));
+  const noDue = items.filter((i) => !i.x.due);
+  return text2({
+    asOf: today,
+    openTasks: items.length,
+    overdue: { count: overdue.length, tasks: overdue.map((i) => fmt(i, { daysOverdue: t - dayNumber2(i.x.due) })) },
+    dueToday: { count: dueToday.length, tasks: dueToday.map((i) => fmt(i, {})) },
+    dueSoon: { withinDays: ahead, count: soon.length, tasks: soon.map((i) => fmt(i, { daysUntilDue: dayNumber2(i.x.due) - t })) },
+    ...noDue.length ? { noDueDate: noDue.map((i) => fmt(i, {})) } : {},
+    note: "Live HubSpot tasks linked to deals; overdue is oldest first. Use as given. " + scopeNote(truncated)
+  });
+}
+var GetSalesFollowupsTool = {
+  name: "get_sales_followups",
+  description: "Sales follow-up tasks from HubSpot, live: overdue tasks (oldest first, with days overdue), tasks due today, and tasks due in the next N days (default 7), each with its deal, amount, stage, company and contact. Use for 'what follow-ups are due', 'what am I behind on', or a daily to-do list.",
+  schema: followSchema,
+  handler: async ({ params }) => {
+    try {
+      return await followups(params);
+    } catch (e) {
+      return fail2(e);
+    }
+  }
+};
+function makeHubSpotTools(qb) {
+  const briefSchema = external_exports.object({
+    company: external_exports.string().min(2).describe('All or part of the company name, for example "lakeshore"'),
+    as_of: asOfSchema
+  });
+  async function brief(params) {
+    const today = checkDate2(params?.as_of, "as_of") || todayISO();
+    const term = String(params?.company ?? "").replace(/[‘’]/g, "'").trim();
+    if (term.length < 2) throw new Error("give part of a company name");
+    const found = await searchAll("companies", datasetFilters(), ["name", "city", "state", "domain", "description"], 200, term);
+    let cands = found.rows;
+    if (!cands.length) {
+      const words = norm(term).split(" ").filter((w) => w.length >= 3);
+      const seen = /* @__PURE__ */ new Map();
+      for (const w of words.slice(0, 4)) for (const r of (await searchAll("companies", datasetFilters(), ["name", "city", "state", "domain", "description"], 200, w)).rows) seen.set(String(r.id), r);
+      cands = [...seen.values()];
+    }
+    const nt = norm(term);
+    const exact = cands.filter((r) => norm(String(r.properties?.name || "")) === nt);
+    const pick2 = exact.length === 1 ? exact : cands.length === 1 ? cands : cands.filter((r) => norm(String(r.properties?.name || "")).includes(nt));
+    if (pick2.length !== 1) {
+      return text2({
+        matched: false,
+        searchedFor: term,
+        candidates: cands.slice(0, 15).map((r) => ({ company: r.properties?.name, location: [r.properties?.city, r.properties?.state].filter(Boolean).join(", ") || null })),
+        note: cands.length ? "More than one company matches. Ask which one, or call again with the full name." : "No company in HubSpot matches. Check the spelling or try a shorter part of the name."
+      });
+    }
+    const co = pick2[0];
+    const cid = String(co.id);
+    const cname = String(co.properties?.name || "");
+    const [{ deals, contacts, truncated }, contactAssoc, invs, cust] = await Promise.all([
+      loadDeals({ companyIds: [cid] }),
+      assoc("companies", "contacts", [cid]),
+      qb.openInvoices(),
+      qb.findCustomer(cname)
+    ]);
+    const people = await batchRead("contacts", contactAssoc.get(cid) || [], ["firstname", "lastname", "jobtitle", "email", "phone"]);
+    const y = today.slice(0, 4);
+    const [ytd, lastYear] = cust ? await Promise.all([
+      qb.customerSales(cust.id, `${y}-01-01`, today),
+      qb.customerSales(cust.id, `${Number(y) - 1}-01-01`, `${Number(y) - 1}-12-31`)
+    ]) : [null, null];
+    const bal = balanceSummary(invoicesFor(cname, invs), today);
+    const open2 = deals.filter((d) => !d.stage.isClosed).sort(byAmountDesc);
+    const closed = deals.filter((d) => d.stage.isClosed).sort((a, b) => String(b.closeDate).localeCompare(String(a.closeDate)));
+    const acts = deals.flatMap((d) => d.activities.filter((a) => a.date && a.date <= today).map((a) => ({ date: a.date, type: a.type, deal: d.name, summary: a.title === "Note" ? a.detail : `${a.title}: ${a.detail}` }))).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const openTasks = deals.flatMap((d) => d.tasks.filter((x) => x.open).map((x) => ({ task: x.subject, due: x.due, priority: x.priority, deal: d.name, ...x.due && x.due < today ? { overdue: true, daysOverdue: dayNumber2(today) - dayNumber2(x.due) } : {} }))).sort((a, b) => String(a.due).localeCompare(String(b.due)));
+    const flags = [];
+    if (bal.pastDue > 0n) flags.push(`${dollars(bal.pastDue)} past due in QuickBooks (oldest ${bal.oldestDaysPastDue} days past due) while ${open2.length} deal${open2.length === 1 ? " is" : "s are"} open worth ${dollars(sum(open2))}. Check with finance before agreeing new terms or discounts.`);
+    for (const d of open2) {
+      const last2 = lastActivity(d, today);
+      if (d.closeDate && d.closeDate < today) flags.push(`${d.name}: close date ${d.closeDate} has passed.`);
+      if (!last2) flags.push(`${d.name}: no activity logged.`);
+      else if (dayNumber2(today) - dayNumber2(last2.date) > 14) flags.push(`${d.name}: no activity in ${dayNumber2(today) - dayNumber2(last2.date)} days.`);
+    }
+    for (const x of openTasks) if (x.overdue) flags.push(`Overdue task: ${x.task} (due ${x.due}).`);
+    return text2({
+      matched: true,
+      asOf: today,
+      company: { name: cname, location: [co.properties?.city, co.properties?.state].filter(Boolean).join(", ") || null, domain: co.properties?.domain || null, about: co.properties?.description ? STRIP(co.properties.description) : null },
+      contacts: [...people.values()].map((x) => {
+        const p = x.properties || {};
+        return { name: [p.firstname, p.lastname].filter(Boolean).join(" "), title: p.jobtitle || null, email: p.email || null, phone: p.phone || null };
+      }),
+      openDeals: { deals: open2.length, value: money2(sum(open2)), list: open2.map((d) => dealLine(d, /* @__PURE__ */ new Map([[cid, { id: cid, name: cname }]]), today, { description: d.description, contact: primaryContact(d, contacts) })) },
+      closedDeals: closed.map((d) => ({ deal: d.name, result: d.stage.won ? "won" : "lost", amount: money2(d.amount), closeDate: d.closeDate })),
+      recentActivity: acts.slice(0, 10),
+      openTasks,
+      quickBooks: cust ? {
+        customer: cust.name,
+        ...cust.terms ? { terms: cust.terms } : {},
+        owed: money2(bal.owed),
+        pastDue: money2(bal.pastDue),
+        moreThan60DaysPastDue: money2(bal.over60),
+        openInvoices: bal.openInvoices,
+        pastDueInvoices: bal.pastDueInvoices,
+        oldestDaysPastDue: bal.oldestDaysPastDue,
+        invoices: bal.list.slice(0, 10),
+        salesYearToDate: money2(ytd),
+        salesLastYear: money2(lastYear)
+      } : { customer: null, note: "No QuickBooks customer has this exact name, so this company has no invoices on record (likely a prospect)." },
+      watchOuts: flags,
+      note: "HubSpot (deals, contacts, activity, tasks) and QuickBooks (balances, sales) read live and joined by exact company name. Figures computed exactly by the connector; use them as given. " + scopeNote(truncated)
+    });
+  }
+  const GetAccountBriefTool = {
+    name: "get_account_brief",
+    description: "Everything about one company in one call, live from HubSpot and QuickBooks: contacts, open deals (amount, stage, close date, next step, last activity), won and lost deals, the last 10 activities, open and overdue tasks, and from QuickBooks what they owe, what is past due, open invoices, and sales this year and last year, plus watch-outs. Use before a call or meeting, or for any question about one account or customer.",
+    schema: briefSchema,
+    handler: async ({ params }) => {
+      try {
+        return await brief(params);
+      } catch (e) {
+        return fail2(e);
+      }
+    }
+  };
+  const creditSchema = external_exports.object({
+    min_days_past_due: external_exports.number().int().min(1).max(365).optional().describe("Only count invoices at least this many days past due (default 1)"),
+    as_of: asOfSchema
+  });
+  async function credit(params) {
+    const today = checkDate2(params?.as_of, "as_of") || todayISO();
+    const minDays = params?.min_days_past_due ?? 1;
+    const [{ deals, companies, contacts, truncated }, invs] = await Promise.all([loadDeals(), qb.openInvoices()]);
+    const open2 = deals.filter((d) => !d.stage.isClosed);
+    const byCompany = /* @__PURE__ */ new Map();
+    for (const d of open2) for (const cid of d.companyIds) byCompany.set(cid, [...byCompany.get(cid) || [], d]);
+    const t = dayNumber2(today);
+    const rows = [];
+    let clear = 0;
+    for (const [cid, list] of byCompany) {
+      const name = companies.get(cid)?.name;
+      if (!name) continue;
+      const mine = invoicesFor(name, invs);
+      const pastList = mine.filter((i) => t - dayNumber2(i.due) >= minDays);
+      if (!pastList.length) {
+        clear++;
+        continue;
+      }
+      const b = balanceSummary(mine, today);
+      const pastDue = pastList.reduce((s, i) => s + i.balance, 0n);
+      rows.push({
+        company: name,
+        pastDue,
+        openDealValue: sum(list),
+        out: {
+          company: name,
+          quickBooks: { owed: money2(b.owed), pastDue: money2(pastDue), oldestDaysPastDue: b.oldestDaysPastDue, pastDueInvoices: pastList.sort((a, z) => dayNumber2(a.due) - dayNumber2(z.due)).map((i) => ({ invoice: i.invoice, dueDate: i.due, balance: money2(i.balance), daysPastDue: t - dayNumber2(i.due) })) },
+          openDeals: list.sort(byAmountDesc).map((d) => dealLine(d, companies, today, { contact: primaryContact(d, contacts) })),
+          openDealValue: money2(sum(list))
+        }
+      });
+    }
+    rows.sort((a, b) => b.pastDue > a.pastDue ? 1 : b.pastDue < a.pastDue ? -1 : 0);
+    return text2({
+      asOf: today,
+      rule: `Companies with an open HubSpot deal and at least one QuickBooks invoice ${minDays}+ days past due`,
+      companies: rows.length,
+      totalPastDue: money2(rows.reduce((s, r) => s + r.pastDue, 0n)),
+      openDealValueAtThoseCompanies: money2(rows.reduce((s, r) => s + r.openDealValue, 0n)),
+      list: rows.map((r) => r.out),
+      companiesWithOpenDealsAndNothingPastDue: clear,
+      note: "HubSpot deals and QuickBooks invoices read live and joined by exact company name; sorted by past-due amount. Use as given. " + scopeNote(truncated)
+    });
+  }
+  const GetDealsWithPastDueBalancesTool = {
+    name: "get_deals_with_past_due_balances",
+    description: "Cross-checks sales against finance, live: every company with an open HubSpot deal that also has past-due invoices in QuickBooks, with the past-due invoices, total owed, and the open deals (amount, stage, next step, last activity). Sorted by past-due amount. Use before offering terms or discounts, or for 'which customers with open deals owe us money'.",
+    schema: creditSchema,
+    handler: async ({ params }) => {
+      try {
+        return await credit(params);
+      } catch (e) {
+        return fail2(e);
+      }
+    }
+  };
+  return [GetSalesPipelineTool, GetDealsClosingTool, GetDealsNeedingAttentionTool, GetSalesFollowupsTool, GetAccountBriefTool, GetDealsWithPastDueBalancesTool];
+}
 
 // src/tools/get-profit-and-loss.tool.ts
 var toolName = "get_profit_and_loss";
@@ -83399,7 +84107,7 @@ var toolHandler35 = async ({ params }) => {
 var SearchTermsTool = { name: toolName38, description: toolDescription38, schema: toolSchema38, handler: toolHandler35 };
 
 // src/convor-connector.ts
-var VERSION2 = "1.6.0";
+var VERSION2 = "1.7.0";
 var PORT = Number(process.env.PORT || 8080);
 var MAX_RESULT_CHARS = 15e4;
 var KEEPALIVE_MS = 6 * 60 * 60 * 1e3;
@@ -83489,6 +84197,43 @@ var CalculateTool = {
     return { content: [{ type: "text", text: JSON.stringify({ results }) }] };
   }
 };
+var normName = (s) => s.toLowerCase().replace(/&/g, " and ").replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\b(inc|llc|co|corp|corporation|company|ltd)\b/g, " ").replace(/\s+/g, " ").trim();
+var QB_SIDE = {
+  async openInvoices() {
+    const r = await searchQuickbooksInvoices([{ field: "Balance", value: "0", operator: ">" }, { field: "fetchAll", value: true }]);
+    if (r.isError) throw new Error("QuickBooks open invoices: " + r.error);
+    if (!Array.isArray(r.result)) throw new Error("QuickBooks open invoices: unexpected result");
+    return r.result.map((x) => ({
+      customer: String(x.CustomerRef?.name ?? ""),
+      customerId: x.CustomerRef?.value ?? null,
+      invoice: x.DocNumber || null,
+      date: x.TxnDate,
+      due: x.DueDate || x.TxnDate,
+      total: toCents2(x.TotalAmt),
+      balance: toCents2(x.Balance)
+    }));
+  },
+  async findCustomer(name) {
+    const words = normName(name).split(" ").filter((w) => w.length >= 3 && w !== "and").sort((a, b) => b.length - a.length);
+    if (!words.length) return null;
+    const r = await searchQuickbooksCustomers([{ field: "DisplayName", value: `%${words[0]}%`, operator: "LIKE" }, { field: "fetchAll", value: true }]);
+    if (r.isError) throw new Error("QuickBooks customer lookup: " + r.error);
+    const want = normName(name);
+    const hits = (Array.isArray(r.result) ? r.result : []).filter((c2) => !c2.Job && normName(String(c2.DisplayName || "")) === want);
+    if (hits.length !== 1) return null;
+    const c = hits[0];
+    return { id: String(c.Id), name: String(c.DisplayName), balance: toCents2(c.BalanceWithJobs ?? c.Balance ?? 0), email: c.PrimaryEmailAddr?.Address || null, terms: c.SalesTermRef?.name || null };
+  },
+  async customerSales(customerId, start, end) {
+    const r = await getQuickbooksCustomerSales({ start_date: start, end_date: end, customer: customerId, summarize_column_by: "Total" });
+    if (r.isError) throw new Error("QuickBooks customer sales: " + r.error);
+    const flat = flattenReport(r.result);
+    if (!flat) throw new Error("QuickBooks customer sales: unexpected report format");
+    const total = (flat.rows || []).find((x) => x.label === "TOTAL");
+    return total ? toCents2(total.values?.Total) : 0n;
+  }
+};
+var HUBSPOT_TOOLS = makeHubSpotTools(QB_SIDE);
 var TOOLS = [
   GetProfitAndLossTool,
   GetBalanceSheetTool,
@@ -83530,8 +84275,11 @@ var TOOLS = [
   SearchTermsTool,
   SearchCustomerOrVendorTool,
   CalculateTool,
-  ...ANSWER_TOOLS
+  ...ANSWER_TOOLS,
+  ...HUBSPOT_TOOLS
 ];
+var CRM_ONLY = new Set(HUBSPOT_TOOLS.map((t) => t.name));
+var CRM_ALSO = /* @__PURE__ */ new Set(["search_customer_or_vendor", "calculate"]);
 var READ_ONLY = /^(get|search|read)[_-]/;
 var LOCAL_ONLY = /* @__PURE__ */ new Set(["calculate"]);
 for (const t of TOOLS) {
@@ -83543,10 +84291,10 @@ quickbooksClient.startOAuthFlow = async () => {
 };
 function secretsToRedact() {
   const c = quickbooksClient;
-  return [process.env.QUICKBOOKS_CLIENT_SECRET, process.env.QUICKBOOKS_REFRESH_TOKEN, c.refreshToken, c.accessToken, process.env.MCP_SHARED_SECRET].filter((s) => typeof s === "string" && s.length >= 12);
+  return [process.env.QUICKBOOKS_CLIENT_SECRET, process.env.QUICKBOOKS_REFRESH_TOKEN, c.refreshToken, c.accessToken, process.env.MCP_SHARED_SECRET, ...hubspotSecrets()].filter((s) => typeof s === "string" && s.length >= 12);
 }
-function redact(text2) {
-  let out = text2;
+function redact(text3) {
+  let out = text3;
   for (const s of secretsToRedact()) out = out.split(s).join("[redacted]");
   return out;
 }
@@ -83555,16 +84303,16 @@ function tidy(result2) {
   let total = 0;
   for (const item of result2.content) {
     if (item?.type !== "text" || typeof item.text !== "string") continue;
-    let text2 = item.text;
-    const trimmed = text2.trim();
+    let text3 = item.text;
+    const trimmed = text3.trim();
     if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
       try {
         const parsed = JSON.parse(trimmed);
-        text2 = JSON.stringify(parsed);
+        text3 = JSON.stringify(parsed);
         if (isQuickBooksReport(parsed)) {
           try {
             const flat = flattenReport(parsed);
-            if (flat) text2 = JSON.stringify(flat);
+            if (flat) text3 = JSON.stringify(flat);
           } catch (e) {
             console.log("[connector] report kept in original form: " + (e?.message || String(e)).slice(0, 200));
           }
@@ -83572,10 +84320,10 @@ function tidy(result2) {
       } catch {
       }
     }
-    if (total + text2.length > MAX_RESULT_CHARS) {
-      text2 = text2.slice(0, Math.max(0, MAX_RESULT_CHARS - total)) + "\n[Truncated: this result was too large. Narrow the date range or add filters and try again.]";
+    if (total + text3.length > MAX_RESULT_CHARS) {
+      text3 = text3.slice(0, Math.max(0, MAX_RESULT_CHARS - total)) + "\n[Truncated: this result was too large. Narrow the date range or add filters and try again.]";
     }
-    item.text = redact(text2);
+    item.text = redact(text3);
     total += item.text.length;
   }
   return result2;
@@ -83636,22 +84384,27 @@ function registerFlat(server, t) {
     return result2;
   });
 }
-function buildServer() {
+function buildServer(kind = "finance") {
   const server = new McpServer(
-    { name: "Convor QuickBooks (read-only)", version: VERSION2 },
+    { name: kind === "crm" ? "Convor HubSpot + QuickBooks (read-only)" : "Convor QuickBooks (read-only)", version: VERSION2 },
     { capabilities: { tools: {} } }
   );
-  for (const t of SERVED) registerFlat(server, t);
+  for (const t of SERVED) {
+    const inCrm = CRM_ONLY.has(t.name) || CRM_ALSO.has(t.name);
+    if (kind === "crm" ? inCrm : !CRM_ONLY.has(t.name)) registerFlat(server, t);
+  }
   return server;
 }
 if (process.env.CONNECTOR_SELFTEST === "1") {
   const s = buildServer();
+  const crm = buildServer("crm");
   const c = quickbooksClient;
   const sha = (v) => v ? crypto4.createHash("sha256").update(v).digest("hex").slice(0, 12) : "none";
   console.log(JSON.stringify({
     configured,
     missing,
     tools: Object.keys(s._registeredTools || {}).sort(),
+    crmTools: Object.keys(crm._registeredTools || {}).sort(),
     refreshTokenSha: sha(c.refreshToken),
     realmId: c.realmId,
     environment: c.environment
@@ -83706,8 +84459,8 @@ function readBody(req, limit = 1e6) {
 var httpServer = http2.createServer(async (req, res) => {
   const path6 = (req.url || "/").split("?")[0];
   try {
-    if (path6 === "/health") return send(res, 200, { service: "quickbooks-connector", version: VERSION2, readOnly: true, ...status });
-    if (path6 !== "/mcp") return send(res, 404, { error: "not found" });
+    if (path6 === "/health") return send(res, 200, { service: "quickbooks-connector", version: VERSION2, readOnly: true, ...status, hubspot: hubspotConfigured() ? "configured" : "not_configured" });
+    if (path6 !== "/mcp" && path6 !== "/mcp-crm") return send(res, 404, { error: "not found" });
     if (!configured) return send(res, 503, { error: "QuickBooks is not connected yet" });
     if (!authorized(req.headers.authorization)) return send(res, 401, { error: "unauthorized" });
     if (req.method !== "POST") return send(res, 405, { error: "method not allowed" }, { Allow: "POST" });
@@ -83717,7 +84470,7 @@ var httpServer = http2.createServer(async (req, res) => {
     } catch {
       return send(res, 400, { error: "invalid JSON body" });
     }
-    const server = buildServer();
+    const server = buildServer(path6 === "/mcp-crm" ? "crm" : "finance");
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: void 0, enableJsonResponse: true });
     res.on("close", () => {
       transport.close().catch(() => {

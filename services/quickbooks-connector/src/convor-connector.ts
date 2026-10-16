@@ -14,7 +14,10 @@ import { z } from "zod";
 import { flattenReport, isQuickBooksReport } from "./convor-reports.js";
 import { calculateAll } from "./convor-calc.js";
 import { compactSearchResult } from "./convor-lists.js";
-import { ANSWER_TOOLS } from "./convor-answers.js";
+import { ANSWER_TOOLS, toCents } from "./convor-answers.js";
+import { makeHubSpotTools, hubspotConfigured, hubspotSecrets, type QbSide } from "./convor-hubspot.js";
+import { searchQuickbooksInvoices } from "./handlers/search-quickbooks-invoices.handler.js";
+import { getQuickbooksCustomerSales } from "./handlers/get-quickbooks-customer-sales.handler.js";
 
 // Reports
 import { GetProfitAndLossTool } from "./tools/get-profit-and-loss.tool.js";
@@ -60,7 +63,7 @@ import { SearchClassesTool } from "./tools/search-classes.tool.js";
 import { SearchDepartmentsTool } from "./tools/search-departments.tool.js";
 import { SearchTermsTool } from "./tools/search-terms.tool.js";
 
-const VERSION = "1.6.0";
+const VERSION = "1.7.0";
 const PORT = Number(process.env.PORT || 8080);
 const MAX_RESULT_CHARS = 150_000;
 const KEEPALIVE_MS = 6 * 60 * 60 * 1000;
@@ -163,6 +166,40 @@ const CalculateTool = {
   },
 };
 
+// Convor addition (1.7): the QuickBooks reads the HubSpot cross-check tools need.
+const normName = (s: string) => s.toLowerCase().replace(/&/g, " and ").replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\b(inc|llc|co|corp|corporation|company|ltd)\b/g, " ").replace(/\s+/g, " ").trim();
+const QB_SIDE: QbSide = {
+  async openInvoices() {
+    const r = await searchQuickbooksInvoices([{ field: "Balance", value: "0", operator: ">" }, { field: "fetchAll", value: true }]);
+    if (r.isError) throw new Error("QuickBooks open invoices: " + r.error);
+    if (!Array.isArray(r.result)) throw new Error("QuickBooks open invoices: unexpected result");
+    return r.result.map((x: any) => ({
+      customer: String(x.CustomerRef?.name ?? ""), customerId: x.CustomerRef?.value ?? null, invoice: x.DocNumber || null,
+      date: x.TxnDate, due: x.DueDate || x.TxnDate, total: toCents(x.TotalAmt), balance: toCents(x.Balance),
+    }));
+  },
+  async findCustomer(name: string) {
+    const words = normName(name).split(" ").filter((w) => w.length >= 3 && w !== "and").sort((a, b) => b.length - a.length);
+    if (!words.length) return null;
+    const r = await searchQuickbooksCustomers([{ field: "DisplayName", value: `%${words[0]}%`, operator: "LIKE" }, { field: "fetchAll", value: true }]);
+    if (r.isError) throw new Error("QuickBooks customer lookup: " + r.error);
+    const want = normName(name);
+    const hits = (Array.isArray(r.result) ? r.result : []).filter((c: any) => !c.Job && normName(String(c.DisplayName || "")) === want);
+    if (hits.length !== 1) return null;
+    const c = hits[0];
+    return { id: String(c.Id), name: String(c.DisplayName), balance: toCents(c.BalanceWithJobs ?? c.Balance ?? 0), email: c.PrimaryEmailAddr?.Address || null, terms: c.SalesTermRef?.name || null };
+  },
+  async customerSales(customerId: string, start: string, end: string) {
+    const r = await getQuickbooksCustomerSales({ start_date: start, end_date: end, customer: customerId, summarize_column_by: "Total" });
+    if (r.isError) throw new Error("QuickBooks customer sales: " + r.error);
+    const flat = flattenReport(r.result);
+    if (!flat) throw new Error("QuickBooks customer sales: unexpected report format");
+    const total = (flat.rows || []).find((x: any) => x.label === "TOTAL");
+    return total ? toCents(total.values?.Total) : 0n;
+  },
+};
+const HUBSPOT_TOOLS = makeHubSpotTools(QB_SIDE);
+
 const TOOLS: any[] = [
   GetProfitAndLossTool, GetBalanceSheetTool, GetCashFlowTool, GetTrialBalanceTool, GetAgedReceivablesTool,
   GetAgedPayablesTool, GetCustomerBalanceTool, GetVendorBalanceTool, GetCustomerSalesTool, GetVendorExpensesTool,
@@ -175,7 +212,12 @@ const TOOLS: any[] = [
   SearchClassesTool, SearchDepartmentsTool, SearchTermsTool,
   SearchCustomerOrVendorTool, CalculateTool,
   ...ANSWER_TOOLS,
+  ...HUBSPOT_TOOLS,
 ];
+// /mcp (Finance) keeps exactly its QuickBooks tool list; /mcp-crm (Sales) serves the
+// HubSpot tools, the HubSpot + QuickBooks cross-checks, the name lookup and the calculator.
+const CRM_ONLY = new Set(HUBSPOT_TOOLS.map((t: any) => t.name));
+const CRM_ALSO = new Set(["search_customer_or_vendor", "calculate"]);
 
 // Belt and braces: refuse to serve anything that is not a read (plus the
 // Convor-only calculator, which never calls QuickBooks).
@@ -194,7 +236,7 @@ for (const t of TOOLS) {
 
 function secretsToRedact(): string[] {
   const c: any = quickbooksClient;
-  return [process.env.QUICKBOOKS_CLIENT_SECRET, process.env.QUICKBOOKS_REFRESH_TOKEN, c.refreshToken, c.accessToken, process.env.MCP_SHARED_SECRET]
+  return [process.env.QUICKBOOKS_CLIENT_SECRET, process.env.QUICKBOOKS_REFRESH_TOKEN, c.refreshToken, c.accessToken, process.env.MCP_SHARED_SECRET, ...hubspotSecrets()]
     .filter((s): s is string => typeof s === "string" && s.length >= 12);
 }
 
@@ -300,23 +342,28 @@ function registerFlat(server: McpServer, t: any) {
   });
 }
 
-function buildServer(): McpServer {
+function buildServer(kind: "finance" | "crm" = "finance"): McpServer {
   const server = new McpServer(
-    { name: "Convor QuickBooks (read-only)", version: VERSION },
+    { name: kind === "crm" ? "Convor HubSpot + QuickBooks (read-only)" : "Convor QuickBooks (read-only)", version: VERSION },
     { capabilities: { tools: {} } },
   );
-  for (const t of SERVED) registerFlat(server, t);
+  for (const t of SERVED) {
+    const inCrm = CRM_ONLY.has(t.name) || CRM_ALSO.has(t.name);
+    if (kind === "crm" ? inCrm : !CRM_ONLY.has(t.name)) registerFlat(server, t);
+  }
   return server;
 }
 
 // ---- self test (no network): prints what would be served and exits
 if (process.env.CONNECTOR_SELFTEST === "1") {
   const s: any = buildServer();
+  const crm: any = buildServer("crm");
   const c: any = quickbooksClient;
   const sha = (v?: string) => (v ? crypto.createHash("sha256").update(v).digest("hex").slice(0, 12) : "none");
   console.log(JSON.stringify({
     configured, missing,
     tools: Object.keys(s._registeredTools || {}).sort(),
+    crmTools: Object.keys(crm._registeredTools || {}).sort(),
     refreshTokenSha: sha(c.refreshToken), realmId: c.realmId, environment: c.environment,
   }));
   process.exit(0);
@@ -373,15 +420,15 @@ function readBody(req: http.IncomingMessage, limit = 1_000_000): Promise<string>
 const httpServer = http.createServer(async (req, res) => {
   const path = (req.url || "/").split("?")[0];
   try {
-    if (path === "/health") return send(res, 200, { service: "quickbooks-connector", version: VERSION, readOnly: true, ...status });
-    if (path !== "/mcp") return send(res, 404, { error: "not found" });
+    if (path === "/health") return send(res, 200, { service: "quickbooks-connector", version: VERSION, readOnly: true, ...status, hubspot: hubspotConfigured() ? "configured" : "not_configured" });
+    if (path !== "/mcp" && path !== "/mcp-crm") return send(res, 404, { error: "not found" });
     if (!configured) return send(res, 503, { error: "QuickBooks is not connected yet" });
     if (!authorized(req.headers.authorization)) return send(res, 401, { error: "unauthorized" });
     if (req.method !== "POST") return send(res, 405, { error: "method not allowed" }, { Allow: "POST" });
     let body: unknown;
     try { body = JSON.parse(await readBody(req)); } catch { return send(res, 400, { error: "invalid JSON body" }); }
     // Stateless: a fresh MCP server and transport per request.
-    const server = buildServer();
+    const server = buildServer(path === "/mcp-crm" ? "crm" : "finance");
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
     res.on("close", () => { transport.close().catch(() => {}); server.close().catch(() => {}); });
     await server.connect(transport);

@@ -38,3 +38,14 @@ assistant never does mental math; it does not call QuickBooks, `src/convor-calc.
 
 Rebuild: clone upstream at the pinned commit into `src/` next to `build.sh`, `npm ci`, install
 `esbuild@0.25.10` into `tools/`, then run `build.sh`.
+
+## 1.7: HubSpot sales tools (`src/convor-hubspot.ts`)
+
+A second endpoint, `/mcp-crm`, serves the Sales Assistant. `/mcp` (Finance) keeps exactly its 47 QuickBooks tools.
+
+- `get_sales_pipeline`, `get_deals_closing`, `get_deals_needing_attention`, `get_sales_followups`: read live from HubSpot.
+- `get_account_brief`, `get_deals_with_past_due_balances`: HubSpot deals and activity joined with QuickBooks balances and sales by exact company name.
+- Also served on `/mcp-crm`: `search_customer_or_vendor` and `calculate`.
+- Read-only by construction: only GET requests and HubSpot's search, batch-read and association batch-read endpoints are allowed (`READ_ONLY_POSTS`); anything else is refused before it is sent.
+- Every call reads HubSpot at that moment (no cache). Totals, weighting (amount x stage probability), staleness and date math are done in code.
+- Variables: `HUBSPOT_TOKEN` (private app, read scopes only; redacted from logs and results); optional `HUBSPOT_DATASET_PROPERTY` / `HUBSPOT_DATASET_VALUE` to limit to tagged records (demo: `convor_demo_dataset` = `tallmark`); `HUBSPOT_PIPELINE_ID`; `HUBSPOT_PRODUCT_LINE_PROPERTY`.
