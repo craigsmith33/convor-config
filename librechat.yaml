@@ -78,6 +78,18 @@ mcpServers:
     chatMenu: false
     serverInstructions: false
     requiresOAuth: false
+  marketing:
+    type: streamable-http
+    title: "Marketing tools"
+    description: "Saves approved marketing drafts: branded documents, email campaign drafts and content calendar rows. Never publishes or sends."
+    url: "https://us1.make.com/mcp?scenarioId[]=4981494&scenarioId[]=4981505&scenarioId[]=4981491"
+    headers:
+      Authorization: "Bearer ${MAKE_MCP_TOKEN}"
+    timeout: 120000
+    initTimeout: 30000
+    chatMenu: false
+    serverInstructions: false
+    requiresOAuth: false
 endpoints:
   assistants:
     disableBuilder: false
@@ -103,6 +115,14 @@ modelSpecs:
         default: false
         endpoint: "agents"
         agent_id: "agent_ZTA-mY-88hWpx__7ayNzs"
+    - name: "marketing-engine"
+      label: "Marketing Assistant"
+      description: "Blog posts, email campaigns, LinkedIn posts and images in the company brand (sample company)"
+      default: false
+      preset:
+        default: false
+        endpoint: "agents"
+        agent_id: "agent_qHpeq5zVGZfXP8Lh2sGZS"
     - name: "finance-engine"
       label: "Finance Assistant"
       description: "Cash, receivables, bills and profit from QuickBooks (sample company)"
