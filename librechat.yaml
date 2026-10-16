@@ -81,8 +81,8 @@ mcpServers:
   marketing:
     type: streamable-http
     title: "Marketing tools"
-    description: "Saves approved marketing drafts: branded documents, email campaign drafts and content calendar rows. Never publishes or sends."
-    url: "https://us1.make.com/mcp?scenarioId[]=4981494&scenarioId[]=4981505&scenarioId[]=4981491"
+    description: "Creates brand images and saves approved marketing drafts: branded documents, email campaign drafts and content calendar rows. Never publishes or sends."
+    url: "https://us1.make.com/mcp?scenarioId[]=4981494&scenarioId[]=4981505&scenarioId[]=4981491&scenarioId[]=4981571"
     headers:
       Authorization: "Bearer ${MAKE_MCP_TOKEN}"
     timeout: 120000
